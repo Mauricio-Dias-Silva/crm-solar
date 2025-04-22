@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Cliente{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Editar Cliente</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}  <!-- Exibe o formulário -->
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        </form>
+
+        <a href="{% url 'detalhe_cliente' pk=cliente.pk %}" class="btn btn-secondary mt-3">Voltar</a>
+    </div>
+{% endblock %}

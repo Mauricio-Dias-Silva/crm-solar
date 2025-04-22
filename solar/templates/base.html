@@ -1,27 +1,69 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>{% block title %}CRM Energia Solar{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta charset="UTF-8">
+    <title>{% block title %}CRM Solar{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <style>
+        nav {
+            background-color: #0d6efd;
+            padding: 1rem;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>CRM Solar</h1>
+    </header>
+
+    <!-- Menu de navegação -->
     <nav>
         <ul>
-            <li><a href="{% url 'home' %}">Início</a></li>
-            <li><a href="{% url 'lista_clientes' %}">Clientes</a></li>
-            <li><a href="{% url 'lista_projetos' %}">Projetos</a></li>
+            <li><a href="{% url 'lista_clientes' %}">Lista de Clientes</a></li>
+            <li><a href="{% url 'lista_projetos' %}">Lista de Projetos</a></li>
         </ul>
     </nav>
 
-    <div class="content">
+    <main>
+        <!-- Bloco para exibir mensagens de sucesso ou erro -->
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
     <footer>
-        <p>&copy; {% now "Y" %} CRM Energia Solar</p>
+        <p>Desenvolvido por MDS Digital Systems</p>
     </footer>
 
-    <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'admin/js/script.js' %}"></script>
 </body>
 </html>

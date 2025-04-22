@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Projetos{% endblock %}
+
+{% block content %}
+    <h2>Lista de Projetos</h2>
+
+    <!-- Link para a página de cadastro de projeto -->
+    <a href="{% url 'cadastrar_projeto' %}">Cadastrar Novo Projeto</a>
+
+    <ul>
+        {% for projeto in projetos %}
+            <li><a href="{% url 'detalhe_projeto' projeto.id %}">{{ projeto.nome }}</a></li>
+        {% empty %}
+            <li>Não há projetos cadastrados.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

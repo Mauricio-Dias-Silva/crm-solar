@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhe do Projeto - {{ projeto.nome }}{% endblock %}
+
+{% block content %}
+    <h1>Detalhes do Projeto: {{ projeto.nome }}</h1>
+    <p><strong>Cliente:</strong> {{ projeto.cliente.nome }}</p>
+    <p><strong>Data de Início:</strong> {{ projeto.data_inicio }}</p>
+    <p><strong>Data de Conclusão:</strong> {{ projeto.data_fim }}</p>
+    <p><strong>Status:</strong> {{ projeto.status }}</p>
+
+    <h2>Etapas de Implantação:</h2>
+    <ul>
+        {% for etapa in projeto.etapas.all %}
+            <li>
+                <strong>{{ etapa.nome }}</strong>: {{ etapa.status }}<br>
+                {{ etapa.descricao }}<br>
+                Início: {{ etapa.data_inicio }} | Fim: {{ etapa.data_fim }}
+            </li>
+        {% empty %}
+            <li>Não há etapas cadastradas para este projeto.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'cadastrar_etapa' projeto_id=projeto.id %}">Cadastrar Nova Etapa</a>
+{% endblock %}

@@ -4,6 +4,10 @@
 
 {% block content %}
     <h1>Lista de Clientes</h1>
+
+    <!-- Link para Cadastrar Novo Cliente -->
+    <a href="{% url 'cadastrar_cliente' %}" class="btn btn-primary mb-3">Cadastrar Novo Cliente</a>
+
     <ul>
         {% for cliente in clientes %}
         <li><a href="{% url 'detalhe_cliente' cliente.id %}">{{ cliente.nome }}</a></li>

@@ -133,10 +133,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'), # pasta static na raiz do projeto
+    BASE_DIR / 'staticfiles',  # sua pasta com style.css e script.js
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') #pasta onde serão coletados os estaticos
+
+STATIC_ROOT = BASE_DIR / 'static'  # usado para produção (collectstatic)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # pasta onde serão armazenadas as medias

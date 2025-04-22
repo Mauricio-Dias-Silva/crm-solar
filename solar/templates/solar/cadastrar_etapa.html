@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastrar Etapa - {{ projeto.nome }}{% endblock %}
+
+{% block content %}
+    <h1>Cadastrar Etapa para o Projeto: {{ projeto.nome }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Cadastrar Etapa</button>
+    </form>
+{% endblock %}
