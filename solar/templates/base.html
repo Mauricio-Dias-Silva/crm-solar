@@ -181,11 +181,15 @@
             </a>
         </div>
 
+        <!-- Formulário de Logout (corrigido) -->
         <div class="menu-item">
-            <a href="#">
-                <img src="https://img.icons8.com/ios-filled/24/ffffff/logout-rounded.png" alt="Logout" class="icon">
-                <span>Logout</span>
-            </a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link text-white">
+                    <img src="https://img.icons8.com/ios-filled/24/ffffff/logout-rounded.png" alt="Logout" class="icon">
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
     </div>
 
