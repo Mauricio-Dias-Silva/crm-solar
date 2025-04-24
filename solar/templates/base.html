@@ -12,25 +12,23 @@
     <!-- Estilo personalizado -->
     <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
 
-    <!-- Font Awesome para ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
     <style>
         /* Layout geral */
         body {
             display: flex;
             height: 100vh;
             margin: 0;
+            background-color: #f4f6f8;
         }
 
         /* Menu lateral */
         .sidebar {
             height: 100%;
-            width: 250px;
+            width: 235px;
             position: fixed;
             left: 0;
             top: 0;
-            background-color: #343a40;
+            background-color: #1b263b; /* azul escuro */
             color: white;
             transition: 0.3s;
             z-index: 1000;
@@ -41,30 +39,34 @@
             display: flex;
             align-items: center;
             cursor: pointer;
+            border-radius: 0.5rem;
+            margin: 4px;
         }
 
-        .sidebar .menu-item i {
+        .sidebar .menu-item img.icon {
+            width: 20px;
+            height: 20px;
             margin-right: 10px;
         }
 
-        .sidebar .menu-item a {
-            color: white;
-            text-decoration: none;
+        .sidebar .menu-item span {
+            flex-grow: 1;
         }
 
         .sidebar .menu-item:hover {
-            background-color: #50575d;
+            background-color: #415a77; /* azul médio */
         }
 
         .sidebar .toggle-btn {
             position: absolute;
             top: 20px;
-            right: -30px;
-            background-color: #007bff;
+            right: -35px;
+            background-color: #1b263b;
             color: white;
             border: none;
             padding: 10px;
             cursor: pointer;
+            border-radius: 0.5rem;
         }
 
         /* Submenu */
@@ -75,14 +77,16 @@
 
         .sidebar .submenu .menu-item {
             padding: 10px;
+            margin: 2px 4px;
         }
 
         /* Conteúdo principal */
         .content {
-            margin-left: 250px;
+            margin-left: 235px;
             padding: 20px;
             flex: 1;
             transition: margin-left 0.3s;
+            background-color: #ffffff;
         }
 
         /* Mudanças quando o menu está recolhido */
@@ -99,13 +103,25 @@
         }
 
         footer {
-            background-color: #343a40;
+            background-color: #1b263b; /* azul escuro */
             color: white;
             padding: 10px 0;
             text-align: center;
             position: fixed;
             bottom: 0;
             width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        footer img {
+            height: 40px;
+        }
+
+        .footer-text {
+            font-size: 14px;
         }
     </style>
 
@@ -114,41 +130,45 @@
     <div class="sidebar" id="sidebar">
         <!-- Botão de expandir/recolher -->
         <button class="toggle-btn" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/menu--v1.png" alt="Menu" class="icon">
         </button>
 
         <!-- Menu lateral -->
         <div class="menu-item" onclick="toggleSubMenu('clientes')">
-            <i class="fas fa-users"></i>
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/user-group-man-man.png" alt="Clientes" class="icon">
             <span>Clientes</span>
-            <i class="fas fa-chevron-down ms-auto"></i>
+            <img src="https://img.icons8.com/ios-filled/16/ffffff/expand-arrow--v1.png" alt="Expandir" class="icon">
         </div>
         <div id="clientes" class="submenu">
             <div class="menu-item">
                 <a href="{% url 'lista_clientes' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Visão Geral" class="icon">
                     <span>Visão Geral</span>
                 </a>
             </div>
             <div class="menu-item">
                 <a href="{% url 'cadastrar_cliente' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/plus-math.png" alt="Novo Cliente" class="icon">
                     <span>Novo Cliente</span>
                 </a>
             </div>
         </div>
 
         <div class="menu-item" onclick="toggleSubMenu('projetos')">
-            <i class="fas fa-solar-panel"></i>
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/solar-panel.png" alt="Projetos" class="icon">
             <span>Projetos</span>
-            <i class="fas fa-chevron-down ms-auto"></i>
+            <img src="https://img.icons8.com/ios-filled/16/ffffff/expand-arrow--v1.png" alt="Expandir" class="icon">
         </div>
         <div id="projetos" class="submenu">
             <div class="menu-item">
                 <a href="{% url 'lista_projetos' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/task.png" alt="Meus Projetos" class="icon">
                     <span>Meus Projetos</span>
                 </a>
             </div>
             <div class="menu-item">
                 <a href="{% url 'cadastrar_projeto' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/plus-math.png" alt="Novo Projeto" class="icon">
                     <span>Novo Projeto</span>
                 </a>
             </div>
@@ -156,14 +176,14 @@
 
         <div class="menu-item">
             <a href="#">
-                <i class="fas fa-cogs"></i>
+                <img src="https://img.icons8.com/ios-filled/24/ffffff/settings.png" alt="Licença" class="icon">
                 <span>Licença</span>
             </a>
         </div>
 
         <div class="menu-item">
             <a href="#">
-                <i class="fas fa-sign-out-alt"></i>
+                <img src="https://img.icons8.com/ios-filled/24/ffffff/logout-rounded.png" alt="Logout" class="icon">
                 <span>Logout</span>
             </a>
         </div>
@@ -181,8 +201,9 @@
         {% block content %}{% endblock %}
     </div>
 
-    <footer>
-        <p>Desenvolvido por MDS Digital Systems</p>
+    <footer class="d-flex justify-content-end align-items-center p-3">
+        <span class="footer-text mr-2">Desenvolvido por MDS Digital Systems</span>
+        <img src="{% static 'images/crm_logo.png' %}" alt="Logo" style="height: 40px;">
     </footer>
 
     <!-- Bootstrap JS -->
@@ -193,8 +214,6 @@
         function toggleSidebar() {
             var sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('collapsed');
-
-            // Fechar todos os submenus quando recolher
             if (sidebar.classList.contains('collapsed')) {
                 document.querySelectorAll('.submenu').forEach(sub => sub.style.display = 'none');
             }
@@ -203,14 +222,10 @@
         function toggleSubMenu(id) {
             var sidebar = document.getElementById('sidebar');
             var submenu = document.getElementById(id);
-
-            // Se recolhido, expandir antes de exibir submenu
             if (sidebar.classList.contains('collapsed')) {
                 toggleSidebar();
             }
-
-            // Alternar exibição do submenu
-            submenu.style.display = (submenu.style.display === 'block') ? 'none' : 'block';
+            submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
         }
     </script>
 </body>

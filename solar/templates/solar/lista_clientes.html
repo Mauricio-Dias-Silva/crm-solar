@@ -1,16 +1,57 @@
 {% extends 'base.html' %}
 
-{% block title %}Lista de Clientes{% endblock %}
+{% block title %}Visão Geral{% endblock %}
 
 {% block content %}
-    <h1>Lista de Clientes</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Visão Geral</h2>
+        <a href="{% url 'cadastrar_cliente' %}" class="btn btn-primary">
+            <img src="https://img.icons8.com/ios-filled/24/add-user-male.png" alt="Novo" class="me-1">
+            Novo Cliente
+        </a>
+    </div>
 
-    <!-- Link para Cadastrar Novo Cliente -->
-    <a href="{% url 'cadastrar_cliente' %}" class="btn btn-primary mb-3">Cadastrar Novo Cliente</a>
-
-    <ul>
-        {% for cliente in clientes %}
-        <li><a href="{% url 'detalhe_cliente' cliente.id %}">{{ cliente.nome }}</a></li>
-        {% endfor %}
-    </ul>
+    {% if clientes %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td>{{ cliente.nome }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.telefone }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'detalhe_cliente' cliente.id %}" class="btn btn-sm btn-outline-info me-1">
+                                <img src="https://img.icons8.com/ios-glyphs/20/visible.png" alt="Detalhes" class="me-1">
+                                Detalhes
+                            </a>
+                            <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-sm btn-outline-warning me-1">
+                                <img src="https://img.icons8.com/ios-filled/20/edit.png" alt="Editar" class="me-1">
+                                Editar
+                            </a>
+                            <a href="{% url 'excluir_cliente' cliente.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
+                                <img src="https://img.icons8.com/ios-glyphs/20/filled-trash.png" alt="Excluir" class="me-1">
+                                Excluir
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Nenhum cliente cadastrado ainda.
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

@@ -3,12 +3,22 @@
 {% block title %}Página Inicial - CRM Solar{% endblock %}
 
 {% block content %}
-    <div style="text-align: center;">
-        <h2>Bem-vindo ao CRM de Energia Solar!</h2>
-        <p>Escolha uma das opções abaixo para continuar:</p>
-        <ul style="list-style-type: none; padding: 0;">
-            <li><a href="{% url 'lista_clientes' %}" style="font-size: 1.2em;">📋 Lista de Clientes</a></li>
-            <li><a href="{% url 'lista_projetos' %}" style="font-size: 1.2em;">📊 Lista de Projetos</a></li>
-        </ul>
+    <div class="container text-center my-5">
+        <!-- Logo -->
+        {% load static %}
+        <img src="{% static 'images/crm_logo_big.png' %}" alt="Logo CRM Solar" class="img-fluid mb-4" style="max-width: 300px;">
+
+        <!-- Frase de boas-vindas -->
+        <h1 class="display-4 text-primary">Bem-vindo, Usuário!</h1>
+        <p class="lead text-secondary">Sua licença tem validade até 30 de dezembro de 2025.</p>
+        <p class="lead text-secondary">Gerencie seus clientes e projetos solares de forma simples e eficiente.</p>
+
+        <!-- Sugestões de frase inicial para o sistema -->
+        <div class="mt-4">
+            <h3 class="h5 text-success">Sugestões de boas-vindas:</h3>
+            <ul class="list-unstyled">
+                <li><strong>"Sua jornada para um futuro mais sustentável começa aqui!"</strong></li>
+            </ul>
+        </div>
     </div>
 {% endblock %}
