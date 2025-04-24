@@ -16,12 +16,20 @@ def validar_telefone(telefone):
         raise ValidationError("Telefone inválido. O campo Telefone deve conter entre 10 e 11 dígitos numéricos.")
     return telefone
 
+# Função para validar o CPF (caso precise adicionar essa validação)
+def validar_cpf(cpf):
+    cpf_pattern = re.compile(r'^\d{11}$')  # Verifica se o CPF tem 11 dígitos numéricos
+    if not cpf_pattern.match(cpf):
+        raise ValidationError("CPF inválido. O campo CPF deve conter exatamente 11 dígitos numéricos.")
+    return cpf
+
 class Cliente(models.Model):
     nome = models.CharField(max_length=200)
     email = models.EmailField()
     telefone = models.CharField(max_length=20, validators=[validar_telefone])  # Validação do telefone
     endereco = models.TextField()
     cnpj = models.CharField(max_length=18, unique=True, null=True, blank=True, validators=[validar_cnpj])  # Validação do CNPJ
+    cpf = models.CharField(max_length=11, null=True, blank=True, validators=[validar_cpf])  # Validação do CPF
     data_cadastro = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -3,54 +3,175 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CRM Solar{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Estilo personalizado -->
     <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        nav {
-            background-color: #0d6efd;
-            padding: 1rem;
-        }
-
-        nav ul {
-            list-style-type: none;
+        /* Layout geral */
+        body {
+            display: flex;
+            height: 100vh;
             margin: 0;
-            padding: 0;
-            text-align: center;
         }
 
-        nav ul li {
-            display: inline;
-            margin-right: 20px;
+        /* Menu lateral */
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #343a40;
+            color: white;
+            transition: 0.3s;
+            z-index: 1000;
         }
 
-        nav ul li a {
+        .sidebar .menu-item {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .sidebar .menu-item i {
+            margin-right: 10px;
+        }
+
+        .sidebar .menu-item a {
             color: white;
             text-decoration: none;
-            font-weight: bold;
         }
 
-        nav ul li a:hover {
-            text-decoration: underline;
+        .sidebar .menu-item:hover {
+            background-color: #50575d;
+        }
+
+        .sidebar .toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        /* Submenu */
+        .sidebar .submenu {
+            padding-left: 20px;
+            display: none;
+        }
+
+        .sidebar .submenu .menu-item {
+            padding: 10px;
+        }
+
+        /* Conteúdo principal */
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            flex: 1;
+            transition: margin-left 0.3s;
+        }
+
+        /* Mudanças quando o menu está recolhido */
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed ~ .content {
+            margin-left: 80px;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
     </style>
+
 </head>
 <body>
-    <header>
-        <h1>CRM Solar</h1>
-    </header>
+    <div class="sidebar" id="sidebar">
+        <!-- Botão de expandir/recolher -->
+        <button class="toggle-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
 
-    <!-- Menu de navegação -->
-    <nav>
-        <ul>
-            <li><a href="{% url 'lista_clientes' %}">Lista de Clientes</a></li>
-            <li><a href="{% url 'lista_projetos' %}">Lista de Projetos</a></li>
-        </ul>
-    </nav>
+        <!-- Menu lateral -->
+        <div class="menu-item" onclick="toggleSubMenu('clientes')">
+            <i class="fas fa-users"></i>
+            <span>Clientes</span>
+            <i class="fas fa-chevron-down ms-auto"></i>
+        </div>
+        <div id="clientes" class="submenu">
+            <div class="menu-item">
+                <a href="{% url 'lista_clientes' %}">
+                    <span>Visão Geral</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'cadastrar_cliente' %}">
+                    <span>Novo Cliente</span>
+                </a>
+            </div>
+        </div>
 
-    <main>
-        <!-- Bloco para exibir mensagens de sucesso ou erro -->
+        <div class="menu-item" onclick="toggleSubMenu('projetos')">
+            <i class="fas fa-solar-panel"></i>
+            <span>Projetos</span>
+            <i class="fas fa-chevron-down ms-auto"></i>
+        </div>
+        <div id="projetos" class="submenu">
+            <div class="menu-item">
+                <a href="{% url 'lista_projetos' %}">
+                    <span>Meus Projetos</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'cadastrar_projeto' %}">
+                    <span>Novo Projeto</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <a href="#">
+                <i class="fas fa-cogs"></i>
+                <span>Licença</span>
+            </a>
+        </div>
+
+        <div class="menu-item">
+            <a href="#">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="content">
         {% if messages %}
-            <div class="container mt-3">
+            <div class="alert-container">
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags }}">{{ message }}</div>
                 {% endfor %}
@@ -58,12 +179,39 @@
         {% endif %}
 
         {% block content %}{% endblock %}
-    </main>
+    </div>
 
     <footer>
         <p>Desenvolvido por MDS Digital Systems</p>
     </footer>
 
-    <script src="{% static 'admin/js/script.js' %}"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+
+            // Fechar todos os submenus quando recolher
+            if (sidebar.classList.contains('collapsed')) {
+                document.querySelectorAll('.submenu').forEach(sub => sub.style.display = 'none');
+            }
+        }
+
+        function toggleSubMenu(id) {
+            var sidebar = document.getElementById('sidebar');
+            var submenu = document.getElementById(id);
+
+            // Se recolhido, expandir antes de exibir submenu
+            if (sidebar.classList.contains('collapsed')) {
+                toggleSidebar();
+            }
+
+            // Alternar exibição do submenu
+            submenu.style.display = (submenu.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
 </body>
 </html>
