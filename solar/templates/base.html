@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
 
     <style>
-        /* Layout geral */
         body {
             display: flex;
             height: 100vh;
@@ -21,14 +20,13 @@
             background-color: #f4f6f8;
         }
 
-        /* Menu lateral */
         .sidebar {
             height: 100%;
             width: 235px;
             position: fixed;
             left: 0;
             top: 0;
-            background-color: #1b263b; /* azul escuro */
+            background-color: #1b263b;
             color: white;
             transition: 0.3s;
             z-index: 1000;
@@ -54,7 +52,7 @@
         }
 
         .sidebar .menu-item:hover {
-            background-color: #415a77; /* azul médio */
+            background-color: #415a77;
         }
 
         .sidebar .toggle-btn {
@@ -69,7 +67,6 @@
             border-radius: 0.5rem;
         }
 
-        /* Submenu */
         .sidebar .submenu {
             padding-left: 20px;
             display: none;
@@ -80,7 +77,6 @@
             margin: 2px 4px;
         }
 
-        /* Conteúdo principal */
         .content {
             margin-left: 235px;
             padding: 20px;
@@ -89,7 +85,6 @@
             background-color: #ffffff;
         }
 
-        /* Mudanças quando o menu está recolhido */
         .sidebar.collapsed {
             width: 80px;
         }
@@ -103,7 +98,7 @@
         }
 
         footer {
-            background-color: #1b263b; /* azul escuro */
+            background-color: #1b263b;
             color: white;
             padding: 10px 0;
             text-align: center;
@@ -128,12 +123,11 @@
 </head>
 <body>
     <div class="sidebar" id="sidebar">
-        <!-- Botão de expandir/recolher -->
         <button class="toggle-btn" onclick="toggleSidebar()">
             <img src="https://img.icons8.com/ios-filled/24/ffffff/menu--v1.png" alt="Menu" class="icon">
         </button>
 
-        <!-- Menu lateral -->
+        <!-- Clientes -->
         <div class="menu-item" onclick="toggleSubMenu('clientes')">
             <img src="https://img.icons8.com/ios-filled/24/ffffff/user-group-man-man.png" alt="Clientes" class="icon">
             <span>Clientes</span>
@@ -154,6 +148,7 @@
             </div>
         </div>
 
+        <!-- Projetos -->
         <div class="menu-item" onclick="toggleSubMenu('projetos')">
             <img src="https://img.icons8.com/ios-filled/24/ffffff/solar-panel.png" alt="Projetos" class="icon">
             <span>Projetos</span>
@@ -174,6 +169,74 @@
             </div>
         </div>
 
+        <!-- Materiais -->
+        <div class="menu-item" onclick="toggleSubMenu('materiais')">
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/box.png" alt="Materiais" class="icon">
+            <span>Materiais</span>
+            <img src="https://img.icons8.com/ios-filled/16/ffffff/expand-arrow--v1.png" alt="Expandir" class="icon">
+        </div>
+        <div id="materiais" class="submenu">
+            <div class="menu-item">
+                <a href="{% url 'lista_materiais' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Lista de Materiais" class="icon">
+                    <span>Lista de Materiais</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'cadastrar_material' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/plus-math.png" alt="Novo Material" class="icon">
+                    <span>Novo Material</span>
+                </a>
+            </div>
+        </div>
+        <!-- Fornecedores -->
+        <div class="menu-item" onclick="toggleSubMenu('fornecedores')">
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/supplier.png" alt="Fornecedores" class="icon">
+            <span>Fornecedores</span>
+            <img src="https://img.icons8.com/ios-filled/16/ffffff/expand-arrow--v1.png" alt="Expandir" class="icon">
+        </div>
+        <div id="fornecedores" class="submenu">
+            <div class="menu-item">
+                <a href="{% url 'lista_fornecedores' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Lista" class="icon">
+                    <span>Lista de Fornecedores</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'cadastrar_fornecedor' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/plus-math.png" alt="Novo" class="icon">
+                    <span>Novo Fornecedor</span>
+                </a>
+            </div>
+        </div>
+        <!-- Financeiro -->
+        <div class="menu-item" onclick="toggleSubMenu('financeiro')">
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/money.png" alt="Financeiro" class="icon">
+            <span>Financeiro</span>
+            <img src="https://img.icons8.com/ios-filled/16/ffffff/expand-arrow--v1.png" alt="Expandir" class="icon">
+        </div>
+        <div id="financeiro" class="submenu">
+            <div class="menu-item">
+                <a href="{% url 'lista_financeiro' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Lançamentos" class="icon">
+                    <span>Todos os Lançamentos</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'cadastrar_lancamento' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/plus-math.png" alt="Novo Lançamento" class="icon">
+                    <span>Novo Lançamento</span>
+                </a>
+            </div>
+        </div>
+        <div class="menu-item">
+            <a href="{% url 'dashboard_financeiro' %}">
+                <img src="https://img.icons8.com/ios-filled/24/ffffff/combo-chart.png" alt="Dashboard" class="icon">
+                <span>Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Licença -->
         <div class="menu-item">
             <a href="#">
                 <img src="https://img.icons8.com/ios-filled/24/ffffff/settings.png" alt="Licença" class="icon">
@@ -181,7 +244,7 @@
             </a>
         </div>
 
-        <!-- Formulário de Logout (corrigido) -->
+        <!-- Logout -->
         <div class="menu-item">
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}

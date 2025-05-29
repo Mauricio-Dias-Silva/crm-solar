@@ -32,6 +32,18 @@
                     </div>
                 {% endif %}
             </div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">E-mail</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div id="email-error" style="color: red;">
+                        {% for error in form.email.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
             
             <div class="form-group">
                 <label for="{{ form.cnpj.id_for_label }}">CNPJ</label>
@@ -69,6 +81,31 @@
                 {% endif %}
             </div>
 
+            <div class="form-group">
+                <label for="{{ form.id_acesso.id_for_label }}">ID de Acesso</label>
+                {{ form.id_acesso }}
+                {% if form.id_acesso.errors %}
+                    <div id="id-acesso-error" style="color: red;">
+                        {% for error in form.id_acesso.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.senha_acesso_plano.id_for_label }}">Senha de Acesso</label>
+                {{ form.senha_acesso_plano }}
+                <small class="form-text text-muted">{{ form.senha_acesso_plano.help_text }}</small>
+                {% if form.senha_acesso_plano.errors %}
+                    <div id="senha-error" style="color: red;">
+                        {% for error in form.senha_acesso_plano.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
             <button type="submit" class="btn btn-primary">Cadastrar Cliente</button>
         </form>
 
@@ -81,11 +118,11 @@
             const form = document.getElementById("form_cliente");
 
             if (cnpjInput) {
-                cnpjInput.setAttribute('maxlength', '18'); // Permite formato com pontuação
+                cnpjInput.setAttribute('maxlength', '18');
 
                 cnpjInput.addEventListener("input", function () {
                     let value = cnpjInput.value.replace(/\D/g, '');
-                    value = value.slice(0, 14); // Garante no máximo 14 dígitos
+                    value = value.slice(0, 14);
 
                     let formatted = value.replace(/^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/, function(_, a, b, c, d, e) {
                         let result = '';
@@ -100,7 +137,6 @@
                     cnpjInput.value = formatted;
                 });
 
-                // Remove a máscara antes de enviar o formulário
                 form.addEventListener("submit", function () {
                     cnpjInput.value = cnpjInput.value.replace(/\D/g, '');
                 });

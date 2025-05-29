@@ -1,29 +1,59 @@
 from django import forms
-from .models import Projeto, Cliente
+from .models import Cliente, Projeto, Etapa, Material, Fornecedor, LancamentoFinanceiro
 from django.core.exceptions import ValidationError
+
+class ClienteForm(forms.ModelForm):
+    senha_acesso_plano = forms.CharField(
+        label='Senha de Acesso',
+        widget=forms.PasswordInput,
+        required=False,
+        help_text="Preencha apenas se desejar definir ou alterar a senha."
+    )
+
+    class Meta:
+        model = Cliente
+        fields = ['nome', 'email', 'telefone', 'endereco', 'cnpj', 'cpf', 'id_acesso', 'senha_acesso_plano']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        id_acesso = cleaned_data.get('id_acesso')
+        senha = cleaned_data.get('senha_acesso_plano')
+
+        if id_acesso and not senha and not self.instance.pk:
+            raise ValidationError("Para novo cliente, o campo 'Senha de Acesso' é obrigatório.")
+
+    def save(self, commit=True):
+        cliente = super().save(commit=False)
+        senha = self.cleaned_data.get('senha_acesso_plano')
+
+        if senha:
+            cliente.set_senha_acesso(senha)
+
+        if commit:
+            cliente.save()
+        return cliente
 
 class ProjetoForm(forms.ModelForm):
     class Meta:
         model = Projeto
-        fields = ['nome', 'descricao', 'data_inicio', 'data_fim', 'status', 'cliente']
+        fields = '__all__'
 
-    def __init__(self, *args, **kwargs):
-        super(ProjetoForm, self).__init__(*args, **kwargs)
-        self.fields['cliente'].queryset = Cliente.objects.all()  # Personaliza a lista de clientes
-
-class ClienteForm(forms.ModelForm):
+class EtapaForm(forms.ModelForm):
     class Meta:
-        model = Cliente
-        fields = ['nome', 'cnpj', 'endereco', 'telefone']
-        error_messages = {
-            'nome': {'required': 'O nome do cliente é obrigatório.'},
-            'cnpj': {'required': 'O CNPJ é obrigatório.'},
-            'endereco': {'required': 'O endereço é obrigatório.'},
-            'telefone': {'required': 'O telefone é obrigatório.'},
-        }
+        model = Etapa
+        fields = '__all__'
 
-    def clean_cnpj(self):
-        cnpj = self.cleaned_data['cnpj']
-        if len(cnpj) != 14:
-            raise ValidationError("CNPJ inválido. O CNPJ deve ter 14 dígitos.")
-        return cnpj
+class MaterialForm(forms.ModelForm):
+    class Meta:
+        model = Material
+        fields = '__all__'
+
+class FornecedorForm(forms.ModelForm):
+    class Meta:
+        model = Fornecedor
+        fields = '__all__'
+
+class LancamentoFinanceiroForm(forms.ModelForm):
+    class Meta:
+        model = LancamentoFinanceiro
+        fields = '__all__'

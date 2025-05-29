@@ -1,0 +1,20 @@
+{% extends 'base_cliente.html' %}
+{% block title %}Login do Cliente{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 400px;">
+    <h3 class="mb-3">Área do Cliente</h3>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_acesso" class="form-label">ID de Acesso</label>
+            <input type="text" name="id_acesso" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <input type="password" name="senha" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+    </form>
+</div>
+{% endblock %}

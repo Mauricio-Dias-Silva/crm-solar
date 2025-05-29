@@ -26,5 +26,4 @@ COPY . .
 COPY entrypoint.sh .
 # Dá permissão de execução para o entrypoint.sh
 RUN chmod +x entrypoint.sh
-
-
+ENTRYPOINT ["sh", "./entrypoint.sh"]

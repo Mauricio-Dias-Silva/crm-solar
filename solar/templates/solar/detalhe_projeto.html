@@ -22,5 +22,5 @@
         {% endfor %}
     </ul>
 
-    <a href="{% url 'cadastrar_etapa' projeto_id=projeto.id %}">Cadastrar Nova Etapa</a>
-{% endblock %}
+    <a href="{% url 'cadastrar_etapa' pk=projeto.id %}">Cadastrar Nova Etapa</a>
+    {% endblock %}

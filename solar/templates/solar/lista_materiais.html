@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Materiais{% endblock %}
+
+{% block content %}
+<h1>Materiais Cadastrados</h1>
+<a href="{% url 'cadastrar_material' %}">+ Cadastrar novo material</a>
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Unidade</th>
+            <th>Estoque</th>
+            <th>Fabricante</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for material in materiais %}
+        <tr>
+            <td>{{ material.nome }}</td>
+            <td>{{ material.unidade_medida }}</td>
+            <td>{{ material.quantidade_estoque }}</td>
+            <td>{{ material.fabricante }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Nenhum material cadastrado.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

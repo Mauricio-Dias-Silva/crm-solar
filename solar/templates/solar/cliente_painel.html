@@ -1,0 +1,49 @@
+{% extends 'base_cliente.html' %}
+{% block title %}Painel do Cliente{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Bem-vindo, {{ cliente.nome }}</h2>
+
+    <div class="card p-4 mb-4">
+        <h5 class="mb-3">Seus dados cadastrais</h5>
+        <p><strong>Nome:</strong> {{ cliente.nome }}</p>
+        <p><strong>E-mail:</strong> {{ cliente.email }}</p>
+        {% if cliente.cnpj %}
+        <p><strong>CNPJ:</strong> {{ cliente.cnpj }}</p>
+        {% endif %}
+        <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+        <p><strong>ID de Acesso:</strong> {{ cliente.id_acesso }}</p>
+    </div>
+
+    <h4 class="mb-3">Seus Projetos</h4>
+
+    {% for item in projetos_data %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <strong>{{ item.projeto.nome }}</strong> — {{ item.projeto.status }}
+        </div>
+        <div class="card-body">
+            <h6>Progresso da Obra</h6>
+            <div class="progress mb-2" style="height: 25px;">
+                <div class="progress-bar bg-success" role="progressbar"
+                     style="width: {{ item.percentual }}%;" aria-valuenow="{{ item.percentual }}"
+                     aria-valuemin="0" aria-valuemax="100">
+                    {{ item.etapas_concluidas }}/{{ item.total_etapas }} concluídas
+                </div>
+            </div>
+
+            <h6>Financeiro</h6>
+            <p><strong>Total Pago:</strong> R$ {{ item.pagos|floatformat:2 }}</p>
+            <p><strong>Total Pendente:</strong> R$ {{ item.pendentes|floatformat:2 }}</p>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">Nenhum projeto cadastrado para este cliente.</p>
+    {% endfor %}
+
+    <div class="text-end mt-4">
+        <a href="{% url 'logout_cliente' %}" class="btn btn-secondary">Sair</a>
+    </div>
+</div>
+{% endblock %}
