@@ -182,6 +182,21 @@ def cadastrar_material(request):
     else:
         form = MaterialForm()
     return render(request, 'solar/cadastrar_material.html', {'form': form})
+
+# Editar material
+@login_required
+def editar_material(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+    if request.method == 'POST':
+        form = MaterialForm(request.POST, instance=material)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Material atualizado com sucesso!')
+            return redirect('lista_materiais')
+    else:
+        form = MaterialForm(instance=material)
+    return render(request, 'solar/editar_material.html', {'form': form, 'material': material})
+
 # Lista de fornecedores
 @login_required
 def lista_fornecedores(request):
@@ -202,6 +217,21 @@ def cadastrar_fornecedor(request):
     else:
         form = FornecedorForm()
     return render(request, 'solar/cadastrar_fornecedor.html', {'form': form})
+
+# Editar fornecedor
+@login_required
+def editar_fornecedor(request, pk):
+    fornecedor = get_object_or_404(Fornecedor, pk=pk)
+    if request.method == 'POST':
+        form = FornecedorForm(request.POST, instance=fornecedor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Fornecedor atualizado com sucesso!')
+            return redirect('lista_fornecedores')
+    else:
+        form = FornecedorForm(instance=fornecedor)
+    return render(request, 'solar/editar_fornecedor.html', {'form': form, 'fornecedor': fornecedor})
+
 
 # Lista de lançamentos
 @login_required

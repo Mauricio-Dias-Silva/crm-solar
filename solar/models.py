@@ -65,19 +65,20 @@ class Etapa(models.Model):
 
 class Material(models.Model):
     nome = models.CharField(max_length=100)
-    descricao = models.TextField(blank=True)
-    unidade_medida = models.CharField(max_length=20, choices=[
-        ('un', 'Unidade'),
-        ('m', 'Metro'),
-        ('kg', 'Quilo'),
-        ('l', 'Litro')
-    ])
-    quantidade_estoque = models.DecimalField(max_digits=10, decimal_places=2)
-    fabricante = models.CharField(max_length=100, blank=True)
-
-    def __str__(self):
-        return self.nome
-
+    codigo = models.CharField(max_length=50, blank=True, null=True)
+    fabricante = models.CharField(max_length=100, blank=True, null=True)
+    modelo = models.CharField(max_length=50, blank=True, null=True)
+    numero_serie = models.CharField(max_length=50, blank=True, null=True)
+    unidade_medida = models.CharField(max_length=20)
+    quantidade_estoque = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    estoque_minimo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    localizacao = models.CharField(max_length=100, blank=True, null=True)
+    preco_compra = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    preco_venda = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    garantia_ate = models.DateField(blank=True, null=True)
+    data_entrada = models.DateField(blank=True, null=True)
+    observacoes = models.TextField(blank=True, null=True)
+    
 class Fornecedor(models.Model):
     nome = models.CharField(max_length=100)
     cnpj = models.CharField(max_length=18, validators=[validar_cnpj])

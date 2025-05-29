@@ -27,10 +27,13 @@ urlpatterns = [
     # Materiais
     path('materiais/', views.lista_materiais, name='lista_materiais'),
     path('materiais/cadastrar/', views.cadastrar_material, name='cadastrar_material'),
+    path('materiais/<int:pk>/editar/', views.editar_material, name='editar_material'),
+
 
     # Fornecedores
     path('fornecedores/', views.lista_fornecedores, name='lista_fornecedores'),
     path('fornecedores/cadastrar/', views.cadastrar_fornecedor, name='cadastrar_fornecedor'),
+    path('fornecedores/<int:pk>/editar/', views.editar_fornecedor, name='editar_fornecedor'),
 
     # Financeiro
     path('financeiro/', views.lista_financeiro, name='lista_financeiro'),

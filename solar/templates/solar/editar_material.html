@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load widget_tweaks %}
 
-{% block title %}Cadastrar Material{% endblock %}
+{% block title %}Editar Material{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Cadastrar Novo Material</h4>
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Editar Material: {{ material.nome }}</h4>
         </div>
         <div class="card-body">
             {% if form.errors %}
@@ -84,7 +84,7 @@
 
                 <div class="d-flex justify-content-between">
                     <a href="{% url 'lista_materiais' %}" class="btn btn-secondary">Voltar</a>
-                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                 </div>
             </form>
         </div>

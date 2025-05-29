@@ -1,146 +1,153 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}Cadastrar Cliente{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2>Cadastrar Novo Cliente</h2>
-        
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                <ul>
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Cadastrar Novo Cliente</h4>
+        </div>
+        <div class="card-body">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
 
-        <form method="POST" id="form_cliente">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label for="{{ form.nome.id_for_label }}">Nome do Cliente</label>
-                {{ form.nome }}
-                {% if form.nome.errors %}
-                    <div id="nome-error" style="color: red;">
-                        {% for error in form.nome.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+            <form method="POST" id="form_cliente">
+                {% csrf_token %}
 
-            <div class="form-group">
-                <label for="{{ form.email.id_for_label }}">E-mail</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <div id="email-error" style="color: red;">
-                        {% for error in form.email.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            
-            <div class="form-group">
-                <label for="{{ form.cnpj.id_for_label }}">CNPJ</label>
-                {{ form.cnpj }}
-                {% if form.cnpj.errors %}
-                    <div id="cnpj-error" style="color: red;">
-                        {% for error in form.cnpj.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            
-            <div class="form-group">
-                <label for="{{ form.endereco.id_for_label }}">Endereço</label>
-                {{ form.endereco }}
-                {% if form.endereco.errors %}
-                    <div id="endereco-error" style="color: red;">
-                        {% for error in form.endereco.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-            
-            <div class="form-group">
-                <label for="{{ form.telefone.id_for_label }}">Telefone</label>
-                {{ form.telefone }}
-                {% if form.telefone.errors %}
-                    <div id="telefone-error" style="color: red;">
-                        {% for error in form.telefone.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+                <div class="form-group mb-3">
+                    <label for="{{ form.nome.id_for_label }}">Nome do Cliente</label>
+                    {{ form.nome|add_class:"form-control" }}
+                    {% if form.nome.errors %}
+                        <div id="nome-error" class="text-danger small">
+                            {% for error in form.nome.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
-            <div class="form-group">
-                <label for="{{ form.id_acesso.id_for_label }}">ID de Acesso</label>
-                {{ form.id_acesso }}
-                {% if form.id_acesso.errors %}
-                    <div id="id-acesso-error" style="color: red;">
-                        {% for error in form.id_acesso.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+                <div class="form-group mb-3">
+                    <label for="{{ form.email.id_for_label }}">E-mail</label>
+                    {{ form.email|add_class:"form-control" }}
+                    {% if form.email.errors %}
+                        <div id="email-error" class="text-danger small">
+                            {% for error in form.email.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
-            <div class="form-group">
-                <label for="{{ form.senha_acesso_plano.id_for_label }}">Senha de Acesso</label>
-                {{ form.senha_acesso_plano }}
-                <small class="form-text text-muted">{{ form.senha_acesso_plano.help_text }}</small>
-                {% if form.senha_acesso_plano.errors %}
-                    <div id="senha-error" style="color: red;">
-                        {% for error in form.senha_acesso_plano.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+                <div class="form-group mb-3">
+                    <label for="{{ form.cnpj.id_for_label }}">CNPJ</label>
+                    {{ form.cnpj|add_class:"form-control" }}
+                    {% if form.cnpj.errors %}
+                        <div id="cnpj-error" class="text-danger small">
+                            {% for error in form.cnpj.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
-            <button type="submit" class="btn btn-primary">Cadastrar Cliente</button>
-        </form>
+                <div class="form-group mb-3">
+                    <label for="{{ form.endereco.id_for_label }}">Endereço</label>
+                    {{ form.endereco|add_class:"form-control" }}
+                    {% if form.endereco.errors %}
+                        <div id="endereco-error" class="text-danger small">
+                            {% for error in form.endereco.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
-        <a href="{% url 'lista_clientes' %}" class="btn btn-secondary mt-3">Voltar para a lista de clientes</a>
+                <div class="form-group mb-3">
+                    <label for="{{ form.telefone.id_for_label }}">Telefone</label>
+                    {{ form.telefone|add_class:"form-control" }}
+                    {% if form.telefone.errors %}
+                        <div id="telefone-error" class="text-danger small">
+                            {% for error in form.telefone.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="{{ form.id_acesso.id_for_label }}">ID de Acesso</label>
+                    {{ form.id_acesso|add_class:"form-control" }}
+                    {% if form.id_acesso.errors %}
+                        <div id="id-acesso-error" class="text-danger small">
+                            {% for error in form.id_acesso.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="{{ form.senha_acesso_plano.id_for_label }}">Senha de Acesso</label>
+                    {{ form.senha_acesso_plano|add_class:"form-control" }}
+                    <small class="form-text text-muted">{{ form.senha_acesso_plano.help_text }}</small>
+                    {% if form.senha_acesso_plano.errors %}
+                        <div id="senha-error" class="text-danger small">
+                            {% for error in form.senha_acesso_plano.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">Voltar</a>
+                    <button type="submit" class="btn btn-success">Cadastrar Cliente</button>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
+<div style="height: 60px;"></div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cnpjInput = document.getElementById("id_cnpj");
+        const form = document.getElementById("form_cliente");
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const cnpjInput = document.getElementById("id_cnpj");
-            const form = document.getElementById("form_cliente");
+        if (cnpjInput) {
+            cnpjInput.setAttribute('maxlength', '18');
 
-            if (cnpjInput) {
-                cnpjInput.setAttribute('maxlength', '18');
+            cnpjInput.addEventListener("input", function () {
+                let value = cnpjInput.value.replace(/\D/g, '');
+                value = value.slice(0, 14);
 
-                cnpjInput.addEventListener("input", function () {
-                    let value = cnpjInput.value.replace(/\D/g, '');
-                    value = value.slice(0, 14);
-
-                    let formatted = value.replace(/^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/, function(_, a, b, c, d, e) {
-                        let result = '';
-                        if (a) result += a;
-                        if (b) result += '.' + b;
-                        if (c) result += '.' + c;
-                        if (d) result += '/' + d;
-                        if (e) result += '-' + e;
-                        return result;
-                    });
-
-                    cnpjInput.value = formatted;
+                let formatted = value.replace(/^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})/, function(_, a, b, c, d, e) {
+                    let result = '';
+                    if (a) result += a;
+                    if (b) result += '.' + b;
+                    if (c) result += '.' + c;
+                    if (d) result += '/' + d;
+                    if (e) result += '-' + e;
+                    return result;
                 });
 
-                form.addEventListener("submit", function () {
-                    cnpjInput.value = cnpjInput.value.replace(/\D/g, '');
-                });
-            }
-        });
-    </script>
+                cnpjInput.value = formatted;
+            });
+
+            form.addEventListener("submit", function () {
+                cnpjInput.value = cnpjInput.value.replace(/\D/g, '');
+            });
+        }
+    });
+</script>
 {% endblock %}
