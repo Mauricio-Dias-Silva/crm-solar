@@ -17,6 +17,7 @@
             display: flex;
             height: 100vh;
             margin: 0;
+            font-size: 12px;
             background-color: #f4f6f8;
         }
 
@@ -28,12 +29,12 @@
             top: 0;
             background-color: #1b263b;
             color: white;
-            transition: 0.3s;
+            transition: 0.6s;
             z-index: 1000;
         }
 
         .sidebar .menu-item {
-            padding: 15px;
+            padding: 10px;
             display: flex;
             align-items: center;
             cursor: pointer;
@@ -69,7 +70,7 @@
         }
 
         .sidebar .submenu {
-            padding-left: 20px;
+            padding-left: 10px;
             display: none;
         }
 
@@ -117,7 +118,7 @@
         }
 
         .footer-text {
-            font-size: 14px;
+            font-size: 12px;
         }
     </style>
 
@@ -247,16 +248,19 @@
 
         <!-- Logout -->
         <div class="menu-item">
-            <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-link text-white">
-                    <img src="https://img.icons8.com/ios-filled/24/ffffff/logout-rounded.png" alt="Logout" class="icon">
-                    <span>Logout</span>
-                </button>
-            </form>
+<form method="post" action="{% url 'logout' %}" style="margin: 0;">
+    {% csrf_token %}
+    <button type="submit" class="menu-item btn p-0 m-0 w-100 text-start" style="background: none; border: none; color: inherit; display: flex; align-items: center;">
+        <img src="https://img.icons8.com/ios-filled/24/ffffff/logout-rounded.png" alt="Logout" class="icon">
+        <span>Logout</span>
+    </button>
+</form>
         </div>
     </div>
 
+
+
+    
     <div class="content">
         {% if messages %}
             <div class="alert-container">
@@ -270,8 +274,9 @@
     </div>
 
     <footer class="d-flex justify-content-end align-items-center p-3">
-        <span class="footer-text mr-2">Desenvolvido por MDS Digital Systems</span>
+               <span class="footer-text mr-2">Desenvolvido por MDS Digital Systems</span>
         <img src="{% static 'images/crm_logo.png' %}" alt="Logo" style="height: 40px;">
+    
     </footer>
 
     <!-- Bootstrap JS -->
