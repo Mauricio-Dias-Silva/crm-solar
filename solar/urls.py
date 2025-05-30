@@ -23,7 +23,11 @@ urlpatterns = [
     path('projetos/<int:pk>/', views.detalhe_projeto, name='detalhe_projeto'),
     path('projetos/<int:pk>/cadastrar_etapa/', views.cadastrar_etapa, name='cadastrar_etapa'),
     path('projetos/dashboard/', views.dashboard_projetos, name='dashboard_projetos'),
-    
+    path('projetos/<int:pk>/editar/', views.editar_projeto, name='editar_projeto'),
+    path('projetos/<int:pk>/excluir/', views.excluir_projeto, name='excluir_projeto'),
+    path('projetos/<int:projeto_id>/upload_documento/', views.upload_documento_projeto, name='upload_documento_projeto'),
+    path('projetos/<int:projeto_id>/excluir_documento/<int:doc_id>/', views.excluir_documento_projeto, name='excluir_documento_projeto'),
+
     # Materiais
     path('materiais/', views.lista_materiais, name='lista_materiais'),
     path('materiais/cadastrar/', views.cadastrar_material, name='cadastrar_material'),

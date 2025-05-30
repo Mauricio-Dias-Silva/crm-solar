@@ -4,8 +4,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count
-from .models import Cliente, Projeto, Etapa, Material, Fornecedor, LancamentoFinanceiro
-from .forms import ProjetoForm, ClienteForm, EtapaForm, MaterialForm, FornecedorForm, LancamentoFinanceiroForm
+from .models import Cliente, Projeto, Etapa, Material, Fornecedor, LancamentoFinanceiro,  DocumentoProjeto
+from .forms import ProjetoForm, ClienteForm, EtapaForm, MaterialForm, FornecedorForm, LancamentoFinanceiroForm, DocumentoProjetoForm
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.utils.dateparse import parse_date
@@ -62,6 +62,35 @@ def dashboard_projetos(request):
     }
     return render(request, 'solar/dashboard_projetos.html', context)
 
+@login_required
+def upload_documento_projeto(request, projeto_id):
+    projeto = get_object_or_404(Projeto, pk=projeto_id)
+    if request.method == 'POST':
+        form = DocumentoProjetoForm(request.POST, request.FILES)
+        if form.is_valid():
+            doc = form.save(commit=False)
+            doc.projeto = projeto
+            doc.save()
+            messages.success(request, 'Documento enviado com sucesso!')
+            return redirect('detalhe_projeto', pk=projeto.id)
+        else:
+            messages.error(request, 'Erro ao enviar documento. Verifique os campos.')
+    else:
+        form = DocumentoProjetoForm()
+    return render(request, 'solar/upload_documento_projeto.html', {'form': form, 'projeto': projeto})
+
+@login_required
+def excluir_documento_projeto(request, projeto_id, doc_id):
+    projeto = get_object_or_404(Projeto, id=projeto_id)
+    doc = get_object_or_404(DocumentoProjeto, id=doc_id, projeto=projeto)
+    if request.method == 'POST':
+        doc.arquivo.delete()  # Exclui o arquivo físico da pasta /media/
+        doc.delete()          # Exclui o registro do banco
+        messages.success(request, 'Documento excluído com sucesso!')
+        return redirect('detalhe_projeto', pk=projeto.id)
+    # Renderiza confirmação simples
+    return render(request, 'solar/confirmar_exclusao_documento.html', {'documento': doc, 'projeto': projeto})
+
 # Lista de clientes
 @login_required
 def lista_clientes(request):
@@ -100,6 +129,31 @@ def cadastrar_projeto(request):
     else:
         form = ProjetoForm()
     return render(request, 'solar/cadastrar_projeto.html', {'form': form})
+
+# Editar projeto
+@login_required
+def editar_projeto(request, pk):
+    projeto = get_object_or_404(Projeto, pk=pk)
+    if request.method == 'POST':
+        form = ProjetoForm(request.POST, instance=projeto)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Projeto atualizado com sucesso!')
+            return redirect('detalhe_projeto', pk=projeto.pk)
+        else:
+            messages.error(request, 'Erro ao atualizar projeto. Verifique os campos.')
+    else:
+        form = ProjetoForm(instance=projeto)
+    return render(request, 'solar/editar_projeto.html', {'form': form, 'projeto': projeto})
+
+@login_required
+def excluir_projeto(request, pk):
+    projeto = get_object_or_404(Projeto, pk=pk)
+    if request.method == 'POST':
+        projeto.delete()
+        messages.success(request, 'Projeto excluído com sucesso!')
+        return redirect('lista_projetos')
+    return render(request, 'solar/confirmar_exclusao_projeto.html', {'projeto': projeto})
 
 # Cadastrar cliente
 @login_required

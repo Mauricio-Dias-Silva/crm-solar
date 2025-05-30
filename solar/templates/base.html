@@ -248,19 +248,15 @@
 
         <!-- Logout -->
         <div class="menu-item">
-<form method="post" action="{% url 'logout' %}" style="margin: 0;">
-    {% csrf_token %}
-    <button type="submit" class="menu-item btn p-0 m-0 w-100 text-start" style="background: none; border: none; color: inherit; display: flex; align-items: center;">
-        <img src="https://img.icons8.com/ios-filled/24/ffffff/logout-rounded.png" alt="Logout" class="icon">
-        <span>Logout</span>
-    </button>
-</form>
+        <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+        {% csrf_token %}
+         <button type="submit" class="menu-item btn p-0 m-0 w-100 text-start" style="background: none; border: none; color: inherit; display: flex; align-items: center;">
+         <img src="https://img.icons8.com/ios-filled/24/ffffff/logout-rounded.png" alt="Logout" class="icon">
+         <span>Logout</span>
+         </button>
+         </form>
         </div>
-    </div>
-
-
-
-    
+    </div>  
     <div class="content">
         {% if messages %}
             <div class="alert-container">

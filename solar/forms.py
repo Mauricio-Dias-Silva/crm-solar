@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente, Projeto, Etapa, Material, Fornecedor, LancamentoFinanceiro
+from .models import Cliente, Projeto, Etapa, Material, Fornecedor, LancamentoFinanceiro, DocumentoProjeto
 from django.core.exceptions import ValidationError
 
 class ClienteForm(forms.ModelForm):
@@ -34,16 +34,53 @@ class ClienteForm(forms.ModelForm):
         return cliente
 
 class ProjetoForm(forms.ModelForm):
+    data_inicio = forms.DateField(
+        input_formats=['%d/%m/%Y'],
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa', 'type': 'text'})
+    )
+    data_fim = forms.DateField(
+        input_formats=['%d/%m/%Y'],
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa', 'type': 'text'}),
+        required=False
+    )
+
     class Meta:
         model = Projeto
         fields = '__all__'
 
+class DocumentoProjetoForm(forms.ModelForm):
+    class Meta:
+        model = DocumentoProjeto
+        fields = ['nome', 'arquivo', 'visivel_cliente']
+
+
 class EtapaForm(forms.ModelForm):
+    data_inicio = forms.DateField(
+        input_formats=['%d/%m/%Y'],
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa', 'type': 'text'})
+    )
+    data_fim = forms.DateField(
+        input_formats=['%d/%m/%Y'],
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa', 'type': 'text'}),
+        required=False
+    )
+
     class Meta:
         model = Etapa
-        fields = '__all__'
+        exclude = ['projeto']
 
 class MaterialForm(forms.ModelForm):
+    garantia_ate = forms.DateField(
+        input_formats=['%d/%m/%Y'],
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa', 'type': 'text'}),
+        required=False
+    )
+    data_entrada = forms.DateField(
+        input_formats=['%d/%m/%Y'],
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa', 'type': 'text'}),
+        required=False
+    )
+
     class Meta:
         model = Material
         fields = '__all__'
@@ -54,6 +91,11 @@ class FornecedorForm(forms.ModelForm):
         fields = '__all__'
 
 class LancamentoFinanceiroForm(forms.ModelForm):
+    data = forms.DateField(
+        input_formats=['%d/%m/%Y'],
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa', 'type': 'text'})
+    )
+
     class Meta:
         model = LancamentoFinanceiro
         fields = '__all__'

@@ -1,26 +1,87 @@
 {% extends 'base.html' %}
-
-{% block title %}Detalhe do Projeto - {{ projeto.nome }}{% endblock %}
-
 {% block content %}
-    <h1>Detalhes do Projeto: {{ projeto.nome }}</h1>
-    <p><strong>Cliente:</strong> {{ projeto.cliente.nome }}</p>
-    <p><strong>Data de Início:</strong> {{ projeto.data_inicio }}</p>
-    <p><strong>Data de Conclusão:</strong> {{ projeto.data_fim }}</p>
-    <p><strong>Status:</strong> {{ projeto.status }}</p>
-
-    <h2>Etapas de Implantação:</h2>
-    <ul>
-        {% for etapa in projeto.etapas.all %}
-            <li>
-                <strong>{{ etapa.nome }}</strong>: {{ etapa.status }}<br>
-                {{ etapa.descricao }}<br>
-                Início: {{ etapa.data_inicio }} | Fim: {{ etapa.data_fim }}
-            </li>
-        {% empty %}
-            <li>Não há etapas cadastradas para este projeto.</li>
-        {% endfor %}
-    </ul>
-
-    <a href="{% url 'cadastrar_etapa' pk=projeto.id %}">Cadastrar Nova Etapa</a>
-    {% endblock %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Detalhes do Projeto: {{ projeto.nome }}</h2>
+            <div>
+                <a href="{% url 'editar_projeto' projeto.id %}" class="btn btn-warning btn-sm me-2">Editar Projeto</a>
+                <a href="{% url 'excluir_projeto' projeto.id %}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('Tem certeza que deseja excluir este projeto?');">Excluir Projeto</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Cliente:</dt>
+                <dd class="col-sm-9">{{ projeto.cliente }}</dd>
+                <dt class="col-sm-3">Endereço da Instalação:</dt>
+                <dd class="col-sm-9">{{ projeto.endereco_instalacao }}</dd>
+                <dt class="col-sm-3">Data de Início:</dt>
+                <dd class="col-sm-9">{{ projeto.data_inicio|date:"d/m/Y" }}</dd>
+                <dt class="col-sm-3">Data de Conclusão:</dt>
+                <dd class="col-sm-9">{{ projeto.data_fim|date:"d/m/Y" }}</dd>
+                <dt class="col-sm-3">Potência Instalada:</dt>
+                <dd class="col-sm-9">{{ projeto.potencia_kwp }} kWp</dd>
+                <dt class="col-sm-3">Quantidade de Módulos:</dt>
+                <dd class="col-sm-9">{{ projeto.quantidade_modulos }}</dd>
+                <dt class="col-sm-3">Inversor:</dt>
+                <dd class="col-sm-9">{{ projeto.inversor }}</dd>
+                <dt class="col-sm-3">Fornecedor:</dt>
+                <dd class="col-sm-9">{{ projeto.fornecedor }}</dd>
+                <dt class="col-sm-3">Valor Total:</dt>
+                <dd class="col-sm-9">R$ {{ projeto.valor_total }}</dd>
+                <dt class="col-sm-3">Forma de Pagamento:</dt>
+                <dd class="col-sm-9">{{ projeto.forma_pagamento }}</dd>
+                <dt class="col-sm-3">Status:</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-success">{{ projeto.status }}</span>
+                </dd>
+            </dl>
+            <hr>
+            <h4>Etapas de Implantação</h4>
+            <ul class="list-group mb-3">
+                {% for etapa in projeto.etapas.all %}
+                <li class="list-group-item">
+                    <strong>{{ etapa.nome }}</strong> <br>
+                    <span class="text-muted">{{ etapa.descricao }}</span><br>
+                    <small>Início: {{ etapa.data_inicio|date:"d/m/Y" }} | Fim: {{ etapa.data_fim|date:"d/m/Y" }}</small>
+                </li>
+                {% empty %}
+                <li class="list-group-item">Nenhuma etapa cadastrada.</li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'cadastrar_etapa' projeto.id %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Cadastrar Nova Etapa
+            </a>
+            <hr>
+            <h4>Documentos do Projeto</h4>
+            <ul class="list-group mb-3">
+                {% for doc in projeto.documentos.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{{ doc.arquivo.url }}" download>{{ doc.nome }}</a>
+                        {% if doc.visivel_cliente %}
+                            <span class="badge bg-success ms-2">Visível ao cliente</span>
+                        {% else %}
+                            <span class="badge bg-secondary ms-2">Interno</span>
+                        {% endif %}
+                        <span class="text-muted small ms-3">Enviado em {{ doc.data_upload|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <form method="post" action="{% url 'excluir_documento_projeto' projeto.id doc.id %}" style="margin:0;display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir documento"
+                                onclick="return confirm('Tem certeza que deseja excluir este documento?');">
+                            &#128465; Excluir
+                        </button>
+                    </form>
+                </li>
+                {% empty %}
+                <li class="list-group-item">Nenhum documento anexado.</li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'upload_documento_projeto' projeto.id %}" class="btn btn-outline-primary btn-sm">Enviar Documento</a>
+        </div>
+    </div>
+</div>
+<div style="height: 60px;"></div>
+{% endblock %}

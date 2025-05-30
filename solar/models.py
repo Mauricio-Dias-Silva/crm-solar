@@ -47,12 +47,34 @@ class Projeto(models.Model):
     descricao = models.TextField()
     data_inicio = models.DateField()
     data_fim = models.DateField(null=True, blank=True)
-    status = models.CharField(max_length=50, choices=[('Em andamento', 'Em andamento'), ('Concluído', 'Concluído')])
+    status = models.CharField(max_length=50, choices=[
+        ('Em andamento', 'Em andamento'), 
+        ('Concluído', 'Concluído'),
+        ('Aguardando aprovação', 'Aguardando aprovação'),
+        ('Cancelado', 'Cancelado'),
+    ])
     cliente = models.ForeignKey('Cliente', on_delete=models.CASCADE)
+    endereco_instalacao = models.TextField(blank=True, null=True)
+    potencia_kwp = models.DecimalField('Potência (kWp)', max_digits=6, decimal_places=2, null=True, blank=True)
+    quantidade_modulos = models.PositiveIntegerField('Quantidade de Módulos', null=True, blank=True)
+    inversor = models.CharField('Modelo do Inversor', max_length=100, blank=True, null=True)
+    fornecedor = models.ForeignKey('Fornecedor', on_delete=models.SET_NULL, null=True, blank=True)
+    valor_total = models.DecimalField('Valor Total (R$)', max_digits=12, decimal_places=2, null=True, blank=True)
+    forma_pagamento = models.CharField('Forma de Pagamento', max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.nome
 
+class DocumentoProjeto(models.Model):
+    projeto = models.ForeignKey('Projeto', on_delete=models.CASCADE, related_name='documentos')
+    nome = models.CharField('Nome do Documento', max_length=200)
+    arquivo = models.FileField('Arquivo', upload_to='projetos/%Y/%m/%d/')
+    data_upload = models.DateTimeField(auto_now_add=True)
+    visivel_cliente = models.BooleanField('Visível para o cliente?', default=False)
+
+    def __str__(self):
+        return f'{self.nome} ({self.projeto.nome})'
+    
 class Etapa(models.Model):
     projeto = models.ForeignKey(Projeto, on_delete=models.CASCADE, related_name='etapas')
     nome = models.CharField(max_length=100)

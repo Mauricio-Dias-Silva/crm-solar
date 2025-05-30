@@ -5,19 +5,19 @@
 {% block content %}
 <div class="container mt-5">
     <h2 class="mb-4">Lista de Projetos</h2>
-
     <div class="mb-3">
         <a href="{% url 'cadastrar_projeto' %}" class="btn btn-primary">+ Cadastrar Novo Projeto</a>
     </div>
-
     {% if projetos %}
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle">
                 <thead class="table-dark">
                     <tr>
                         <th>Nome do Projeto</th>
-                        <th>Status</th>
                         <th>Cliente</th>
+                        <th>Status</th>
+                        <th>Potência (kWp)</th>
+                        <th>Valor (R$)</th>
                         <th>Início</th>
                         <th>Ações</th>
                     </tr>
@@ -26,13 +26,16 @@
                     {% for projeto in projetos %}
                     <tr>
                         <td>{{ projeto.nome }}</td>
-                        <td>{{ projeto.status }}</td>
                         <td>{{ projeto.cliente.nome }}</td>
+                        <td>{{ projeto.status }}</td>
+                        <td>{{ projeto.potencia_kwp }}</td>
+                        <td>{{ projeto.valor_total }}</td>
                         <td>{{ projeto.data_inicio|date:"d/m/Y" }}</td>
                         <td>
-                            <a href="{% url 'detalhe_projeto' projeto.id %}" class="btn btn-sm btn-outline-primary">
-                                Detalhes
-                            </a>
+                            <a href="{% url 'detalhe_projeto' projeto.id %}" class="btn btn-sm btn-outline-primary">Detalhes</a>
+                            <a href="{% url 'editar_projeto' projeto.id %}" class="btn btn-sm btn-outline-warning ms-1">Editar</a>
+                            <a href="{% url 'excluir_projeto' projeto.id %}" class="btn btn-sm btn-outline-danger ms-1"
+                               onclick="return confirm('Tem certeza que deseja excluir este projeto?');">Excluir</a>
                         </td>
                     </tr>
                     {% endfor %}

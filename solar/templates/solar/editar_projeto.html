@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Editar Projeto{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Editar Projeto: {{ projeto.nome }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" novalidate>
+                {% csrf_token %}
+                {# Se quiser, coloque o bloco de erros igual sugerido antes #}
+                <!-- Mesmos campos do cadastrar_projeto.html -->
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field|add_class:"form-control" }}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                <a href="{% url 'detalhe_projeto' projeto.id %}" class="btn btn-secondary ms-2">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+<div style="height: 60px;"></div>
+{% endblock %}
