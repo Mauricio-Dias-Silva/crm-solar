@@ -8,8 +8,6 @@
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Estilo personalizado -->
     <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
 
     <style>
@@ -120,11 +118,34 @@
         .footer-text {
             font-size: 12px;
         }
+
+        /* Links do sidebar sempre brancos, sem sublinhado */
+        .sidebar a,
+        .sidebar a:visited {
+            color: #fff !important;
+            text-decoration: none !important;
+        }
+
+        .sidebar a:hover,
+        .sidebar a:active,
+        .sidebar a:focus {
+            color: #4ea8de !important;  /* Azul claro ao passar mouse */
+            text-decoration: underline;
+        }
+
+        .sidebar .submenu .menu-item a span {
+            color: inherit !important;
+        }
+
+        /* Remover sublinhado de span dentro do link */
+        .sidebar .submenu .menu-item a span:hover {
+            text-decoration: underline;
+        }
     </style>
 
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar collapsed" id="sidebar">
         <button class="toggle-btn" onclick="toggleSidebar()">
             <img src="https://img.icons8.com/ios-filled/24/ffffff/menu--v1.png" alt="Menu" class="icon">
         </button>
@@ -138,8 +159,8 @@
         <div id="clientes" class="submenu">
             <div class="menu-item">
                 <a href="{% url 'lista_clientes' %}">
-                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Visão Geral" class="icon">
-                    <span>Visão Geral</span>
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Clientes" class="icon">
+                    <span>Clientes</span>
                 </a>
             </div>
             <div class="menu-item">
@@ -159,8 +180,8 @@
         <div id="projetos" class="submenu">
             <div class="menu-item">
                 <a href="{% url 'lista_projetos' %}">
-                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/task.png" alt="Meus Projetos" class="icon">
-                    <span>Meus Projetos</span>
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/task.png" alt="Projetos" class="icon">
+                    <span>Projetos</span>
                 </a>
             </div>
             <div class="menu-item">
@@ -180,8 +201,8 @@
         <div id="materiais" class="submenu">
             <div class="menu-item">
                 <a href="{% url 'lista_materiais' %}">
-                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Lista de Materiais" class="icon">
-                    <span>Lista de Materiais</span>
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Materiais" class="icon">
+                    <span>Materiais</span>
                 </a>
             </div>
             <div class="menu-item">
@@ -191,6 +212,7 @@
                 </a>
             </div>
         </div>
+
         <!-- Fornecedores -->
         <div class="menu-item" onclick="toggleSubMenu('fornecedores')">
             <img src="https://img.icons8.com/ios-filled/24/ffffff/supplier.png" alt="Fornecedores" class="icon">
@@ -200,28 +222,29 @@
         <div id="fornecedores" class="submenu">
             <div class="menu-item">
                 <a href="{% url 'lista_fornecedores' %}">
-                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Lista" class="icon">
-                    <span>Lista de Fornecedores</span>
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Fornecedores" class="icon">
+                    <span>Fornecedores</span>
                 </a>
             </div>
             <div class="menu-item">
                 <a href="{% url 'cadastrar_fornecedor' %}">
-                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/plus-math.png" alt="Novo" class="icon">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/plus-math.png" alt="Novo Fornecedor" class="icon">
                     <span>Novo Fornecedor</span>
                 </a>
             </div>
         </div>
+
         <!-- Financeiro -->
         <div class="menu-item" onclick="toggleSubMenu('financeiro')">
             <img src="https://img.icons8.com/ios-filled/24/ffffff/money.png" alt="Financeiro" class="icon">
-            <span>Financeiro</span>
+            <span>Lançamentos</span>
             <img src="https://img.icons8.com/ios-filled/16/ffffff/expand-arrow--v1.png" alt="Expandir" class="icon">
         </div>
         <div id="financeiro" class="submenu">
             <div class="menu-item">
                 <a href="{% url 'lista_financeiro' %}">
                     <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Lançamentos" class="icon">
-                    <span>Todos os Lançamentos</span>
+                    <span>Lançamentos</span>
                 </a>
             </div>
             <div class="menu-item">
@@ -230,12 +253,12 @@
                     <span>Novo Lançamento</span>
                 </a>
             </div>
-        </div>
-        <div class="menu-item">
-            <a href="{% url 'dashboard_financeiro' %}">
-                <img src="https://img.icons8.com/ios-filled/24/ffffff/combo-chart.png" alt="Dashboard" class="icon">
-                <span>Dashboard</span>
-            </a>
+            <div class="menu-item">
+                <a href="{% url 'dashboard_financeiro' %}">
+                    <img src="https://img.icons8.com/ios-filled/24/ffffff/combo-chart.png" alt="Dashboard" class="icon">
+                    <span>Dashboard</span>
+                </a>
+            </div>
         </div>
 
         <!-- Licença -->
@@ -270,9 +293,8 @@
     </div>
 
     <footer class="d-flex justify-content-end align-items-center p-3">
-               <span class="footer-text mr-2">Desenvolvido por MDS Digital Systems</span>
+        <span class="footer-text mr-2">Desenvolvido por MDS Digital Systems</span>
         <img src="{% static 'images/crm_logo.png' %}" alt="Logo" style="height: 40px;">
-    
     </footer>
 
     <!-- Bootstrap JS -->
