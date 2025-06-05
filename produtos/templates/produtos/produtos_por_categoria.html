@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Produtos na Categoria: {{ categoria.nome }}{% endblock %}
+
+{% block content %}
+<div class="produtos-container">
+    {% for produto in produtos %}
+    <div class="produto-item" id="produto-{{ produto.id }}">
+        {% if produto.images %}
+        <img src="{{ produto.images.0 }}" alt="{{ produto.name }}" class="produto-imagem">
+        {% else %}
+        <p>Imagem não disponível</p>
+        {% endif %}
+        <h2 class="produto-titulo">{{ produto.name }}</h2>
+        <p class="produto-descricao">{{ produto.description }}</p>
+        <p class="produto-preco">Preço: R$ {{ produto.preco|floatformat:2}}</p>
+        <a href="{% url 'adicionar_ao_carrinho' produto.id %}" class="btn-comprar">Comprar</a>
+    </div>
+    {% empty %}
+    <p>Não há produtos nesta categoria.</p>
+    {% endfor %}
+</div>
+{% endblock %}

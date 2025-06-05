@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/detalhe_produto.css' %}">
+
+<div class="produto-detalhes">
+    <div class="produto-imagem">
+        <img src="{{ produto.images.0 }}" alt="{{ produto.name }}">
+    </div>
+    <div class="produto-info">
+        <h1>{{ produto.name }}</h1>
+        <p>Preço: R$ {{ produto.preco }}</p>
+        
+        {% if produto.tipo == 'metro_quadrado' %}
+            <form id="calculadora-form" method="POST" action="{% url 'produto_detalhe' produto.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="produto_id" value="{{ produto.id }}">
+                
+                <label for="altura">Altura (em centímetros):</label>
+                <input type="number" name="altura" id="altura" step="0.01" required>
+                
+                <label for="largura">Largura (em centímetros):</label>
+                <input type="number" name="largura" id="largura" step="0.01" required>
+                
+                <label for="quantidade">Quantidade:</label>
+                <input type="number" name="quantidade" id="quantidade" value="1" min="1" required>
+                
+                <button type="button" onclick="calcularPreco()">Calcular Preço</button>
+                <button type="submit">Adicionar ao Carrinho</button>
+            </form>
+            
+            <p id="preco-total">Preço Total: R$ 0,00</p>
+            
+            <script>
+                function calcularPreco() {
+                    var alturaCm = parseFloat(document.getElementById('altura').value) || 0;
+                    var larguraCm = parseFloat(document.getElementById('largura').value) || 0;
+                    var quantidade = parseInt(document.getElementById('quantidade').value) || 1;
+                    var precoUnitario = parseFloat("{{ produto.preco }}") || 0;
+
+                    // Converter centímetros para metros
+                    var alturaM = alturaCm / 100;
+                    var larguraM = larguraCm / 100;
+
+                    var precoTotal = alturaM * larguraM * precoUnitario * quantidade;
+                    document.getElementById('preco-total').innerText = "Preço Total: R$ " + precoTotal.toFixed(2).replace('.', ',');
+                }
+            </script>
+        {% else %}
+            <form method="POST" action="{% url 'produto_detalhe' produto.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="produto_id" value="{{ produto.id }}">                
+                <label for="quantidade">Quantidade:</label>
+                <input type="number" name="quantidade" id="quantidade" value="1" min="1" required>
+                <button type="submit">Adicionar ao Carrinho</button>
+            </form>
+        {% endif %}
+        
+        <a href="{% url 'home' %}">Continuar Comprando</a>
+        <a href="{% url 'ver_carrinho' %}">Ver Carrinho</a>
+    </div>
+</div>
+{% endblock %}
+
+
+

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Página Inicial{% endblock %}
+
+{% block content %}
+<div class="produtos-container">
+    {% for categoria, produtos in produtos_por_categoria.items %}
+        {% for produto in produtos %}
+            <div class="produto-card">
+                <img src="{{ produto.images.0 }}" alt="{{ produto.name }}">
+                <h3><a href="{% url 'produto_detalhe' produto.id %}">{{ produto.name }}</a></h3>
+                <p>Preço: R$ {{ produto.preco|floatformat:2 }}</p>
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
+{% endblock %}
+

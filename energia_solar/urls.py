@@ -21,7 +21,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('solar.urls')),  # Inclui as URLs do app "solar"
+    path('crm/', include('solar.urls')), # Ajuste 'crm/' e 'solar.urls' conforme o seu projeto
+    path('loja/', include('produtos.urls')), # Acesso via 'seudominio.com/loja/...'
 ] 
 
 # 👇 Serve arquivos estáticos apenas em modo DEBUG

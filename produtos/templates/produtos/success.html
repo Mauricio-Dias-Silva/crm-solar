@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Compra Realizada com Sucesso{% endblock %}
+
+{% block content %}
+<h1>Compra Realizada com Sucesso</h1>
+<p>Obrigado por sua compra! Por favor, envie os arquivos para os itens comprados.</p>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for form, item in form_item_pairs %}
+        <h3>Enviar arquivo para: {{ item.nome }}</h3>
+        {{ form.as_p }}
+    {% endfor %}
+    <button type="submit">Enviar Arquivos</button>
+</form>
+
+<a href="{% url 'home' %}">Voltar para a Página Inicial</a>
+
+{% endblock %}

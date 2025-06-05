@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Compra Cancelada{% endblock %}
+
+{% block content %}
+<h1>Compra Cancelada</h1>
+<p>Sua compra foi cancelada. Se você tiver alguma dúvida, entre em <a href="{% url 'contact' %}">contato</a> conosco.</p>
+<a href="{% url 'home' %}">Voltar para a Página Inicial</a>
+<a href="{% url 'ver_carrinho' %}">Ver Carrinho</a>
+<a href="{% url 'search' %}">Continuar Comprando</a>
+{% endblock %}

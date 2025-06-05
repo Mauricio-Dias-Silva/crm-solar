@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'solar',
     'widget_tweaks',
+    'produtos',
 ]
 
 MIDDLEWARE = [
