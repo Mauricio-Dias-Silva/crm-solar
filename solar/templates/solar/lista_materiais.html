@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'solar/base.html' %}
 
 {% block title %}Materiais{% endblock %}
 
@@ -6,7 +6,7 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Materiais Cadastrados</h2>
-        <a href="{% url 'cadastrar_material' %}" class="btn btn-primary">+ Cadastrar novo material</a>
+        <a href="{% url 'crm:cadastrar_material' %}" class="btn btn-primary">+ Cadastrar novo material</a>
     </div>
 
     <div class="table-responsive">
@@ -56,7 +56,7 @@
                     </td>
                     <td>{{ material.observacoes }}</td>
                     <td>
-                        <a href="{% url 'editar_material' material.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'crm:editar_material' material.id %}" class="btn btn-sm btn-warning">Editar</a>
                         <!-- Botão de exclusão pode ser colocado aqui futuramente -->
                     </td>
                 </tr>

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "produtos/base.html" %}
 
 {% load socialaccount %}
 
@@ -11,10 +11,10 @@
     <button type="submit">Cadastrar</button>
 </form>
 <!-- Link para recuperação de senha -->
-<p><a href="{% url 'password_reset' %}">Esqueci minha senha</a></p>
+<p><a href="{% url 'produtos:password_reset' %}">Esqueci minha senha</a></p>
 
 <!-- Link para a página de cadastro -->
-<p>Não tem uma conta? <a href="{% url 'register' %}">Cadastre-se aqui</a>.</p>
+<p>Não tem uma conta? <a href="{% url 'produtos:register' %}">Cadastre-se aqui</a>.</p>
 
 {% comment %} <!-- Links para login social -->
 <h3>Ou faça login com</h3>

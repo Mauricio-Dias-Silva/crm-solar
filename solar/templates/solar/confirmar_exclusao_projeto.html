@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'solar/base.html' %}
 {% block title %}Excluir Projeto{% endblock %}
 {% block content %}
 <div class="container mt-5">
@@ -11,7 +11,7 @@
             <form method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">Sim, excluir</button>
-                <a href="{% url 'detalhe_projeto' projeto.id %}" class="btn btn-secondary ms-2">Cancelar</a>
+                <a href="{% url 'crm:detalhe_projeto' projeto.id %}" class="btn btn-secondary ms-2">Cancelar</a>
             </form>
         </div>
     </div>

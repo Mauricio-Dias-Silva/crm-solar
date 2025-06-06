@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'solar/base.html' %}
 {% load widget_tweaks %}
 
 {% block title %}Cadastrar Projeto{% endblock %}
@@ -71,7 +71,7 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Cadastrar Projeto</button>
-                <a href="{% url 'lista_projetos' %}" class="btn btn-secondary ms-2">Voltar</a>
+                <a href="{% url 'crm:lista_projetos' %}" class="btn btn-secondary ms-2">Voltar</a>
             </form>
         </div>
     </div>

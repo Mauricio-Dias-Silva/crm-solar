@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'produtos/base.html' %}
 {% load static %}
 
 {% block title %}Carrinho de Compras{% endblock %}
@@ -13,11 +13,11 @@
                 <h2>{{ produto.nome }}</h2>
                 <p>Preço: R$ {{ produto.preco|floatformat:2 }}</p>
                 <p>Quantidade: {{ produto.quantidade }}</p>
-                <a href="{% url 'remover_do_carrinho' produto_id %}">Remover</a>
+                <a href="{% url 'produtos:remover_do_carrinho' produto_id %}">Remover</a>
             </li>
         {% endfor %}
     </ul>
-    <form method="POST" action="{% url 'criar_checkout_session' %}">
+    <form method="POST" action="{% url 'produtos:criar_checkout_session' %}">
         {% csrf_token %}
         {% if not user.is_authenticated %}
             <label for="email">Email:</label>
@@ -25,10 +25,10 @@
         {% endif %}
         <button type="submit">Comprar</button>
     </form>
-    <a href="{% url 'home' %}">Continuar Comprando</a>
+    <a href="{% url 'produtos:home' %}">Continuar Comprando</a>
 {% else %}
     <p>Seu carrinho está vazio.</p>
-    <a href="{% url 'home' %}">Continuar Comprando</a>
+    <a href="{% url 'produtos:home' %}">Continuar Comprando</a>
 {% endif %}
 {% endblock %}
 

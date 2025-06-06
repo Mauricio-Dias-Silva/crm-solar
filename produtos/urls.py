@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 
+app_name = 'produtos'
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -20,7 +21,9 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('compra_sucesso/', views.success, name='compra_sucesso'),
+    path('politica-de-privacidade/', views.politica_privacidade, name='politica_privacidade'),
     path('finalizar_compra/', views.finalizar_compra, name='finalizar_compra'),
+    path('termos-de-servico/', views.termos_de_servico, name='termos_de_servico'),
     path('register/', views.register, name='register'),
     path('criar-checkout-session/', views.criar_checkout_session, name='criar_checkout_session'),
     path('stripe-webhook/', views.stripe_webhook, name='stripe_webhook'),

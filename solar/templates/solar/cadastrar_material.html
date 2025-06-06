@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'solar/base.html' %}
 {% load widget_tweaks %}
 
 {% block title %}Cadastrar Material{% endblock %}
@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between">
-                    <a href="{% url 'lista_materiais' %}" class="btn btn-secondary">Voltar</a>
+                    <a href="{% url 'crm:lista_materiais' %}" class="btn btn-secondary">Voltar</a>
                     <button type="submit" class="btn btn-success">Cadastrar</button>
                 </div>
             </form>

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'solar/base.html' %}
 
 {% block title %}Detalhes do Cliente{% endblock %}
 
@@ -16,8 +16,8 @@
     </div>
 
     <div class="mt-4 d-flex gap-2">
-        <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">Voltar</a>
-        <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-warning">Editar</a>
+        <a href="{% url 'crm:lista_clientes' %}" class="btn btn-secondary">Voltar</a>
+        <a href="{% url 'crm:editar_cliente' cliente.id %}" class="btn btn-warning">Editar</a>
         <form method="POST" action="{% url 'excluir_cliente' cliente.id %}" style="display:inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?');">

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'produtos/base.html' %}
 {% load static %}
 
 {% block content %}
@@ -13,7 +13,7 @@
         <p>Preço: R$ {{ produto.preco }}</p>
         
         {% if produto.tipo == 'metro_quadrado' %}
-            <form id="calculadora-form" method="POST" action="{% url 'produto_detalhe' produto.id %}">
+            <form id="calculadora-form" method="POST" action="{% url 'produtos:produto_detalhe' produto.id %}">
                 {% csrf_token %}
                 <input type="hidden" name="produto_id" value="{{ produto.id }}">
                 
@@ -48,7 +48,7 @@
                 }
             </script>
         {% else %}
-            <form method="POST" action="{% url 'produto_detalhe' produto.id %}">
+            <form method="POST" action="{% url 'produtos:produto_detalhe' produto.id %}">
                 {% csrf_token %}
                 <input type="hidden" name="produto_id" value="{{ produto.id }}">                
                 <label for="quantidade">Quantidade:</label>
@@ -57,8 +57,8 @@
             </form>
         {% endif %}
         
-        <a href="{% url 'home' %}">Continuar Comprando</a>
-        <a href="{% url 'ver_carrinho' %}">Ver Carrinho</a>
+        <a href="{% url 'produtos:home' %}">Continuar Comprando</a>
+        <a href="{% url 'produtos:ver_carrinho' %}">Ver Carrinho</a>
     </div>
 </div>
 {% endblock %}

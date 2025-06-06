@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'solar/base.html' %}
 
 {% load widget_tweaks %}
 
@@ -56,7 +56,7 @@
                     {% endif %}
                 </div>
                 <button type="submit" class="btn btn-primary">Salvar</button>
-                <a href="{% url 'lista_financeiro' %}" class="btn btn-secondary ms-2">Voltar</a>
+                <a href="{% url 'crm:lista_financeiro' %}" class="btn btn-secondary ms-2">Voltar</a>
             </form>
         </div>
     </div>

@@ -11,26 +11,30 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-from decouple import Config, RepositoryEnv,
+import smtplib
+# Linha original que causava o erro: from decouple import config
+# Corrija para importar Config e RepositoryEnv
+# from decouple import Config, RepositoryEnv
 from pathlib import Path
-import dj_database_url
-
-
-STRIPE_SECRET_KEY = Config('SECRET_KEY_STRIPE')
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# import dj_database_url 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+STRIPE_SECRET_KEY = 'sk_test_51PnlTd07MXniEPOQGMO7NYQGJbZKmfEFFljlCH4PS8RDyYKKka91CH3obqsM1gBZXydb6vbWl1fHHpsI3J7Ijue500IwRgQ9i9'
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# config = Config(RepositoryEnv(str(BASE_DIR / '.env')))
 # config = Config(RepositoryEnv(str(BASE_DIR / '.env')))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'SECRET_KEY'
+
+SECRET_KEY = 'django-insecure-k^#8#26p1!^!_tk+f!gcxezrnri2e#m)9+o@=#&0iu^%8848au'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-DEBUG = config('DEBUG', default=False, cast=bool)
-
+# DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -73,19 +77,21 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+# energia_solar/settings.py
 
+# ...
+LOGIN_URL = 'account_login' # <--- CORRIGIR AQUI!
+LOGIN_REDIRECT_URL = 'produtos:home' # Exemplo: Redirecionar para a home da loja
+LOGOUT_REDIRECT_URL = 'account_login' # <--- CORRIGIR AQUI!
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login' # Esta já estava correta para Allauth
 
-
-
-LOGIN_URL = 'login'  # Rota usada para redirecionar usuários não autenticados
-LOGIN_REDIRECT_URL = 'home'  # Para onde o usuário é redirecionado após login bem-sucedido
-LOGOUT_REDIRECT_URL = 'login'  # Para onde o usuário vai após sair
-ACCOUNT_LOGOUT_REDIRECT_URL = LOGOUT_REDIRECT_URL
+# ...
 
 # Configurações adicionais
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_USERNAME_REQUIRED = True
 
 
@@ -96,7 +102,7 @@ SESSION_COOKIE_SECURE = False  # Apenas True em produção
 SESSION_COOKIE_HTTPONLY = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-ROOT_URLCONF = 'grafica_rapida.urls'
+ROOT_URLCONF = 'energia_solar.urls'
 
 TEMPLATES = [
     {
@@ -122,36 +128,53 @@ EMAIL_HOST = 'smtp-mail.outlook.com'  # Servidor SMTP do Hotmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mauriciodiassilva@hotmail.com'  # Seu e-mail do Hotmail
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # Sua senha do Hotmail
+# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_PASSWORD = 'EuSouoEuSou01@'  # Sua senha do Hotmail
 # Opcional, para definir um remetente padrão
 DEFAULT_FROM_EMAIL = 'mauriciodiassilva@hotmail.com'
+
+
+
+# sender = "mauriciodiassilva@hotmail.com"
+# password = "EuSouoEuSou01@"  # Replace with your app password
+
+# try:
+#     server = smtplib.SMTP("smtp-mail.outlook.com", 587)  # Or 465 if using SSL
+#     server.starttls()  # Or server = smtplib.SMTP_SSL("smtp-mail.outlook.com", 465) if using SSL
+#     server.login(sender, password)
+#     print("Successfully connected to SMTP server.")
+# except Exception as e:
+#     print(f"Error connecting to SMTP server: {e}")
+# finally:
+#     server.quit() if server else None
+
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-######## INÍCIO DAS CONFIGURAÇÕES DO DB SQLITE #############
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
-############# FIM DAS CONFIGURAÇÕES DB SQLITE ##############
-
+####### INÍCIO DAS CONFIGURAÇÕES DO DB SQLITE #############
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',
-        'USER': 'user',
-        'PASSWORD': 'password',
-        'HOST': 'db',  # mesmo nome do serviço no docker-compose
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-    }
+   'default': {
+       'ENGINE': 'django.db.backends.sqlite3',
+       'NAME': BASE_DIR / 'db.sqlite3',
+   }
 }
+############ FIM DAS CONFIGURAÇÕES DB SQLITE ##############
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'mydb',
+#         'USER': 'user',
+#         'PASSWORD': 'password',
+#         'HOST': 'db',  # mesmo nome do serviço no docker-compose
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -181,24 +204,14 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-# Arquivos estáticos (CSS, JavaScript, Imagens)
-STATIC_URL = '/static/'
-# STATIC_ROOT = '/home2/ma186372/public_html/static'
-STATIC_ROOT = 'static'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
+# Configurações de mídia
 MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, '/home2/ma186372/public_html/media')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+
+# Configurações de arquivos estáticos
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

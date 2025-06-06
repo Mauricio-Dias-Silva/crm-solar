@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'produtos/base.html' %}
 {% load static %}
 
 {% block title %}Produtos na Categoria: {{ categoria.nome }}{% endblock %}
@@ -16,7 +16,7 @@
             <h2>{{ produto.name }}</h2>
             <p>{{ produto.description }}</p>
             <p>Preço: R$ {{ produto.metadata.preco }}</p>
-            <a href="{% url 'adicionar_ao_carrinho' produto.id %}" class="btn-comprar">Comprar</a>
+            <a href="{% url 'produtos:adicionar_ao_carrinho' produto.id %}" class="btn-comprar">Comprar</a>
         </div>
     {% empty %}
         <p>Não há produtos nesta categoria.</p>

@@ -151,8 +151,8 @@ def produto_detalhes(request, produto_id):
             'imagem': produto['images'][0] if produto['images'] else None,
             'quantidade': quantidade,
         }
-        request.session['carrinho'] = carrinho
-        return redirect('ver_carrinho')  # Redireciona para visualizar o carrinho
+        request.session['produtos:carrinho'] = carrinho
+        return redirect('produtos:ver_carrinho')  # Redireciona para visualizar o carrinho
 
     return render(request, 'produtos/produto_detalhe.html', {'produto': produto})
 
@@ -190,7 +190,7 @@ def success(request):
                 arquivo_impressao.usuario = request.user
                 arquivo_impressao.nome_item = item.nome  # Adicionar o nome do item ao arquivo
                 arquivo_impressao.save()
-        return redirect('home')
+        return redirect('produtos:home')
 
     form_item_pairs = [(ArquivoImpressaoForm(), item) for item in itens]
 
@@ -205,11 +205,17 @@ def cancel(request):
     # Se você tiver o produto_id armazenado em algum lugar (por exemplo, na sessão):
     produto_id = request.session.get('produto_id') 
     if produto_id:
-        return redirect('produto_detalhe', produto_id=produto_id) 
+        return redirect('produtos:produto_detalhe', produto_id=produto_id) 
     else:
         # Se não tiver o produto_id, redirecionar para a página inicial ou outra página apropriada
         return redirect('home') 
 
+def termos_de_servico(request):
+    return render(request, 'produtos/termos_de_servico.html', {})
+
+
+def politica_privacidade(request):
+    return render(request, 'produtos/politica_privacidade.html', {})
 
 
 def register(request):
@@ -219,7 +225,7 @@ def register(request):
             user = form.save()
             # Use o backend apropriado para logar o usuário
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            return redirect('home')  # Redirecionar para a página inicial ou outra página
+            return redirect('produtos:home')  # Redirecionar para a página inicial ou outra página
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
@@ -273,7 +279,7 @@ def adicionar_ao_carrinho(request, produto_id):
         }
         request.session['carrinho'] = carrinho
         return redirect('ver_carrinho')
-    return redirect('home')
+    return redirect('produtos:home')
 
 
 def remover_do_carrinho(request, produto_id):
@@ -286,8 +292,8 @@ def remover_do_carrinho(request, produto_id):
 def ver_carrinho(request):
     
     if not request.user.is_authenticated:
-        request.session['next'] = request.path
-        return redirect('login')
+        request.session['produtos:next'] = request.path
+        return redirect('produtos:login')
     
     carrinho = request.session.get('carrinho', {})
     return render(request, 'produtos/ver_carrinho.html', {'carrinho': carrinho})

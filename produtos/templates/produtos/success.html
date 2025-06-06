@@ -1,4 +1,5 @@
-{% extends 'base.html' %}
+{% extends 'produtos/base.html' %}
+
 {% load static %}
 
 {% block title %}Compra Realizada com Sucesso{% endblock %}
@@ -16,6 +17,6 @@
     <button type="submit">Enviar Arquivos</button>
 </form>
 
-<a href="{% url 'home' %}">Voltar para a Página Inicial</a>
+<a href="{% url 'produtos:home' %}">Voltar para a Página Inicial</a>
 
 {% endblock %}

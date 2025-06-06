@@ -3,6 +3,8 @@ from django.contrib.auth import views as auth_views
 from . import views
 from django.shortcuts import redirect
 
+app_name = 'crm'
+
 urlpatterns = [
     # Login
     path('login/', views.login_view, name='login'),
@@ -53,5 +55,5 @@ urlpatterns = [
     path('progresso/painel/', views.painel_cliente, name='painel_cliente'),
 
     # Logout (opcional, usando view padrão do Django)
-    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

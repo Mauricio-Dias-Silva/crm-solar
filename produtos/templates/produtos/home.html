@@ -1,4 +1,6 @@
-{% extends 'base.html' %}
+
+{% extends 'produtos/base.html' %}
+
 {% load static %}
 
 {% block title %}Página Inicial{% endblock %}
@@ -9,7 +11,7 @@
         {% for produto in produtos %}
             <div class="produto-card">
                 <img src="{{ produto.images.0 }}" alt="{{ produto.name }}">
-                <h3><a href="{% url 'produto_detalhe' produto.id %}">{{ produto.name }}</a></h3>
+                <h3><a href="{% url 'produtos:produto_detalhe' produto.id %}">{{ produto.name }}</a></h3>
                 <p>Preço: R$ {{ produto.preco|floatformat:2 }}</p>
             </div>
         {% endfor %}
