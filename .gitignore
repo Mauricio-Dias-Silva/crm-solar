@@ -8,7 +8,8 @@ __pycache__/
 .pytest_cache/
 
 # Environments
-.env # MUITO IMPORTANTE: Arquivo de variáveis de ambiente com segredos
+.env
+*.env 
 venv/
 env/
 /site/
