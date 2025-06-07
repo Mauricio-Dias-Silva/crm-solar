@@ -69,40 +69,91 @@ def criar_checkout_session(request):
     return redirect('home')
 
 
+# Seu arquivo views.py
+
+# Seu arquivo views.py
+
+import stripe
+from django.shortcuts import render
+# Supondo que CarouselImage esteja importado de algum lugar
+from .models import CarouselImage # Ajuste o caminho se necessário
+
 def home(request):
+    # ATUALIZE ESTA LISTA COM SUAS NOVAS CATEGORIAS DE PRODUTOS SOLARES
     categorias = [
-        'adesivos',
-        'banners',
-        'faixas',
+        'paineis_solares',
+        'inversores',
+        'baterias',
+        'kits_fotovoltaicos',
+        'estruturas_montagem',
+        'acessorios',
     ]
 
+    print(f"DEBUG: Categorias configuradas: {categorias}") # DEBUG 1
+
     produtos_por_categoria = {}
-    produtos = stripe.Product.list(active=True)
+    try:
+        # Tenta listar os produtos do Stripe
+        produtos_stripe_response = stripe.Product.list(active=True)
+        produtos = produtos_stripe_response['data']
+        print(f"DEBUG: Total de produtos ativos retornados pelo Stripe: {len(produtos)}") # DEBUG 2
+        # print(f"DEBUG: Primeiros 3 produtos Stripe (raw): {produtos[:3]}") # DEBUG 3 (Opcional, para ver o objeto completo)
+
+    except stripe.error.StripeError as e:
+        print(f"ERRO STRIPE: Não foi possível listar produtos. Erro: {e}")
+        produtos = [] # Garante que a lista de produtos não é None ou causa mais erros
 
     for categoria in categorias:
         produtos_categoria = []
-        for produto in produtos['data']:
-            if produto.metadata.get('categoria_id') == categoria:
+        for produto in produtos:
+            # Verifica se o produto tem metadados e se 'categoria_id' existe neles
+            produto_categoria_id = produto.metadata.get('categoria_id')
+            # print(f"DEBUG: Produto '{produto.name}' (ID: {produto.id}) - categoria_id nos metadados: {produto_categoria_id}") # DEBUG 4 (Opcional, para ver cada produto)
+
+            if produto_categoria_id == categoria:
                 preco_id = produto['default_price']
                 if preco_id:
-                    preco = stripe.Price.retrieve(preco_id)
-                    produto['preco'] = preco['unit_amount'] / 100  # Convertendo centavos para reais
-                produtos_categoria.append(produto)
+                    try:
+                        preco = stripe.Price.retrieve(preco_id)
+                        produto['preco'] = preco['unit_amount'] / 100  # Convertendo centavos para reais
+                        # print(f"DEBUG: Produto '{produto.name}' adicionado à categoria '{categoria}' com preço R$ {produto['preco']}") # DEBUG 5
+                    except stripe.error.StripeError as e:
+                        print(f"ERRO STRIPE: Não foi possível obter preço para produto {produto.id}. Erro: {e}")
+                        continue # Pula este produto se o preço não puder ser recuperado
+                else:
+                    print(f"DEBUG: Produto '{produto.name}' (ID: {produto.id}) não tem default_price.") # DEBUG 6
+                    continue # Pula produtos sem preço padrão
+                
+                # Certifique-se de que o produto tem uma imagem antes de adicionar (opcional, para evitar erros de índice)
+                if produto.images: # Assumindo que 'images' é uma lista
+                    produtos_categoria.append(produto)
+                else:
+                    print(f"DEBUG: Produto '{produto.name}' (ID: {produto.id}) não tem imagens e foi pulado.") # DEBUG 7 (Se você quiser que produtos sem imagem não apareçam)
+
         produtos_por_categoria[categoria] = produtos_categoria
+        print(f"DEBUG: Categoria '{categoria}' finalizada com {len(produtos_categoria)} produtos.") # DEBUG 8
+
+    print(f"DEBUG: Produtos por categoria (final): {produtos_por_categoria}") # DEBUG 9
 
     carousel_images = CarouselImage.objects.filter(is_active=True)
+    print(f"DEBUG: Total de imagens de carrossel ativas: {len(carousel_images)}") # DEBUG 10
 
     return render(request, 'produtos/home.html', {
         'produtos_por_categoria': produtos_por_categoria,
         'carousel_images': carousel_images,
     })
 
+# Seu arquivo views.py
 
 def produtos_por_categoria(request, categoria_id):
+    # ATUALIZE ESTE DICIONÁRIO PARA OS NOVOS NOMES AMIGÁVEIS
     categoria_nome = {
-        'adesivos': 'Adesivos',
-        'banners': 'Banners',
-        'faixas': 'Faixas'
+        'paineis_solares': 'Painéis Solares',
+        'inversores': 'Inversores',
+        'baterias': 'Baterias',
+        'kits_fotovoltaicos': 'Kits Fotovoltaicos',
+        'estruturas_montagem': 'Estruturas de Montagem',
+        'acessorios': 'Acessórios',
     }
 
     produtos = stripe.Product.list(active=True)
@@ -120,7 +171,6 @@ def produtos_por_categoria(request, categoria_id):
         'categoria': {'id': categoria_id, 'nome': categoria_nome.get(categoria_id, 'Categoria Desconhecida')},
         'produtos': produtos_categoria
     })
-
 
 
 def about(request):

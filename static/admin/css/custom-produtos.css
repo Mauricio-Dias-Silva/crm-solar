@@ -1,0 +1,45 @@
+/* Estilo para o contêiner principal dos produtos */
+.produtos-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os cards quebrem para a próxima linha em telas menores */
+    gap: 20px; /* Espaçamento entre os cards */
+    justify-content: center; /* Centraliza os cards */
+    padding: 20px;
+}
+
+/* Estilo para cada card de produto */
+.produto-card {
+    border: 1px solid #d60d0d;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #891313;
+    width: 280px; /* Largura fixa para o card (ajuste conforme a necessidade) */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Espaçamento entre os elementos do card */
+    align-items: center;
+}
+
+/* Estilo para as imagens dentro do card de produto */
+.produto-card img {
+    max-width: 100%; /* Garante que a imagem não ultrapasse a largura do card */
+    height: 200px; /* Altura fixa para as imagens */
+    object-fit: contain; /* Redimensiona a imagem para caber no contêiner mantendo a proporção */
+    border-radius: 4px; /* Cantos arredondados para a imagem */
+    margin-bottom: 10px;
+}
+
+/* Estilos básicos para os títulos e parágrafos */
+.produto-card h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.2em;
+}
+
+.produto-card p {
+    font-size: 1.1em;
+    color: #333;
+    font-weight: bold;
+}
