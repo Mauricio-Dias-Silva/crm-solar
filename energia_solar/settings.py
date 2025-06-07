@@ -11,32 +11,36 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-import smtplib
-# Linha original que causava o erro: from decouple import config
-# Corrija para importar Config e RepositoryEnv
-# from decouple import Config, RepositoryEnv
 from pathlib import Path
-# import dj_database_url 
-BASE_DIR = Path(__file__).resolve().parent.parent
+import dj_database_url
 
-STRIPE_SECRET_KEY = 'sk_test_51PnlTd07MXniEPOQGMO7NYQGJbZKmfEFFljlCH4PS8RDyYKKka91CH3obqsM1gBZXydb6vbWl1fHHpsI3J7Ijue500IwRgQ9i9'
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# config = Config(RepositoryEnv(str(BASE_DIR / '.env')))
-# config = Config(RepositoryEnv(str(BASE_DIR / '.env')))
+# --- INÍCIO DA CONFIGURAÇÃO COM DJANGO-ENVIRON ---
+import environ # <--- Importe environ
+# Initialise environment variables
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
+env = environ.Env() # <--- Crie uma instância de Env
 
-SECRET_KEY = 'django-insecure-k^#8#26p1!^!_tk+f!gcxezrnri2e#m)9+o@=#&0iu^%8848au'
+
+# Read .env file from the project root (where manage.py is)
+# BASE_DIR é 'C:/Users/Mauricio/Desktop/crmsolar'
+env.read_env(os.path.join(BASE_DIR, '.env')) # <--- Lê o arquivo .env
+# --- FIM DA CONFIGURAÇÃO COM DJANGO-ENVIRON --
+
+
+
+
+STRIPE_SECRET_KEY = env('SECRET_KEY_STRIPE')
+
+SECRET_KEY = env('SECRET_KEY', default='sua-chave-secreta-padrao-para-desenvolvimento-aqui') # <--- Use env()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-# DEBUG = config('DEBUG', default=False, cast=bool)
-DEBUG = True
+DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
+
+# ... (o restante do seu settings.py) ...
 
 
 # Application definition
@@ -107,7 +111,7 @@ ROOT_URLCONF = 'energia_solar.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR , 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,15 +127,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'energia_solar.wsgi.application'
 
 
+
+# Configuração de E-mail com django-environ
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-mail.outlook.com'  # Servidor SMTP do Hotmail
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mauriciodiassilva@hotmail.com'  # Seu e-mail do Hotmail
-# EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-EMAIL_HOST_PASSWORD = 'EuSouoEuSou01@'  # Sua senha do Hotmail
-# Opcional, para definir um remetente padrão
-DEFAULT_FROM_EMAIL = 'mauriciodiassilva@hotmail.com'
+EMAIL_HOST = env('EMAIL_HOST', default='smtp-mail.outlook.com')
+EMAIL_PORT = env.int('EMAIL_PORT', default=587) # env.int() para converter para inteiro
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True) # env.bool() para booleanos
+EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL', default=False)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD') # Aqui virá a senha de aplicativo
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
 
 
 
@@ -154,27 +160,41 @@ DEFAULT_FROM_EMAIL = 'mauriciodiassilva@hotmail.com'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 ####### INÍCIO DAS CONFIGURAÇÕES DO DB SQLITE #############
-DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-       'NAME': BASE_DIR / 'db.sqlite3',
-   }
-}
+# DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }
+# }
+
+
+
+# Configuração do Banco de Dados com django-environ (Muito comum e recomendado)
+# Isso permite que você coloque a string completa do banco de dados no .env
+# DATABASES = {
+#     'default': env.db_url(
+#         'DATABASE_URL',
+#         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3') # Default para SQLite em dev
+#     )
+# }
+# NO SEU ARQUIVO .env, você teria algo como:
+# DATABASE_URL=mysql://user:password@db:3306/mydb
+# Ou, para PostgreSQL: DATABASE_URL=postgres://user:password@host:port/dbname
 ############ FIM DAS CONFIGURAÇÕES DB SQLITE ##############
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'mydb',
-#         'USER': 'user',
-#         'PASSWORD': 'password',
-#         'HOST': 'db',  # mesmo nome do serviço no docker-compose
-#         'PORT': '3306',
-#         'OPTIONS': {
-#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-#         },
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mydb',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': 'db',  # mesmo nome do serviço no docker-compose
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

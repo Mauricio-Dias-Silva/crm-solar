@@ -1,22 +1,110 @@
+# services:
+#   web:  
+#    environment: # <--- Define as variáveis diretamente no contêiner
+#       SECRET_KEY: 'django-insecure-k^#8#26p1!^!_tk+f!gcxezrnri2e#m)9+o@=#&0iu^%8848au'
+#       DEBUG: "False"
+#       DATABASE_URL: 'mysql://user:password@db:3306/mydb'
+#       EMAIL_HOST_USER: 'mauriciodiassilva@hotmail.com'
+#       EMAIL_HOST_PASSWORD: 'EuSouoEuSou01@'
+#     # ... outras configurações ...
+
+#   build: 
+#     container_name: django_app
+#     ports:
+#       - "8000:8000"
+#     volumes:
+#       - .:/app
+#     depends_on:
+#       - db
+
+#   db:
+#     image: mysql:8.0
+#     container_name: mysql_db
+#     restart: always
+#     environment:
+#       MYSQL_DATABASE: mydb
+#       MYSQL_USER: user
+#       MYSQL_PASSWORD: password
+#       MYSQL_ROOT_PASSWORD: rootpassword
+#     ports:
+#       - "3306:3306"
+
+# Define a versão da especificação Docker Compose a ser usada
+version: '3.8'
+
+# Define os serviços (contêineres) que compõem sua aplicação
 services:
+  # Serviço principal da sua aplicação (Django, etc.)
   web:
-    build: .
+    # A seção 'build' instrui o Docker Compose a construir uma imagem
+    # a partir de um Dockerfile.
+    build:
+      # O 'context' define o caminho para o diretório que contém o Dockerfile
+      # e os arquivos necessários para a construção da imagem.
+      # '.' significa o diretório atual onde o docker-compose.yml está.
+      context: .
+      # Opcional: 'dockerfile: NomeDoSeuDockerfile' se o seu Dockerfile
+      # não se chamar 'Dockerfile' ou não estiver na raiz do contexto.
+      # Por exemplo, se estiver em 'backend/Dockerfile', seria 'dockerfile: backend/Dockerfile'
+
+    # 'container_name' define um nome específico para o contêiner
     container_name: django_app
+
+    # 'ports' mapeia as portas do contêiner para as portas do host.
+    # "HOST_PORT:CONTAINER_PORT"
     ports:
       - "8000:8000"
+
+    # 'volumes' mapeia diretórios do host para diretórios dentro do contêiner.
+    # Isso permite que as alterações no código local sejam refletidas no contêiner.
+    # '.' mapeia o diretório atual do host para '/app' dentro do contêiner.
     volumes:
       - .:/app
+
+    # 'environment' define variáveis de ambiente para o contêiner.
+    # Substitua 'wwwwwwwwwwwwwwwwwwwwwwwwwwwww' e 'wwwwwwwww' pelas suas senhas reais.
+    environment:
+      SECRET_KEY: 'django-insecure-k^#8#26p1!^!_tk+f!gcxezrnri2e#m)9+o@=#&0iu^%8848au'
+      DEBUG: "False"
+      DATABASE_URL: 'mysql://user:password@db:3306/mydb'
+      EMAIL_HOST_USER: 'mauriciodiassilva@hotmail.com'
+      EMAIL_HOST_PASSWORD: 'EuSouoEuSou01@'
+      ALLOWED_HOSTS: 'localhost,127.0.0.1'
+
+    # 'depends_on' define a ordem de inicialização dos serviços.
+    # O serviço 'web' só iniciará depois que o serviço 'db' estiver pronto.
     depends_on:
       - db
 
+  # Serviço do banco de dados MySQL
   db:
+    # 'image' especifica a imagem Docker a ser usada para este serviço.
     image: mysql:8.0
+
+    # Nome específico para o contêiner do banco de dados
     container_name: mysql_db
+
+    # 'restart: always' garante que o contêiner será reiniciado automaticamente
+    # em caso de falha ou reinicialização do Docker.
     restart: always
+
+    # Variáveis de ambiente específicas para a configuração do MySQL.
     environment:
       MYSQL_DATABASE: mydb
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: rootpassword
+
+    # Mapeamento da porta do MySQL do contêiner para a porta do host.
     ports:
       - "3306:3306"
+
+# Você pode adicionar outras seções aqui, como 'volumes' nomeados ou 'networks'.
+# Por exemplo, para um volume persistente para o banco de dados:
+# volumes:
+#   db_data:
+
+# E então, no serviço 'db':
+# volumes:
+#   - db_data:/var/lib/mysql
+
