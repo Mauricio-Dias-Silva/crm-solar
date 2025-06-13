@@ -4,21 +4,40 @@
 {% block title %}Produtos na Categoria: {{ categoria.nome }}{% endblock %}
 
 {% block content %}
-<div class="produtos-container">
-    {% for produto in produtos %}
-    <div class="produto-item" id="produto-{{ produto.id }}">
-        {% if produto.images %}
-        <img src="{{ produto.images.0 }}" alt="{{ produto.name }}" class="produto-imagem">
-        {% else %}
-        <p>Imagem não disponível</p>
-        {% endif %}
-        <h2 class="produto-titulo">{{ produto.name }}</h2>
-        <p class="produto-descricao">{{ produto.description }}</p>
-        <p class="produto-preco">Preço: R$ {{ produto.preco|floatformat:2}}</p>
-        <a href="{% url 'produtos:adicionar_ao_carrinho' produto.id %}" class="btn-comprar">Comprar</a>
-    </div>
-    {% empty %}
-    <p>Não há produtos nesta categoria.</p>
-    {% endfor %}
+<div class="container my-4"> {# Adiciona um container Bootstrap e margem superior/inferior #}
+    <h2 class="text-center mb-4">Produtos na Categoria: <span class="text-primary">{{ categoria.nome }}</span></h2> {# Título centralizado com nome da categoria #}
+
+    {% if produtos %} {# Verifica se há produtos para evitar a div grid vazia #}
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4"> {# Grid responsivo #}
+            {% for produto in produtos %}
+                <div class="col"> {# Cada produto em uma coluna da grid #}
+                    <div class="card h-100 produto-card"> {# Card do Bootstrap, h-100 para altura igual #}
+                        {% if produto.images %}
+                            <img src="{{ produto.images.0 }}" class="card-img-top produto-img" alt="{{ produto.name }}">
+                        {% else %}
+                            <div class="produto-img d-flex align-items-center justify-content-center bg-light text-muted">
+                                <p>Imagem não disponível</p>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column"> {# Usar flex-column para alinhar conteúdo e push botões para baixo #}
+                            <h5 class="card-title mb-2"><a href="{% url 'produtos:produto_detalhe' produto.id %}" class="text-decoration-none text-dark">{{ produto.name }}</a></h5>
+                            {# Usar card-text para a descrição, com limitação de altura se necessário #}
+                            <p class="card-text text-muted mb-auto">{{ produto.description|truncatechars:100 }}</p> {# trunca a descrição se for muito longa #}
+                            <p class="card-text produto-preco mt-2">Preço: R$ {{ produto.preco|floatformat:2 }}</p>
+                            <div class="mt-auto"> {# Push button to the bottom if description is short #}
+                                <a href="{% url 'produtos:adicionar_ao_carrinho' produto.id %}" class="btn btn-primary w-100">Adicionar ao Carrinho</a>
+                                {# Botão opcional para ver detalhes, se adicionar_ao_carrinho já não for a rota de detalhes #}
+                                <a href="{% url 'produtos:produto_detalhe' produto.id %}" class="btn btn-outline-secondary w-100 mt-2">Ver Detalhes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            Não há produtos nesta categoria.
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

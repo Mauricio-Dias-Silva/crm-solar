@@ -36,10 +36,11 @@ STRIPE_SECRET_KEY = env('SECRET_KEY_STRIPE')
 SECRET_KEY = env('SECRET_KEY', default='sua-chave-secreta-padrao-para-desenvolvimento-aqui') # <--- Use env()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
+# DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
+DEBUG='True'
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
-
+# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
+ALLOWED_HOSTS=()
 # ... (o restante do seu settings.py) ...
 
 
@@ -156,16 +157,13 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-####### INÍCIO DAS CONFIGURAÇÕES DO DB SQLITE #############
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        # Mude esta linha:
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'), # <-- CORRIGIDO AQUI
+    }
+}
 
 
 
@@ -180,21 +178,21 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 # NO SEU ARQUIVO .env, você teria algo como:
 # DATABASE_URL=mysql://user:password@db:3306/mydb
 # Ou, para PostgreSQL: DATABASE_URL=postgres://user:password@host:port/dbname
-############ FIM DAS CONFIGURAÇÕES DB SQLITE ##############
+########### FIM DAS CONFIGURAÇÕES DB SQLITE ##############
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',
-        'USER': 'user',
-        'PASSWORD': 'password',
-        'HOST': 'db',  # mesmo nome do serviço no docker-compose
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'mydb',
+#         'USER': 'user',
+#         'PASSWORD': 'password',
+#         'HOST': 'db',  # mesmo nome do serviço no docker-compose
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

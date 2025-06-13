@@ -4,32 +4,94 @@
 {% block title %}Carrinho de Compras{% endblock %}
 
 {% block content %}
-<h1>Seu Carrinho de Compras</h1>
-{% if carrinho %}
-    <ul>
-        {% for produto_id, produto in carrinho.items %}
-            <li>
-                <img src="{{ produto.imagem }}" alt="{{ produto.nome }}">
-                <h2>{{ produto.nome }}</h2>
-                <p>Preço: R$ {{ produto.preco|floatformat:2 }}</p>
-                <p>Quantidade: {{ produto.quantidade }}</p>
-                <a href="{% url 'produtos:remover_do_carrinho' produto_id %}">Remover</a>
-            </li>
-        {% endfor %}
-    </ul>
-    <form method="POST" action="{% url 'produtos:criar_checkout_session' %}">
-        {% csrf_token %}
-        {% if not user.is_authenticated %}
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        {% endif %}
-        <button type="submit">Comprar</button>
-    </form>
-    <a href="{% url 'produtos:home' %}">Continuar Comprando</a>
-{% else %}
-    <p>Seu carrinho está vazio.</p>
-    <a href="{% url 'produtos:home' %}">Continuar Comprando</a>
-{% endif %}
+<div class="container my-5"> {# Container Bootstrap para centralizar e dar margem #}
+    <h1 class="mb-4 text-center">Seu Carrinho de Compras</h1>
+
+    {% if carrinho %}
+        <div class="table-responsive"> {# Torna a tabela responsiva em telas pequenas #}
+            <table class="table table-hover align-middle"> {# Tabela Bootstrap com hover e alinhamento vertical #}
+                <thead class="table-light"> {# Cabeçalho da tabela #}
+                    <tr>
+                        <th scope="col" class="text-start">Produto</th> {# Alinhei à esquerda para o nome do produto #}
+                        <th scope="col" class="text-center">Preço Unitário</th>
+                        <th scope="col" class="text-center">Quantidade</th>
+                        <th scope="col" class="text-center">Subtotal</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto_id, produto in carrinho.items %}
+                    <tr>
+                        {# Coluna do Produto: d-flex para alinhar imagem e nome lado a lado #}
+                        <td class="d-flex align-items-center py-2"> {# py-2 para padding vertical um pouco menor #}
+                            {% if produto.imagem %}
+                                {# Classes Bootstrap para tamanho da imagem #}
+                                {# w-auto para largura automática, h-auto para altura automática. Use classes de tamanho como 'w-10 h-10' (não existe) #}
+                                {# Vamos usar classes de utilidade para largura/altura fixas. #}
+                                {# Bootstrap não tem classes para width/height exatos como 60px. #}
+                                {# Mas podemos usar w-auto h-auto e controlar com style, ou usar uma classe 'ratio' para proporção. #}
+                                {# Para um tamanho fixo PEQUENO, teremos que usar estilo inline ou classes de utilidade customizadas. #}
+                                {# Mas para *apenas* Bootstrap, vamos tentar com classes de espaçamento e flexbox para simular o "pequeno". #}
+                                <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" class="img-thumbnail me-2 rounded-2" style="width: 60px; height: 60px; object-fit: cover;"> {# <--- ESTILO INLINE para tamanho fixo #}
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center bg-light text-muted me-2 rounded-2 border" style="width: 60px; height: 60px;"> {# <--- ESTILO INLINE para tamanho fixo #}
+                                    <small class="text-center">Sem Imagem</small>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-0 fs-6">{{ produto.nome }}</h5> {# fs-6 para fonte menor no nome do produto #}
+                            </div>
+                        </td>
+                        <td class="text-center fw-semibold text-body-secondary small">R$ {{ produto.preco_unitario|floatformat:2 }}</td> {# small e text-body-secondary para preço #}
+                        <td class="text-center fw-semibold text-body-secondary small">{{ produto.quantidade }}</td>
+                        <td class="text-center fw-bold text-primary">R$ {{ produto.subtotal|floatformat:2 }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'produtos:remover_do_carrinho' produto_id=produto_id %}" class="btn btn-outline-danger btn-sm">Remover</a> {# btn-outline-danger para menos impacto visual #}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-end fs-5">Total:</th> {# fs-5 para fonte no total #}
+                        <td colspan="2" class="text-start fs-4 text-primary fw-bold">R$ {{ total_carrinho|floatformat:2 }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div> {# Fim table-responsive #}
+
+        <div class="row justify-content-between align-items-center mt-4">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <a href="{% url 'produtos:home' %}" class="btn btn-outline-secondary btn-lg w-100">
+                    <i class="bi bi-arrow-left"></i> Continuar Comprando
+                </a>
+            </div>
+            <div class="col-md-6">
+                <form method="POST" action="{% url 'produtos:criar_checkout_session' %}" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% if not user.is_authenticated %}
+                        <div class="mb-3">
+                            <label for="email" class="form-label visually-hidden">Email:</label>
+                            <input type="email" id="email" name="email" class="form-control form-control-lg" placeholder="Seu e-mail (obrigatório para convidados)" required>
+                            <div class="invalid-feedback">
+                                Por favor, insira um e-mail válido.
+                            </div>
+                        </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-credit-card"></i> Finalizar Compra
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="alert alert-info text-center my-5" role="alert">
+            Seu carrinho está vazio.
+            <div class="mt-3">
+                <a href="{% url 'produtos:home' %}" class="btn btn-primary btn-lg">Continuar Comprando</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
-
-

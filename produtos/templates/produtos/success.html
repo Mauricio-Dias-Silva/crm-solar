@@ -1,22 +1,49 @@
+{# produtos/templates/produtos/success.html #}
 {% extends 'produtos/base.html' %}
-
 {% load static %}
 
-{% block title %}Compra Realizada com Sucesso{% endblock %}
+{% block title %}Compra Concluída com Sucesso!{% endblock %}
 
 {% block content %}
-<h1>Compra Realizada com Sucesso</h1>
-<p>Obrigado por sua compra! Por favor, envie os arquivos para os itens comprados.</p>
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+        <h1 class="display-4 fw-bold mt-3">Compra Concluída com Sucesso!</h1>
+        <p class="lead text-muted">Seu pedido #<strong class="text-dark">{{ pedido.id }}</strong> foi registrado.</p>
+        <p class="lead">Agradecemos sua preferência! Um e-mail de confirmação com os detalhes da compra será enviado para <strong class="text-dark">{{ pedido.email_cliente }}</strong> em breve.</p>
+    </div>
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {% for form, item in form_item_pairs %}
-        <h3>Enviar arquivo para: {{ item.nome }}</h3>
-        {{ form.as_p }}
-    {% endfor %}
-    <button type="submit">Enviar Arquivos</button>
-</form>
+    <hr class="my-5">
 
-<a href="{% url 'produtos:home' %}">Voltar para a Página Inicial</a>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="text-center mb-4 text-primary">Detalhes do Seu Pedido</h2>
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Pedido ID: {{ pedido.id }} <span class="badge bg-secondary ms-2">{{ pedido.status|capfirst }}</span></h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for item in itens %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ item.quantidade }} x {{ item.nome }}</h6>
+                            <small class="text-muted">R$ {{ item.preco_unitario|floatformat:2 }} por unidade</small>
+                        </div>
+                        <span class="fw-bold">R$ {{ item.subtotal|floatformat:2 }}</span>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light fw-bold fs-5">
+                        <span>Total do Pedido:</span>
+                        <span class="text-success">R$ {{ pedido.total|floatformat:2 }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
+    <div class="text-center mt-5">
+        <a href="{% url 'produtos:home' %}" class="btn btn-primary btn-lg">Explorar mais Produtos</a>
+        <a href="{% url 'produtos:contact' %}" class="btn btn-outline-secondary btn-lg ms-3">Precisa de Ajuda?</a>
+    </div>
+</div>
 {% endblock %}
