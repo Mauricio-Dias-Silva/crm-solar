@@ -261,6 +261,29 @@
             </div>
         </div>
 
+        <!-- Usuários -->
+        {% if user.is_superuser %}
+        <div class="menu-item" onclick="toggleSubMenu('usuarios')">
+            <img src="https://img.icons8.com/ios-filled/24/ffffff/admin-settings-male.png" alt="Usuários" class="icon">
+            <span>Usuários</span>
+            <img src="https://img.icons8.com/ios-filled/16/ffffff/expand-arrow--v1.png" alt="Expandir" class="icon">
+        </div>
+        <div id="usuarios" class="submenu">
+            <div class="menu-item">
+                <a href="{% url 'crm:lista_usuarios' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/list.png" alt="Lista Usuários" class="icon">
+                    <span>Listar Usuários</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'crm:cadastrar_usuario' %}">
+                    <img src="https://img.icons8.com/ios-glyphs/24/ffffff/plus-math.png" alt="Novo Usuário" class="icon">
+                    <span>Novo Usuário</span>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Licença -->
         <div class="menu-item">
             <a href="#">

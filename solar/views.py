@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.utils.dateparse import parse_date
 from django.contrib.auth.hashers import check_password
 import json
+from .forms import UsuarioCreateForm 
 
 
 # Tela inicial de login
@@ -415,3 +416,88 @@ def painel_cliente(request):
         'cliente': cliente,
         'projetos_data': projetos_data
     })
+
+# -------- CRUD DE USUÁRIOS --------
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User # Modelo padrão de usuário do Django
+from django.contrib.auth.decorators import login_required, user_passes_test # Decoradores de autenticação
+from django.urls import reverse # Para reverter URLs
+
+# --- Funções Auxiliares ---
+# Esta função é usada pelo decorador @user_passes_test
+def is_admin(user):
+    """
+    Verifica se o usuário é um administrador (is_staff).
+    Necessário para o decorador @user_passes_test.
+    """
+    return user.is_authenticated and user.is_staff
+
+# --- Views do seu aplicativo 'solar' ---
+
+@login_required # Garante que o usuário esteja logado
+@user_passes_test(is_admin) # Garante que apenas admins possam acessar
+def lista_usuarios(request):
+    """
+    Exibe uma lista de todos os usuários registrados no sistema.
+    Apenas administradores logados podem acessar.
+    """
+    usuarios = User.objects.all().order_by('username') # Busca todos os usuários, ordenados pelo nome de usuário
+    return render(request, 'solar/lista_usuarios.html', {'usuarios': usuarios})
+
+@login_required
+@user_passes_test(is_admin)
+def cadastrar_usuario(request):
+    if request.method == 'POST':
+        form = UsuarioCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Usuário cadastrado com sucesso!')
+            return redirect('crm:lista_usuarios')
+        else:
+            messages.error(request, 'Corrija os erros abaixo.')
+    else:
+        form = UsuarioCreateForm()
+    return render(request, 'solar/cadastrar_usuario.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def editar_usuario(request, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    if request.method == 'POST':
+        form = UsuarioUpdateForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Usuário atualizado com sucesso!')
+            return redirect('crm:lista_usuarios')
+        else:
+            messages.error(request, 'Corrija os erros abaixo.')
+    else:
+        form = UsuarioUpdateForm(instance=usuario)
+    return render(request, 'solar/editar_usuario.html', {'form': form, 'usuario': usuario})
+
+@login_required
+@user_passes_test(is_admin)
+def resetar_senha_usuario(request, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    if request.method == "POST":
+        form = SetPasswordForm(usuario, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Senha redefinida com sucesso!')
+            return redirect('crm:lista_usuarios')
+        else:
+            messages.error(request, 'Corrija os erros abaixo.')
+    else:
+        form = SetPasswordForm(usuario)
+    return render(request, "solar/resetar_senha_usuario.html", {"form": form, "usuario": usuario})
+
+@login_required
+@user_passes_test(is_admin)
+def excluir_usuario(request, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    if request.method == "POST":
+        usuario.delete()
+        messages.success(request, 'Usuário excluído com sucesso!')
+        return redirect('crm:lista_usuarios')
+    return render(request, "solar/confirmar_excluir_usuario.html", {"usuario": usuario})

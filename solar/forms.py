@@ -99,3 +99,12 @@ class LancamentoFinanceiroForm(forms.ModelForm):
     class Meta:
         model = LancamentoFinanceiro
         fields = '__all__'
+
+from django import forms
+from django.contrib.auth.forms import UserCreationForm # Para formulário de criação de usuário padrão
+from django.contrib.auth.models import User # Se você precisar de acesso direto ao modelo User
+
+class UsuarioCreateForm(UserCreationForm): # Herdando de UserCreationForm para criar usuários
+    class Meta(UserCreationForm.Meta):
+        model = User # Usando o modelo de usuário padrão do Django
+        fields = UserCreationForm.Meta.fields + ('email',) # Exemplo: adicionando o campo 'email'
