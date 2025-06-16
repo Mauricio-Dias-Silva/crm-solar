@@ -12,6 +12,7 @@ from django.utils.dateparse import parse_date
 from django.contrib.auth.hashers import check_password
 import json
 
+
 # Tela inicial de login
 def login_view(request):
     if request.method == "POST":

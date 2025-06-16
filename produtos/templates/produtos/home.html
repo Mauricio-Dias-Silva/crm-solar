@@ -1,50 +1,59 @@
+{# produtos/home.html #}
 {% extends 'produtos/base.html' %}
 {% load static %}
-{# REMOVA A LINHA: {% load custom_filters %} #}
 
 {% block title %}Página Inicial{% endblock %}
 
 {% block content %}
-<div class="container my-4">
+<div class="container my-5">
     <h2 class="text-center mb-5 display-5 fw-bold text-dark">Nossos Produtos por Categoria</h2>
 
-    {# Loop para exibir produtos agrupados por categoria #}
-    {% for categoria_url_key, produtos_lista in produtos_por_categoria.items %} {# Renomeei a variável para clareza #}
+    {% for categoria_url_key, produtos_lista in produtos_por_categoria.items %}
         {% if produtos_lista %}
-            {# AQUI ESTÁ A CORREÇÃO: Usando o nome formatado da categoria diretamente #}
-            <h3 class="mb-3 mt-5 text-primary border-bottom pb-2">{{ produtos_lista.0.categoria_exibicao }}</h3> 
-            
-            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+            <h3 class="mb-4 mt-5 text-primary border-bottom pb-2">{{ produtos_lista.0.categoria_exibicao }}</h3>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                 {% for produto in produtos_lista %}
                     <div class="col">
-                        <div class="card h-100 produto-card">
-                            {% if produto.images %}
-                                <img src="{{ produto.images.0 }}" class="card-img-top produto-img" alt="{{ produto.name }}">
-                            {% else %}
-                                <div class="produto-img d-flex align-items-center justify-content-center bg-light text-muted border rounded">
+                        <div class="card h-100 shadow-sm">
+                            {% for img_obj in produto.images.all|slice:"1" %}
+                                <img src="{{ img_obj.image.url }}" class="card-img-top img-fluid" alt="{{ img_obj.alt_text|default:produto.name }}">
+                            {% empty %}
+                                <div class="produto-img d-flex align-items-center justify-content-center bg-light text-muted border rounded" style="height: 200px;">
                                     <small class="text-center">Imagem não disponível</small>
                                 </div>
-                            {% endif %}
+                            {% endfor %}
+
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title mb-2"><a href="{% url 'produtos:produto_detalhe' produto.id %}" class="text-decoration-none text-dark">{{ produto.name }}</a></h5>
-                                <p class="card-text text-muted mb-auto">{{ produto.description|default:"Produto sem descrição."|truncatechars:70 }}</p>
-                                <p class="card-text text-success fw-bold fs-5 mt-2">R$ {{ produto.preco|floatformat:2 }}</p>
+                                <h5 class="card-title mb-2">
+                                    <a href="{% url 'produtos:produto_detalhe' produto.id %}" class="text-decoration-none text-dark">
+                                        {{ produto.name }}
+                                    </a>
+                                </h5>
+                                <p class="card-text text-muted mb-auto">
+                                    {{ produto.description|default:"Produto sem descrição."|truncatechars:70 }}
+                                </p>
+                                <p class="card-text text-success fw-bold fs-5 mt-2">
+                                    R$ {{ produto.preco|floatformat:2 }}
+                                </p>
                                 <div class="mt-auto">
-                                    <a href="{% url 'produtos:produto_detalhe' produto.id %}" class="btn btn-primary w-100 mt-2">Ver Detalhes</a>
+                                    <a href="{% url 'produtos:produto_detalhe' produto.id %}" class="btn btn-primary w-100 mt-2">
+                                        Ver Detalhes
+                                    </a>
                                 </div>
                             </div>
                             <div class="card-footer">
-                                {# AQUI TAMBÉM: Usando o nome formatado do próprio produto #}
                                 <small class="text-muted">Categoria: {{ produto.categoria_exibicao }}</small>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
-            {# Botão para ver todos da categoria #}
+
             <div class="text-center mt-4 mb-5">
-                {# A URL ainda usa a chave original da categoria, que é 'categoria_url_key' #}
-                <a href="{% url 'produtos:produtos_por_categoria' categoria_url_key %}" class="btn btn-outline-secondary">Ver todos em {{ produtos_lista.0.categoria_exibicao }} <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'produtos:produtos_por_categoria' categoria_url_key %}" class="btn btn-outline-secondary">
+                    Ver todos em {{ produtos_lista.0.categoria_exibicao }} <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
         {% endif %}
     {% empty %}
@@ -56,4 +65,5 @@
         </div>
     {% endfor %}
 </div>
+
 {% endblock %}

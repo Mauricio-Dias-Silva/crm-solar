@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('produtos.urls')),
     path('crm/', include('solar.urls')),
+    path('pagamento/', include('pagamento.urls', namespace='pagamento')),
     path('accounts/', include('allauth.urls')),
 ]
 
@@ -16,3 +17,4 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     # Se você tem arquivos de mídia (imagens de produtos, etc.)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

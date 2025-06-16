@@ -1,96 +1,98 @@
+{# produtos/templates/produtos/carrinho.html #}
 {% extends 'produtos/base.html' %}
 {% load static %}
 
-{% block title %}Carrinho de Compras{% endblock %}
+{% block title %}Meu Carrinho{% endblock %}
 
 {% block content %}
-<div class="container my-5"> {# Container Bootstrap para centralizar e dar margem #}
-    <h1 class="mb-4 text-center">Seu Carrinho de Compras</h1>
+<div class="container my-4">
+    <h2 class="text-center mb-5 display-5 fw-bold text-dark">Meu Carrinho</h2>
 
-    {% if carrinho %}
-        <div class="table-responsive"> {# Torna a tabela responsiva em telas pequenas #}
-            <table class="table table-hover align-middle"> {# Tabela Bootstrap com hover e alinhamento vertical #}
-                <thead class="table-light"> {# Cabeçalho da tabela #}
-                    <tr>
-                        <th scope="col" class="text-start">Produto</th> {# Alinhei à esquerda para o nome do produto #}
-                        <th scope="col" class="text-center">Preço Unitário</th>
-                        <th scope="col" class="text-center">Quantidade</th>
-                        <th scope="col" class="text-center">Subtotal</th>
-                        <th scope="col" class="text-center">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for produto_id, produto in carrinho.items %}
-                    <tr>
-                        {# Coluna do Produto: d-flex para alinhar imagem e nome lado a lado #}
-                        <td class="d-flex align-items-center py-2"> {# py-2 para padding vertical um pouco menor #}
-                            {% if produto.imagem %}
-                                {# Classes Bootstrap para tamanho da imagem #}
-                                {# w-auto para largura automática, h-auto para altura automática. Use classes de tamanho como 'w-10 h-10' (não existe) #}
-                                {# Vamos usar classes de utilidade para largura/altura fixas. #}
-                                {# Bootstrap não tem classes para width/height exatos como 60px. #}
-                                {# Mas podemos usar w-auto h-auto e controlar com style, ou usar uma classe 'ratio' para proporção. #}
-                                {# Para um tamanho fixo PEQUENO, teremos que usar estilo inline ou classes de utilidade customizadas. #}
-                                {# Mas para *apenas* Bootstrap, vamos tentar com classes de espaçamento e flexbox para simular o "pequeno". #}
-                                <img src="{{ produto.imagem }}" alt="{{ produto.nome }}" class="img-thumbnail me-2 rounded-2" style="width: 60px; height: 60px; object-fit: cover;"> {# <--- ESTILO INLINE para tamanho fixo #}
-                            {% else %}
-                                <div class="d-flex align-items-center justify-content-center bg-light text-muted me-2 rounded-2 border" style="width: 60px; height: 60px;"> {# <--- ESTILO INLINE para tamanho fixo #}
-                                    <small class="text-center">Sem Imagem</small>
-                                </div>
+    {% if itens_carrinho %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Produto</th>
+                    <th scope="col">Preço Unitário</th>
+                    <th scope="col">Quantidade</th>
+                    <th scope="col">Subtotal</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens_carrinho %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            {% if item.produto.images %}
+                                {# Acessa a primeira imagem do produto real (objeto Produto) #}
+                                {% with first_image=item.produto.images.first %}
+                                {% if first_image %}
+                                    <img src="{{ first_image.image.url }}" alt="{{ item.produto.name }}" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                {% endif %}
+                                {% endwith %}
                             {% endif %}
-                            <div>
-                                <h5 class="mb-0 fs-6">{{ produto.nome }}</h5> {# fs-6 para fonte menor no nome do produto #}
-                            </div>
-                        </td>
-                        <td class="text-center fw-semibold text-body-secondary small">R$ {{ produto.preco_unitario|floatformat:2 }}</td> {# small e text-body-secondary para preço #}
-                        <td class="text-center fw-semibold text-body-secondary small">{{ produto.quantidade }}</td>
-                        <td class="text-center fw-bold text-primary">R$ {{ produto.subtotal|floatformat:2 }}</td>
-                        <td class="text-center">
-                            <a href="{% url 'produtos:remover_do_carrinho' produto_id=produto_id %}" class="btn btn-outline-danger btn-sm">Remover</a> {# btn-outline-danger para menos impacto visual #}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="3" class="text-end fs-5">Total:</th> {# fs-5 para fonte no total #}
-                        <td colspan="2" class="text-start fs-4 text-primary fw-bold">R$ {{ total_carrinho|floatformat:2 }}</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div> {# Fim table-responsive #}
-
-        <div class="row justify-content-between align-items-center mt-4">
-            <div class="col-md-6 mb-3 mb-md-0">
-                <a href="{% url 'produtos:home' %}" class="btn btn-outline-secondary btn-lg w-100">
-                    <i class="bi bi-arrow-left"></i> Continuar Comprando
-                </a>
-            </div>
-            <div class="col-md-6">
-                <form method="POST" action="{% url 'produtos:criar_checkout_session' %}" class="needs-validation" novalidate>
-                    {% csrf_token %}
-                    {% if not user.is_authenticated %}
-                        <div class="mb-3">
-                            <label for="email" class="form-label visually-hidden">Email:</label>
-                            <input type="email" id="email" name="email" class="form-control form-control-lg" placeholder="Seu e-mail (obrigatório para convidados)" required>
-                            <div class="invalid-feedback">
-                                Por favor, insira um e-mail válido.
-                            </div>
+                            <a href="{% url 'produtos:produto_detalhe' item.produto.id %}" class="text-decoration-none text-dark fw-bold">{{ item.produto.name }}</a>
                         </div>
-                    {% endif %}
-                    <button type="submit" class="btn btn-success btn-lg w-100">
-                        <i class="bi bi-credit-card"></i> Finalizar Compra
-                    </button>
+                    </td>
+                    <td>R$ {{ item.produto.preco|floatformat:2 }}</td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>R$ {{ item.subtotal|floatformat:2 }}</td>
+                    <td>
+                        {# Futuramente: botões para aumentar/diminuir quantidade ou remover item #}
+                        <form action="{% url 'produtos:remover_do_carrinho' item.produto.id %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-end">Total do Carrinho:</th>
+                    <th colspan="2">R$ {{ total_carrinho|floatformat:2 }}</th>
+                </tr>
+            </tfoot>
+        </table>
+
+        {# --- SEÇÃO PARA FINALIZAR COMPRA (AUTENTICADO OU CONVIDADO) --- #}
+        {% if not request.user.is_authenticated %}
+        {# Formulário para CONVIDADOS #}
+        <div class="card mb-4">
+            <div class="card-header">
+                Detalhes para a Compra (Convidado)
+            </div>
+            <div class="card-body">
+                <p>Por favor, informe seu e-mail para continuar a compra. Você não precisa se registrar.</p>
+                <form method="POST" action="{% url 'pagamento:criar_checkout_session' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="email_convidado" class="form-label">Seu E-mail:</label>
+                        <input type="email" class="form-control" id="email_convidado" name="email" required placeholder="exemplo@dominio.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="nome_convidado" class="form-label">Seu Nome (Opcional):</label>
+                        <input type="text" class="form-control" id="nome_convidado" name="nome_convidado" placeholder="Nome Completo">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Finalizar Compra</button>
                 </form>
             </div>
         </div>
+        {% else %}
+        {# Formulário para USUÁRIOS AUTENTICADOS #}
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+            <a href="{% url 'produtos:home' %}" class="btn btn-secondary me-md-2">Continuar Comprando</a>
+            <form method="POST" action="{% url 'pagamento:criar_checkout_session' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Finalizar Compra ({{ request.user.email }})</button>
+            </form>
+        </div>
+        {% endif %}
 
     {% else %}
-        <div class="alert alert-info text-center my-5" role="alert">
-            Seu carrinho está vazio.
-            <div class="mt-3">
-                <a href="{% url 'produtos:home' %}" class="btn btn-primary btn-lg">Continuar Comprando</a>
-            </div>
+        <div class="alert alert-info text-center" role="alert">
+            Seu carrinho está vazio. <a href="{% url 'produtos:home' %}" class="alert-link">Comece a adicionar produtos!</a>
         </div>
     {% endif %}
 </div>

@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'solar',
     'widget_tweaks',
     'produtos',
+    'pagamento',
     'django_admin_logs',
     'django.contrib.sites',
     'allauth',

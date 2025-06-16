@@ -3,6 +3,8 @@ from django.contrib.auth import views as auth_views
 from . import views
 from django.shortcuts import redirect
 
+
+
 app_name = 'crm'
 
 urlpatterns = [
