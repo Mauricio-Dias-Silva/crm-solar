@@ -32,11 +32,11 @@ STRIPE_SECRET_KEY = env('SECRET_KEY_STRIPE')
 SECRET_KEY = env('SECRET_KEY', default='sua-chave-secreta-padrao-para-desenvolvimento-aqui') # <--- Use env()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
-DEBUG='True'
+DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
+# DEBUG='True'
 
-# ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
-ALLOWED_HOSTS=()
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
+# ALLOWED_HOSTS=()
 # ... (o restante do seu settings.py) ...
 
 SITE_ID = 1

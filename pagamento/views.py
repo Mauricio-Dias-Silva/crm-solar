@@ -82,18 +82,21 @@ def criar_checkout_session(request):
 
             print(f"DEBUG: Processando item para Stripe: {item_data['nome']}, Preço: {preco_em_centavos}, Qtd: {quantidade_item}, Imagens: {item_images}")
 
-            line_items.append({
-                'price_data': {
-                    'currency': 'brl',
-                    'product_data': {
-                        'name': item_data['nome'],
-                        'description': item_description,
-                        'images': item_images,
-                    },
-                    'unit_amount': preco_em_centavos,
-                },
-                'quantity': quantidade_item,
-            })
+            line_items = []
+            for item in carrinho.values():
+                image_url = request.build_absolute_uri(item['imagem'])
+                line_items.append({
+                    'price_data': {
+                        'currency': 'brl',
+                        'unit_amount': int(item['preco_unitario'] * 100),
+                        'product_data': {
+                        'name': item['nome'],
+                        'images': [image_url],
+                     },
+                 },
+                    'quantity': item['quantidade'],
+    })
+
             total_pedido_calculado += item_data['subtotal']
 
         except Exception as e: # Captura KeyErrors e outros erros aqui
