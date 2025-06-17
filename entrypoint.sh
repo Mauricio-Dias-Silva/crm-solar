@@ -16,6 +16,7 @@ python manage.py migrate
 echo "Coletando arquivos estáticos..."
 python manage.py collectstatic --noinput
 
+
 # Cria o superusuário automaticamente se não existir
 echo "Verificando superusuário..."
 python manage.py shell <<EOF

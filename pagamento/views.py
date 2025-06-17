@@ -136,8 +136,9 @@ def criar_checkout_session(request):
             line_items=line_items,
             mode='payment',
             customer=customer_stripe_id,
-            success_url=request.build_absolute_uri(reverse('pagamento:compra_sucesso')) + '?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url=request.build_absolute_uri(reverse('pagamento:pagamento_cancelado')),
+            success_url = request.build_absolute_uri(reverse('pagamento:compra_sucesso')) + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url = request.build_absolute_uri(reverse('pagamento:pagamento_cancelado'))
+
         )
         print(f"DEBUG: Sessão de checkout Stripe criada com sucesso: {checkout_session.id}")
 

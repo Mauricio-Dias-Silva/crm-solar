@@ -58,10 +58,11 @@ urlpatterns = [
     path('financeiro/dashboard/', views.dashboard_financeiro, name='dashboard_financeiro'),
 
     # Área do Cliente
-    path('progresso/', lambda request: redirect('login_cliente')),  # redireciona se acessar apenas /cliente/
+    path('progresso/', lambda request: redirect('produtos:login')), 
     path('progresso/login/', views.login_cliente, name='login_cliente'),
     path('progresso/logout/', views.logout_cliente, name='logout_cliente'),
     path('progresso/painel/', views.painel_cliente, name='painel_cliente'),
+    
 
     # Logout (opcional, usando view padrão do Django)
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

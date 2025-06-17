@@ -22,14 +22,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 env = environ.Env() # <--- Crie uma instância de Env
 
-
 # Read .env file from the project root (where manage.py is)
 # BASE_DIR é 'C:/Users/Mauricio/Desktop/crmsolar'
 env.read_env(os.path.join(BASE_DIR, '.env')) # <--- Lê o arquivo .env
 # --- FIM DA CONFIGURAÇÃO COM DJANGO-ENVIRON --
-
-
-
 
 STRIPE_SECRET_KEY = env('SECRET_KEY_STRIPE')
 
@@ -43,7 +39,7 @@ DEBUG='True'
 ALLOWED_HOSTS=()
 # ... (o restante do seu settings.py) ...
 
-
+SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
@@ -139,7 +135,6 @@ EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL', default=False)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD') # Aqui virá a senha de aplicativo
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
-
 
 
 

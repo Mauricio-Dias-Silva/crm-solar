@@ -1,33 +1,4 @@
-# services:
-#   web:  
-#    environment: # <--- Define as variáveis diretamente no contêiner
-#       SECRET_KEY: 'django-insecure-k^#8#26p1!^!_tk+f!gcxezrnri2e#m)9+o@=#&0iu^%8848au'
-#       DEBUG: "False"
-#       DATABASE_URL: 'mysql://user:password@db:3306/mydb'
-#       EMAIL_HOST_USER: 'mauriciodiassilva@hotmail.com'
-#       EMAIL_HOST_PASSWORD: 'EuSouoEuSou01@'
-#     # ... outras configurações ...
 
-#   build: 
-#     container_name: django_app
-#     ports:
-#       - "8000:8000"
-#     volumes:
-#       - .:/app
-#     depends_on:
-#       - db
-
-#   db:
-#     image: mysql:8.0
-#     container_name: mysql_db
-#     restart: always
-#     environment:
-#       MYSQL_DATABASE: mydb
-#       MYSQL_USER: user
-#       MYSQL_PASSWORD: password
-#       MYSQL_ROOT_PASSWORD: rootpassword
-#     ports:
-#       - "3306:3306"
 
 # Define a versão da especificação Docker Compose a ser usada
 version: '3.8'

@@ -21,60 +21,51 @@
 
 </head>
 <body class="bg-light">
-    <header>
-        {# Navbar Principal #}
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <header>              
+
+     <!-- Barra de Navegação -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'produtos:home' %}">Sua Marca</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavMain" aria-controls="navbarNavMain" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-bold" href="{% url 'produtos:home' %}">Solar Shop</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNavMain">
+                <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" href="{% url 'produtos:home' %}">Home</a></li>
-                        
-                        {# --- NAVBAR DROPDOWN DE CATEGORIAS (MANTIDO) --- #}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCategories" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Categorias
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownCategories">
-                                {% for categoria in categorias_ativas %}
-                                    <li><a class="dropdown-item" href="{% url 'produtos:produtos_por_categoria' categoria.nome_url %}">{{ categoria.nome_exibicao }}</a></li>
-                                {% empty %}
-                                    <li><span class="dropdown-item text-muted">Nenhuma categoria ativa.</span></li>
-                                {% endfor %}
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'produtos:home' %}">Ver Todos os Produtos</a></li>
-                            </ul>
-                        </li>
+                         {# --- NAVBAR DROPDOWN DE CATEGORIAS (MANTIDO) --- #}
+                    
                         {# --- FIM DO NAVBAR DROPDOWN --- #}
-
                         <li class="nav-item"><a class="nav-link" href="{% url 'produtos:contact' %}">Contato</a></li>
-                        {% if user.is_staff %}
+                        {% comment %} {% if user.is_staff %}
                           <li class="nav-item"><a class="nav-link" href="https://dashboard.stripe.com" target="_blank">Dashboard Stripe</a></li>
-                        {% endif %}
+                        {% endif %} {% endcomment %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'produtos:about' %}">Sobre</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'crm:home' %}">Dashboard CRM</a></li> 
-                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'produtos:ver_carrinho' %}"><i class="bi bi-cart"></i> Carrinho</a></li>?
-                        <li class="nav-item ms-lg-auto">
-                            <form action="{% url 'produtos:search' %}" method="get" class="d-flex">
-                                <input type="text" name="q" placeholder="Pesquisar produtos..." class="form-control form-control-sm me-2">
-                                <button type="submit" class="btn btn-outline-light btn-sm">Buscar</button>
-                            </form>
-                        </li>
-                        
+
+                        <li class="nav-item"><a class="nav-link" href="/crm/progresso/">Acompanhar Minha Obra</a></li>
+
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'produtos:ver_carrinho' %}"><i class="bi bi-cart"></i> Carrinho</a></li>
+                    </ul>
+                    <form action="{% url 'produtos:search' %}" method="get" class="d-flex mx-2" style="max-width:350px; width:100%;">
+                        <input type="text" name="q" placeholder="Pesquisar produtos..." class="form-control me-2" aria-label="Pesquisar produtos">
+                        <button type="submit" class="btn btn-outline-success">Buscar</button>
+                    </form>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         {% if user.is_authenticated %}
                             <li class="nav-item">
                                 <form action="{% url 'produtos:logout' %}" method="post" class="nav-link p-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-link nav-link text-white">Logout</button>
+                                    <button type="submit" class="btn btn-link">Logout</button>
                                 </form>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'crm:home' %}">Área Restrita</a>
+                            </li>
                         {% else %}
-                            <li class="nav-item"><a class="nav-link text-white" href="{% url 'produtos:login' %}">Login</a></li>
-                            
+                            <li class="nav-item"><a class="nav-link" href="{% url 'produtos:login' %}">Login</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'crm:home' %}">Área Restrita</a></li>
                         {% endif %}
+                            
                     </ul>
                 </div>
             </div>
@@ -95,9 +86,6 @@
                                 <a class="nav-link text-dark fw-bold px-3 py-2" href="{% url 'produtos:produtos_por_categoria' categoria.nome_url %}">{{ categoria.nome_exibicao }}</a> {# Ajustei o padding e a cor do texto #}
                             </li>
                         {% endfor %}
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-bold px-3 py-2" href="{% url 'produtos:home' %}">Todos os Produtos</a>
-                        </li>
                     </ul>
                 </div>
             </div>
