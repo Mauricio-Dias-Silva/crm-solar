@@ -21,7 +21,7 @@ def criar_checkout_session(request):
 
     if not carrinho:
         messages.error(request, "Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.")
-        print("ERRO DEBUG: Carrinho vazio. Redirecionando para ver_carrinho.")
+    
         return redirect('produtos:ver_carrinho')
 
     line_items = []
@@ -234,15 +234,14 @@ def compra_sucesso(request):
         if 'carrinho' in request.session:
             del request.session['carrinho']
             request.session.modified = True
-            messages.success(request, "Seu carrinho foi limpo com sucesso!")
-        
-       
+ 
+      
         if pedido.status == 'pendente':
           
             pedido.status = 'pago'
             pedido.data_pagamento = timezone.now()
             pedido.save()
-            messages.info(request, "Status do pedido atualizado (fallback da view de sucesso).")
+        
 
         messages.success(request, f"Sua compra (Pedido #{pedido.id}) foi realizada com sucesso! Um e-mail de confirmação será enviado.")
         return render(request, 'pagamento/compra_sucesso.html', {

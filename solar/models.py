@@ -27,9 +27,9 @@ class Cliente(models.Model):
     telefone = models.CharField(max_length=20, validators=[validar_telefone])
     endereco = models.TextField()
     cnpj = models.CharField(max_length=18, unique=True, null=True, blank=True, validators=[validar_cnpj])
-    cpf = models.CharField(max_length=11, null=True, blank=True, validators=[validar_cpf])
+    cpf = models.CharField(max_length=11, unique=True, null=True, blank=True, validators=[validar_cpf])
+    possui_whatsapp = models.BooleanField(default=False)  # NOVO CAMPO
     data_cadastro = models.DateTimeField(auto_now_add=True)
-
     id_acesso = models.CharField(max_length=20, unique=True, null=True, blank=True)
     senha_acesso = models.CharField(max_length=128, null=True, blank=True)
 
@@ -130,3 +130,43 @@ class LancamentoFinanceiro(models.Model):
 
     def __str__(self):
         return f'{self.tipo.title()} - {self.valor} ({self.projeto.nome})'
+
+# =============== MODELOS DE USUÁRIO, DEPARTAMENTO, MENU =================
+
+from django.contrib.auth.models import AbstractUser, Group, Permission
+
+class Departamento(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nome
+
+class MenuPermissao(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+    rota = models.CharField(max_length=100, help_text="Exemplo: /clientes/ ou nome da URL Django")
+    def __str__(self):
+        return self.nome
+
+class Usuario(AbstractUser):
+    departamento = models.ForeignKey('Departamento', on_delete=models.SET_NULL, null=True, blank=True)
+    permissoes_menu = models.ManyToManyField('MenuPermissao', blank=True)
+
+    # Estes campos mantêm compatibilidade com grupos/permissões Django Admin
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name='groups',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        related_name="usuario_set",  # nome único
+        related_query_name="usuario",
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name='user permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_name="usuario_set",  # nome único
+        related_query_name="usuario",
+    )
+
+    def __str__(self):
+        return self.get_full_name() or self.username

@@ -30,15 +30,15 @@
                         <td>{{ cliente.email }}</td>
                         <td>{{ cliente.telefone }}</td>
                         <td class="text-end">
-                            <a href="{% url 'detalhe_cliente' cliente.id %}" class="btn btn-sm btn-outline-info me-1">
+                            <a href="{% url 'crm:detalhe_cliente' cliente.id %}" class="btn btn-sm btn-outline-info me-1">
                                 <img src="https://img.icons8.com/ios-glyphs/20/visible.png" alt="Detalhes" class="me-1">
                                 Detalhes
                             </a>
-                            <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-sm btn-outline-warning me-1">
+                            <a href="{% url 'crm:editar_cliente' cliente.id %}" class="btn btn-sm btn-outline-warning me-1">
                                 <img src="https://img.icons8.com/ios-filled/20/edit.png" alt="Editar" class="me-1">
                                 Editar
                             </a>
-                            <a href="{% url 'excluir_cliente' cliente.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
+                            <a href="{% url 'crm:excluir_cliente' cliente.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
                                 <img src="https://img.icons8.com/ios-glyphs/20/filled-trash.png" alt="Excluir" class="me-1">
                                 Excluir
                             </a>
