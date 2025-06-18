@@ -1,0 +1,29 @@
+{9% extends "base.html" %} {# Certifique-se de que base.html existe #}
+
+{% load static %} 
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Pagamento</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Exemplo de CSS #}
+</head>
+<body>
+    <h1>Detalhes do seu Pedido</h1>
+    <p>Valor total: R$ {{ valor_total }}</p>
+
+    {% if init_point %}
+        <p>Clique no botão abaixo para ir para o Mercado Pago:</p>
+        <a href="{{ init_point }}" class="btn btn-primary">Pagar com Mercado Pago</a>
+    {% else %}
+        <p>Erro ao gerar o link de pagamento. Tente novamente mais tarde.</p>
+    {% endif %}
+
+    {# Se for Checkout Transparente, aqui entrariam os campos do cartão e o SDK do Mercado Pago #}
+
+    <script src="{% static 'js/script.js' %}"></script> {# Exemplo de JS #}
+</body>
+</html>

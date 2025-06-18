@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'pagamento',
     'django_admin_logs',
     'django.contrib.sites',
+    'mercadopago',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
