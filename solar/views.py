@@ -12,6 +12,9 @@ from django.utils.dateparse import parse_date
 from django.contrib.auth.hashers import check_password
 import json
 from .forms import UsuarioCreateForm 
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.urls import reverse #
 
 
 # Tela inicial de login
@@ -419,30 +422,18 @@ def painel_cliente(request):
 
 # -------- CRUD DE USUÁRIOS --------
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User # Modelo padrão de usuário do Django
-from django.contrib.auth.decorators import login_required, user_passes_test # Decoradores de autenticação
-from django.urls import reverse # Para reverter URLs
 
-# --- Funções Auxiliares ---
-# Esta função é usada pelo decorador @user_passes_test
 def is_admin(user):
-    """
-    Verifica se o usuário é um administrador (is_staff).
-    Necessário para o decorador @user_passes_test.
-    """
+ 
     return user.is_authenticated and user.is_staff
 
 # --- Views do seu aplicativo 'solar' ---
 
-@login_required # Garante que o usuário esteja logado
-@user_passes_test(is_admin) # Garante que apenas admins possam acessar
+@login_required 
+@user_passes_test(is_admin) 
 def lista_usuarios(request):
-    """
-    Exibe uma lista de todos os usuários registrados no sistema.
-    Apenas administradores logados podem acessar.
-    """
-    usuarios = User.objects.all().order_by('username') # Busca todos os usuários, ordenados pelo nome de usuário
+    
+    usuarios = User.objects.all().order_by('username')
     return render(request, 'solar/lista_usuarios.html', {'usuarios': usuarios})
 
 @login_required
