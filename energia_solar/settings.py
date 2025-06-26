@@ -33,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY', default='sua-chave-secreta-padrao-para-desenvolvi
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
-# DEBUG='True'
+DEBUG='True'
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
 # ALLOWED_HOSTS=()
@@ -224,8 +224,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configurações de arquivos estáticos
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
