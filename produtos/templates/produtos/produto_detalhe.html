@@ -9,13 +9,13 @@
         <div class="col-md-6 mb-4 mb-md-0">
             <div class="card shadow-sm h-100">
                 <div class="card-body p-0">
-                    {% if produto.images %}
-                        <img src="{{ produto.images.0 }}" alt="{{ produto.name }}" class="img-fluid rounded">
-                    {% else %}
-                        <div class="d-flex align-items-center justify-content-center bg-light text-muted" style="min-height: 400px; width: 100%;">
-                            <p>Imagem não disponível</p>
-                        </div>
-                    {% endif %}
+            {% if imagem_para_exibir %} 
+                <img src="{{ imagem_para_exibir.image.url }}" alt="{{ imagem_para_exibir.alt_text|default:produto.name }}" class="img-fluid rounded">
+            {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-light text-muted" style="min-height: 400px; width: 100%;">
+                    <p>Imagem não disponível</p>
+                </div>
+            {% endif %}
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
             <div class="produto-info-container">
                 <h1 class="display-5 mb-3">{{ produto.name }}</h1>
                 <p class="lead text-success mb-3">Preço: R$ {{ produto.preco|floatformat:2 }}</p>
-                
+
                 <h3 class="mt-4 mb-2">Descrição:</h3>
                 <p class="text-muted">{{ produto.description|default:"Nenhuma descrição disponível." }}</p>
 
@@ -33,14 +33,14 @@
                 <form method="POST" action="{% url 'produtos:adicionar_ao_carrinho' produto.id %}" class="mt-4">
                     {% csrf_token %}
                     <input type="hidden" name="produto_id" value="{{ produto.id }}">
-                    
+
                     <div class="mb-3">
                         <label for="quantidade" class="form-label">Quantidade:</label>
                         <input type="number" name="quantidade" id="quantidade" value="1" min="1" class="form-control w-25" required>
                     </div>
                     <button type="submit" class="btn btn-success btn-lg">Adicionar ao Carrinho</button>
                 </form>
-                
+
                 <div class="mt-4 d-flex justify-content-start gap-3">
                     <a href="{% url 'produtos:home' %}" class="btn btn-outline-secondary">Continuar Comprando</a>
                     <a href="{% url 'produtos:ver_carrinho' %}" class="btn btn-info">Ver Carrinho</a>

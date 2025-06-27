@@ -1,18 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Count
-from .models import Cliente, Projeto, Etapa, Material, Fornecedor, LancamentoFinanceiro,  DocumentoProjeto
-from .forms import ProjetoForm, ClienteForm, EtapaForm, MaterialForm, FornecedorForm, LancamentoFinanceiroForm, DocumentoProjetoForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
+from django.db.models import Count, Sum
+from .models import Cliente, Projeto, Etapa, Material, Fornecedor, LancamentoFinanceiro, DocumentoProjeto, Usuario
+from .forms import ProjetoForm, ClienteForm, EtapaForm, MaterialForm, FornecedorForm, LancamentoFinanceiroForm, DocumentoProjetoForm, UsuarioCreateForm, UsuarioUpdateForm
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.utils.dateparse import parse_date
 from django.contrib.auth.hashers import check_password
 import json
-from .forms import UsuarioCreateForm 
-
 
 # Tela inicial de login
 def login_view(request):
@@ -24,9 +22,12 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Redireciona para a página inicial após login
+                return redirect('/crm')
+            else:
+                # Usuário/senha errados, mesmo que campos estejam OK
+                messages.error(request, 'Usuário ou senha inválidos!')
         else:
-            messages.error(request, 'Credenciais inválidas')
+            messages.error(request, 'Preencha todos os campos corretamente!')
     else:
         form = AuthenticationForm()
     return render(request, 'solar/login.html', {'form': form})
@@ -74,7 +75,7 @@ def upload_documento_projeto(request, projeto_id):
             doc.projeto = projeto
             doc.save()
             messages.success(request, 'Documento enviado com sucesso!')
-            return redirect('detalhe_projeto', pk=projeto.id)
+            return redirect('crm:detalhe_projeto', pk=projeto.id)
         else:
             messages.error(request, 'Erro ao enviar documento. Verifique os campos.')
     else:
@@ -89,7 +90,7 @@ def excluir_documento_projeto(request, projeto_id, doc_id):
         doc.arquivo.delete()  # Exclui o arquivo físico da pasta /media/
         doc.delete()          # Exclui o registro do banco
         messages.success(request, 'Documento excluído com sucesso!')
-        return redirect('detalhe_projeto', pk=projeto.id)
+        return redirect('crm:detalhe_projeto', pk=projeto.id)
     # Renderiza confirmação simples
     return render(request, 'solar/confirmar_exclusao_documento.html', {'documento': doc, 'projeto': projeto})
 
@@ -125,7 +126,7 @@ def cadastrar_projeto(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Projeto cadastrado com sucesso!')
-            return redirect('lista_projetos')
+            return redirect('crm:lista_projetos')
         else:
             messages.error(request, 'Erro ao cadastrar projeto. Verifique os campos.')
     else:
@@ -141,7 +142,7 @@ def editar_projeto(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Projeto atualizado com sucesso!')
-            return redirect('detalhe_projeto', pk=projeto.pk)
+            return redirect('crm:detalhe_projeto', pk=projeto.pk)
         else:
             messages.error(request, 'Erro ao atualizar projeto. Verifique os campos.')
     else:
@@ -154,7 +155,7 @@ def excluir_projeto(request, pk):
     if request.method == 'POST':
         projeto.delete()
         messages.success(request, 'Projeto excluído com sucesso!')
-        return redirect('lista_projetos')
+        return redirect('crm:lista_projetos')
     return render(request, 'solar/confirmar_exclusao_projeto.html', {'projeto': projeto})
 
 # Cadastrar cliente
@@ -165,7 +166,7 @@ def cadastrar_cliente(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Cliente cadastrado com sucesso!')
-            return redirect('lista_clientes')
+            return redirect('crm:lista_clientes')
         else:
             messages.error(request, 'Erro ao cadastrar cliente. Verifique os campos.')
     else:
@@ -181,7 +182,7 @@ def editar_cliente(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Cliente atualizado com sucesso!')
-            return redirect('detalhe_cliente', pk=cliente.pk)
+            return redirect('crm:detalhe_cliente', pk=cliente.pk)
         else:
             messages.error(request, 'Erro ao atualizar cliente. Verifique os campos.')
     else:
@@ -194,7 +195,7 @@ def excluir_cliente(request, pk):
     cliente = get_object_or_404(Cliente, pk=pk)
     cliente.delete()
     messages.success(request, 'Cliente excluído com sucesso!')
-    return redirect('lista_clientes')
+    return redirect('crm:lista_clientes')
 
 # Cadastrar etapa (template provisório)
 @login_required
@@ -208,7 +209,7 @@ def cadastrar_etapa(request, pk):
             etapa.projeto = projeto
             etapa.save()
             messages.success(request, 'Etapa cadastrada com sucesso!')
-            return redirect('detalhe_projeto', pk=projeto.pk)
+            return redirect('crm:detalhe_projeto', pk=projeto.pk)
         else:
             messages.error(request, 'Erro ao cadastrar a etapa. Verifique os campos.')
     else:
@@ -218,6 +219,7 @@ def cadastrar_etapa(request, pk):
         'form': form,
         'projeto': projeto
     })
+
 # Lista de materiais
 @login_required
 def lista_materiais(request):
@@ -232,7 +234,7 @@ def cadastrar_material(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Material cadastrado com sucesso!')
-            return redirect('lista_materiais')
+            return redirect('crm:lista_materiais')
         else:
             messages.error(request, 'Erro ao cadastrar material.')
     else:
@@ -248,7 +250,7 @@ def editar_material(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Material atualizado com sucesso!')
-            return redirect('lista_materiais')
+            return redirect('crm:lista_materiais')
     else:
         form = MaterialForm(instance=material)
     return render(request, 'solar/editar_material.html', {'form': form, 'material': material})
@@ -267,7 +269,7 @@ def cadastrar_fornecedor(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Fornecedor cadastrado com sucesso!')
-            return redirect('lista_fornecedores')
+            return redirect('crm:lista_fornecedores')
         else:
             messages.error(request, 'Erro ao cadastrar fornecedor.')
     else:
@@ -283,11 +285,10 @@ def editar_fornecedor(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Fornecedor atualizado com sucesso!')
-            return redirect('lista_fornecedores')
+            return redirect('crm:lista_fornecedores')
     else:
         form = FornecedorForm(instance=fornecedor)
     return render(request, 'solar/editar_fornecedor.html', {'form': form, 'fornecedor': fornecedor})
-
 
 # Lista de lançamentos
 @login_required
@@ -303,7 +304,7 @@ def cadastrar_lancamento(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Lançamento registrado com sucesso!')
-            return redirect('lista_financeiro')
+            return redirect('crm:lista_financeiro')
         else:
             messages.error(request, 'Erro ao registrar lançamento.')
     else:
@@ -368,7 +369,7 @@ def login_cliente(request):
         cliente = Cliente.objects.filter(id_acesso=id_acesso).first()
         if cliente and cliente.verificar_senha_acesso(senha):
             request.session['cliente_id'] = cliente.id
-            return redirect('painel_cliente')
+            return redirect('crm:painel_cliente')
         else:
             messages.error(request, 'ID de acesso ou senha incorretos.')
 
@@ -377,13 +378,13 @@ def login_cliente(request):
 # Logout do cliente
 def logout_cliente(request):
     request.session.flush()
-    return redirect('login_cliente')
+    return redirect('crm:login_cliente')
 
 # Painel do cliente
 def painel_cliente(request):
     cliente_id = request.session.get('cliente_id')
     if not cliente_id:
-        return redirect('login_cliente')
+        return redirect('crm:login_cliente')
 
     cliente = get_object_or_404(Cliente, id=cliente_id)
     projetos = Projeto.objects.filter(cliente=cliente).order_by('-data_inicio')
@@ -419,30 +420,13 @@ def painel_cliente(request):
 
 # -------- CRUD DE USUÁRIOS --------
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User # Modelo padrão de usuário do Django
-from django.contrib.auth.decorators import login_required, user_passes_test # Decoradores de autenticação
-from django.urls import reverse # Para reverter URLs
-
-# --- Funções Auxiliares ---
-# Esta função é usada pelo decorador @user_passes_test
 def is_admin(user):
-    """
-    Verifica se o usuário é um administrador (is_staff).
-    Necessário para o decorador @user_passes_test.
-    """
-    return user.is_authenticated and user.is_staff
+    return user.is_superuser
 
-# --- Views do seu aplicativo 'solar' ---
-
-@login_required # Garante que o usuário esteja logado
-@user_passes_test(is_admin) # Garante que apenas admins possam acessar
+@login_required
+@user_passes_test(is_admin)
 def lista_usuarios(request):
-    """
-    Exibe uma lista de todos os usuários registrados no sistema.
-    Apenas administradores logados podem acessar.
-    """
-    usuarios = User.objects.all().order_by('username') # Busca todos os usuários, ordenados pelo nome de usuário
+    usuarios = Usuario.objects.all()
     return render(request, 'solar/lista_usuarios.html', {'usuarios': usuarios})
 
 @login_required

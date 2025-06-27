@@ -36,7 +36,7 @@ services:
     # Substitua 'wwwwwwwwwwwwwwwwwwwwwwwwwwwww' e 'wwwwwwwww' pelas suas senhas reais.
     environment:
       SECRET_KEY: 'django-insecure-k^#8#26p1!^!_tk+f!gcxezrnri2e#m)9+o@=#&0iu^%8848au'
-      DEBUG: "False"
+      DEBUG: "True"
       DATABASE_URL: 'mysql://user:password@db:3306/mydb'
       EMAIL_HOST_USER: 'mauriciodiassilva@hotmail.com'
       EMAIL_HOST_PASSWORD: 'EuSouoEuSou01@'

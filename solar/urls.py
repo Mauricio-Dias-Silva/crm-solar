@@ -3,7 +3,6 @@ from django.contrib.auth import views as auth_views
 from . import views
 from django.shortcuts import redirect
 
-
 app_name = 'crm'
 
 urlpatterns = [
@@ -19,6 +18,13 @@ urlpatterns = [
     path('clientes/<int:pk>/', views.detalhe_cliente, name='detalhe_cliente'),
     path('clientes/<int:pk>/editar/', views.editar_cliente, name='editar_cliente'),
     path('clientes/<int:pk>/excluir/', views.excluir_cliente, name='excluir_cliente'),
+
+    # Usuários (adicionar ao urlpatterns do branch mauricio)
+    path('usuarios/', views.lista_usuarios, name='lista_usuarios'),
+    path('usuarios/novo/', views.cadastrar_usuario, name='cadastrar_usuario'),
+    path('usuarios/<int:usuario_id>/editar/', views.editar_usuario, name='editar_usuario'),
+    path('usuarios/<int:usuario_id>/resetar_senha/', views.resetar_senha_usuario, name='resetar_senha_usuario'),
+    path('usuarios/<int:usuario_id>/excluir/', views.excluir_usuario, name='excluir_usuario'),
 
     # Projetos
     path('projetos/', views.lista_projetos, name='lista_projetos'),
@@ -36,19 +42,10 @@ urlpatterns = [
     path('materiais/cadastrar/', views.cadastrar_material, name='cadastrar_material'),
     path('materiais/<int:pk>/editar/', views.editar_material, name='editar_material'),
 
-
     # Fornecedores
     path('fornecedores/', views.lista_fornecedores, name='lista_fornecedores'),
     path('fornecedores/cadastrar/', views.cadastrar_fornecedor, name='cadastrar_fornecedor'),
     path('fornecedores/<int:pk>/editar/', views.editar_fornecedor, name='editar_fornecedor'),
-
-     # Usuários (adicionar ao urlpatterns do branch mauricio)
-    path('usuarios/', views.lista_usuarios, name='lista_usuarios'),
-    path('usuarios/novo/', views.cadastrar_usuario, name='cadastrar_usuario'),
-    path('usuarios/<int:usuario_id>/editar/', views.editar_usuario, name='editar_usuario'),
-    path('usuarios/<int:usuario_id>/resetar_senha/', views.resetar_senha_usuario, name='resetar_senha_usuario'),
-    path('usuarios/<int:usuario_id>/excluir/', views.excluir_usuario, name='excluir_usuario'),            
-
 
     # Financeiro
     path('financeiro/', views.lista_financeiro, name='lista_financeiro'),
@@ -58,11 +55,10 @@ urlpatterns = [
     path('financeiro/dashboard/', views.dashboard_financeiro, name='dashboard_financeiro'),
 
     # Área do Cliente
-    path('progresso/', lambda request: redirect('produtos:login')), 
+    path('progresso/', lambda request: redirect('/crm/progresso/login/')),  # redireciona se acessar apenas /crm/progresso/
     path('progresso/login/', views.login_cliente, name='login_cliente'),
     path('progresso/logout/', views.logout_cliente, name='logout_cliente'),
     path('progresso/painel/', views.painel_cliente, name='painel_cliente'),
-    
 
     # Logout (opcional, usando view padrão do Django)
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
