@@ -24,7 +24,8 @@ SECRET_KEY = env('SECRET_KEY', default='sua-chave-secreta-padrao-para-desenvolvi
 DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
 DEBUG='True'
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
+#ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
