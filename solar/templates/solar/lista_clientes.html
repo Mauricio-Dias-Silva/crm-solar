@@ -19,7 +19,9 @@
                     <tr>
                         <th>Nome</th>
                         <th>Email</th>
+                        <th>Documento</th>
                         <th>Telefone</th>
+                        <th>Cidade/UF</th>
                         <th class="text-end">Ações</th>
                     </tr>
                 </thead>
@@ -28,7 +30,15 @@
                     <tr>
                         <td>{{ cliente.nome }}</td>
                         <td>{{ cliente.email }}</td>
+                        <td>
+                            {% if cliente.cnpj %}
+                                {{ cliente.cnpj }}
+                            {% elif cliente.cpf %}
+                                {{ cliente.cpf }}
+                            {% endif %}
+                        </td>
                         <td>{{ cliente.telefone }}</td>
+                        <td>{{ cliente.cidade }}/{{ cliente.estado }}</td>
                         <td class="text-end">
                             <a href="{% url 'crm:detalhe_cliente' cliente.id %}" class="btn btn-sm btn-outline-info me-1">
                                 <img src="https://img.icons8.com/ios-glyphs/20/visible.png" alt="Detalhes" class="me-1">

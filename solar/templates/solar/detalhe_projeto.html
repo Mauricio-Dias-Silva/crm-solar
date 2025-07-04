@@ -67,7 +67,7 @@
                         {% endif %}
                         <span class="text-muted small ms-3">Enviado em {{ doc.data_upload|date:"d/m/Y H:i" }}</span>
                     </div>
-                    <form method="post" action="{% url 'excluir_documento_projeto' projeto.id doc.id %}" style="margin:0;display:inline;">
+                    <form method="post" action="{% url 'crm:excluir_documento_projeto' projeto.id doc.id %}" style="margin:0;display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir documento"
                                 onclick="return confirm('Tem certeza que deseja excluir este documento?');">

@@ -24,16 +24,18 @@ class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
         fields = [
-            'nome', 'email', 'telefone', 'endereco',
+            'nome', 'email', 'telefone',
+            'rua', 'numero', 'cep', 'cidade', 'estado',
             'cnpj', 'cpf',
-            'id_acesso', 'senha_acesso_plano',
-            'possui_whatsapp'
+            'possui_whatsapp',
+            'id_acesso', 'senha_acesso_plano'
         ]
 
     def clean(self):
         cleaned_data = super().clean()
         cpf = cleaned_data.get('cpf')
         cnpj = cleaned_data.get('cnpj')
+
         if cpf:
             cleaned_data['cpf'] = cpf.replace('.', '').replace('-', '').replace(' ', '')
             self.data = self.data.copy()

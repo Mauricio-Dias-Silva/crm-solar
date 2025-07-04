@@ -25,10 +25,18 @@ class Cliente(models.Model):
     nome = models.CharField(max_length=200)
     email = models.EmailField()
     telefone = models.CharField(max_length=20, validators=[validar_telefone])
-    endereco = models.TextField()
+    
+    # Novo formato de endereço
+    rua = models.CharField(max_length=200, null=True, blank=True)
+    numero = models.CharField(max_length=20, null=True, blank=True)
+    cep = models.CharField(max_length=10, null=True, blank=True)
+    cidade = models.CharField(max_length=100, null=True, blank=True)
+    estado = models.CharField(max_length=2, null=True, blank=True)
+
     cnpj = models.CharField(max_length=18, unique=True, null=True, blank=True, validators=[validar_cnpj])
     cpf = models.CharField(max_length=11, unique=True, null=True, blank=True, validators=[validar_cpf])
-    possui_whatsapp = models.BooleanField(default=False)  # NOVO CAMPO
+    possui_whatsapp = models.BooleanField(default=False)
+
     data_cadastro = models.DateTimeField(auto_now_add=True)
     id_acesso = models.CharField(max_length=20, unique=True, null=True, blank=True)
     senha_acesso = models.CharField(max_length=128, null=True, blank=True)
@@ -44,7 +52,7 @@ class Cliente(models.Model):
 
 class Projeto(models.Model):
     nome = models.CharField(max_length=100)
-    descricao = models.TextField()
+    descricao = models.TextField(blank=True, null=True)
     data_inicio = models.DateField()
     data_fim = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=50, choices=[
@@ -53,7 +61,7 @@ class Projeto(models.Model):
         ('Aguardando aprovação', 'Aguardando aprovação'),
         ('Cancelado', 'Cancelado'),
     ])
-    cliente = models.ForeignKey('Cliente', on_delete=models.CASCADE)
+    cliente = models.ForeignKey('Cliente', on_delete=models.SET_NULL, null=True, blank=True)
     endereco_instalacao = models.TextField(blank=True, null=True)
     potencia_kwp = models.DecimalField('Potência (kWp)', max_digits=6, decimal_places=2, null=True, blank=True)
     quantidade_modulos = models.PositiveIntegerField('Quantidade de Módulos', null=True, blank=True)

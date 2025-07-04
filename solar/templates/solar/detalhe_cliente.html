@@ -9,9 +9,29 @@
     <div class="card p-4">
         <p><strong>Nome:</strong> {{ cliente.nome }}</p>
         <p><strong>E-mail:</strong> {{ cliente.email }}</p>
-        <p><strong>CNPJ:</strong> {{ cliente.cnpj }}</p>
-        <p><strong>Endereço:</strong> {{ cliente.endereco }}</p>
+
+        {% if cliente.cnpj %}
+            <p><strong>CNPJ:</strong> {{ cliente.cnpj }}</p>
+        {% elif cliente.cpf %}
+            <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
+        {% endif %}
+
         <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
+
+        <p><strong>Endereço:</strong> 
+            {{ cliente.rua }}, nº {{ cliente.numero }} — 
+            CEP {{ cliente.cep }} — 
+            {{ cliente.cidade }}/{{ cliente.estado }}
+        </p>
+
+        <p><strong>Possui WhatsApp:</strong> 
+            {% if cliente.possui_whatsapp %}
+                Sim
+            {% else %}
+                Não
+            {% endif %}
+        </p>
+
         <p><strong>ID de Acesso:</strong> {{ cliente.id_acesso }}</p>
     </div>
 

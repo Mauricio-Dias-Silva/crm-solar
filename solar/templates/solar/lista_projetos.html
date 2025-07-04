@@ -1,4 +1,4 @@
-{% extends 'solar/base.html' %}
+{% extends 'solar/base.html' %} 
 
 {% block title %}Lista de Projetos{% endblock %}
 
@@ -26,7 +26,13 @@
                     {% for projeto in projetos %}
                     <tr>
                         <td>{{ projeto.nome }}</td>
-                        <td>{{ projeto.cliente.nome }}</td>
+                        <td>
+                            {% if projeto.cliente %}
+                                {{ projeto.cliente.nome }}
+                            {% else %}
+                                <span class="text-muted fst-italic">Sem cliente</span>
+                            {% endif %}
+                        </td>
                         <td>{{ projeto.status }}</td>
                         <td>{{ projeto.potencia_kwp }}</td>
                         <td>{{ projeto.valor_total }}</td>
