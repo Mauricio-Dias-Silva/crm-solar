@@ -68,14 +68,9 @@ services:
     ports:
       - "3306:3306"
 
-# Você pode adicionar outras seções aqui, como 'volumes' nomeados ou 'networks'.
-# Por exemplo, para um volume persistente para o banco de dados:
-# volumes:
-#   db_data:
-
-# E então, no serviço 'db':
-# volumes:
-#   - db_data:/var/lib/mysql
+    # Volume persistente ativado corretamente
+    volumes:
+      - db_data:/var/lib/mysql
 
   nginx:
     image: nginx:latest
@@ -88,3 +83,7 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
       - web
+
+# Volume nomeado para persistência do banco de dados
+volumes:
+  db_data:
