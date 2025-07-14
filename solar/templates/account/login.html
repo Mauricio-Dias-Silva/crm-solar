@@ -1,6 +1,4 @@
 {% load static %}
-
-
 {% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -29,11 +27,9 @@
         .login-logo {
             height: 60px;
             margin-bottom: 1.3rem;
-            /* Removido: background, border-radius e padding para evitar oval */
             display: block;
             margin-left: auto;
             margin-right: auto;
-            /* Se quiser garantir, pode definir também width: auto; */
         }
         .login-title {
             color: #0966f2;
@@ -117,36 +113,51 @@
                     <div class="alert alert-danger py-2">{{ message }}</div>
                 {% endfor %}
             {% endif %}
+            
             {% for field in form %}
-                <div class="mb-3 text-start">
-                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                    <div class="input-group">
-                        {% if field.label|lower == "usuário" or field.label|lower == "username" %}
-                            <span class="input-group-text">
-                                <img src="https://img.icons8.com/ios-filled/22/7a8799/user--v1.png" alt="Usuário"/>
-                            </span>
-                        {% elif field.label|lower == "senha" or field.label|lower == "password" %}
-                            <span class="input-group-text">
-                                <img src="https://img.icons8.com/ios-filled/22/7a8799/lock--v1.png" alt="Senha"/>
-                            </span>
+                {% if field.field.widget.input_type == "checkbox" %}
+                    <div class="form-check mb-3 text-start">
+                        {{ field|add_class:"form-check-input" }}
+                        <label class="form-check-label" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
                         {% endif %}
-                        {{ field|add_class:"form-control" }}
                     </div>
-                    {% if field.errors %}
-                        <div class="text-danger small">{{ field.errors }}</div>
-                    {% endif %}
-                </div>
+                {% else %}
+                    <div class="mb-3 text-start">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        <div class="input-group">
+                            {% if field.label|lower == "usuário" or field.label|lower == "username" %}
+                                <span class="input-group-text">
+                                    <img src="https://img.icons8.com/ios-filled/22/7a8799/user--v1.png" alt="Usuário"/>
+                                </span>
+                            {% elif field.label|lower == "senha" or field.label|lower == "password" %}
+                                <span class="input-group-text">
+                                    <img src="https://img.icons8.com/ios-filled/22/7a8799/lock--v1.png" alt="Senha"/>
+                                </span>
+                            {% endif %}
+                            {{ field|add_class:"form-control" }}
+                        </div>
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
             {% endfor %}
+
             <button type="submit" class="btn btn-primary w-100">
                 <img src="https://img.icons8.com/ios-filled/20/ffffff/login-rounded-right.png" alt="Entrar"/>
                 Entrar
             </button>
             <a href="mailto:suporte@solar.com" class="help-link">Esqueceu a senha?</a>
-
         </form>
+
         {% if error %}
             <div class="alert alert-danger mt-3 py-2">{{ error }}</div>
         {% endif %}
+
         <div class="footer-support">
             Precisa de ajuda? <a href="mailto:suporte@solar.com" class="help-link" style="display:inline;font-size:inherit;">Fale com o suporte</a>.
         </div>
