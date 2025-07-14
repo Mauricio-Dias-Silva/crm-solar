@@ -1,4 +1,3 @@
-{# produtos/templates/produtos/carrinho.html #}
 {% extends 'produtos/base.html' %}
 {% load static %}
 
@@ -25,21 +24,19 @@
                     <td>
                         <div class="d-flex align-items-center">
                             {% if item.produto.images %}
-                                {# Acessa a primeira imagem do produto real (objeto Produto) #}
                                 {% with first_image=item.produto.images.first %}
-                                {% if first_image %}
-                                    <img src="{{ first_image.image.url }}" alt="{{ item.produto.name }}" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
-                                {% endif %}
+                                    {% if first_image %}
+                                        <img src="{{ first_image.image.url }}" alt="{{ item.produto.name }}" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                    {% endif %}
                                 {% endwith %}
                             {% endif %}
                             <a href="{% url 'produtos:produto_detalhe' item.produto.id %}" class="text-decoration-none text-dark fw-bold">{{ item.produto.name }}</a>
                         </div>
                     </td>
-                    <td>R$ {{ item.produto.preco|floatformat:2 }}</td>
+                    <td>R$ {{ item.preco_unitario|floatformat:2 }}</td>
                     <td>{{ item.quantidade }}</td>
                     <td>R$ {{ item.subtotal|floatformat:2 }}</td>
                     <td>
-                        {# Futuramente: botões para aumentar/diminuir quantidade ou remover item #}
                         <form action="{% url 'produtos:remover_do_carrinho' item.produto.id %}" method="POST" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-outline-danger">Remover</button>
@@ -53,34 +50,32 @@
                     <th colspan="3" class="text-end">Total do Carrinho:</th>
                     <th colspan="2">R$ {{ total_carrinho|floatformat:2 }}</th>
                 </tr>
+                <tr>
+                    <th colspan="3" class="text-end align-middle">Frete:</th>
+                    <th colspan="2" class="align-middle">
+                        {% if frete %}
+                            R$ {{ frete|floatformat:2 }}
+                        {% else %}
+                            <form method="POST" action="{% url 'produtos:calcular_frete_carrinho' %}" class="d-flex flex-wrap gap-2 align-items-center">
+                                {% csrf_token %}
+                                <input type="text" name="cep" placeholder="Digite seu CEP" class="form-control" style="max-width: 180px;" required>
+                                <button type="submit" class="btn btn-primary btn-sm">Calcular</button>
+                            </form>
+                        {% endif %}
+                    </th>
+                </tr>
+                <tr class="table-success">
+                    <th colspan="3" class="text-end">Total com Frete:</th>
+                    <th colspan="2">R$ {{ total_com_frete|floatformat:2 }}</th>
+                </tr>
             </tfoot>
         </table>
 
-        {# --- SEÇÃO PARA FINALIZAR COMPRA (AUTENTICADO OU CONVIDADO) --- #}
         {% if not request.user.is_authenticated %}
-        {# Formulário para CONVIDADOS #}
-        <div class="card mb-4">
-            <div class="card-header">
-                Detalhes para a Compra (Convidado)
-            </div>
-            <div class="card-body">
-                <p>Por favor, informe seu e-mail para continuar a compra. Você não precisa se registrar.</p>
-                <form method="POST" action="{% url 'pagamento:criar_checkout_session' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="email_convidado" class="form-label">Seu E-mail:</label>
-                        <input type="email" class="form-control" id="email_convidado" name="email" required placeholder="exemplo@dominio.com">
-                    </div>
-                    <div class="mb-3">
-                        <label for="nome_convidado" class="form-label">Seu Nome (Opcional):</label>
-                        <input type="text" class="form-control" id="nome_convidado" name="nome_convidado" placeholder="Nome Completo">
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">Finalizar Compra</button>
-                </form>
-            </div>
+        <div class="alert alert-warning text-center mt-4">
+            Para finalizar a compra, faça <a href="/login/?next={% url 'produtos:ver_carrinho' %}">login</a> ou <a href="/register/">crie uma conta</a>.
         </div>
         {% else %}
-        {# Formulário para USUÁRIOS AUTENTICADOS #}
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
             <a href="{% url 'produtos:home' %}" class="btn btn-secondary me-md-2">Continuar Comprando</a>
             <form method="POST" action="{% url 'pagamento:criar_checkout_session' %}">

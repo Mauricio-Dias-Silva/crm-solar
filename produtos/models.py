@@ -147,3 +147,12 @@ class ProdutoImage(models.Model):
 
     def __str__(self):
         return f"Imagem para {self.produto.name} ({self.id})"
+    
+class RegiaoFrete(models.Model):
+    prefixo_cep = models.CharField(max_length=3, unique=True, verbose_name="Prefixo do CEP")
+    cidade = models.CharField(max_length=100)
+    valor_frete = models.DecimalField(max_digits=7, decimal_places=2)
+    prazo_entrega = models.PositiveIntegerField(verbose_name="Prazo (dias úteis)")
+
+    def __str__(self):
+        return f"{self.prefixo_cep} - {self.cidade} (R$ {self.valor_frete:.2f}, {self.prazo_entrega} dias)"

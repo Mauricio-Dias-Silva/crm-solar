@@ -16,12 +16,10 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @require_POST
 def criar_checkout_session(request):
-    
     carrinho = request.session.get('carrinho', {})
 
     if not carrinho:
         messages.error(request, "Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.")
-    
         return redirect('produtos:ver_carrinho')
 
     line_items = []
@@ -33,138 +31,108 @@ def criar_checkout_session(request):
     if request.user.is_authenticated:
         customer_email = request.user.email
         customer_name = request.user.get_full_name() or request.user.username
-
     else:
         customer_email = request.POST.get('email')
         customer_name = request.POST.get('nome_convidado', 'Convidado')
-        
         if not customer_email or "@" not in customer_email or "." not in customer_email:
             messages.error(request, "Por favor, insira um e-mail válido para continuar como convidado.")
-
             return redirect('produtos:ver_carrinho')
 
-
-    for item_key, item_data in carrinho.items():
+    for item_data in carrinho.values():
         try:
-           
             required_keys = ['produto_id', 'nome', 'preco_unitario', 'quantidade', 'subtotal', 'imagem', 'description']
             if not all(k in item_data for k in required_keys):
                 missing_keys = [k for k in required_keys if k not in item_data]
-                messages.error(request, f"Erro: Item '{item_data.get('nome', 'desconhecido')}' no carrinho está incompleto (faltam: {', '.join(missing_keys)}). Não pode ser processado.")
+                messages.error(request, f"Erro: Item '{item_data.get('nome', 'desconhecido')}' no carrinho está incompleto (faltam: {', '.join(missing_keys)}).")
+                return redirect('produtos:ver_carrinho')
 
-                return redirect('produtos:ver_carrinho') 
-
-            preco_em_centavos = int(item_data['preco_unitario'] * 100)
-            quantidade_item = item_data['quantidade']
-            item_description = item_data['description']
-            item_images = [item_data['imagem']] if item_data['imagem'] else []
-
-           
-            if not item_description and not item_images:
-                item_description = item_data['nome'] 
-
-            line_items = []
-            for item in carrinho.values():
-                image_url = request.build_absolute_uri(item['imagem'])
-                line_items.append({
-                    'price_data': {
-                        'currency': 'brl',
-                        'unit_amount': int(item['preco_unitario'] * 100),
-                        'product_data': {
-                        'name': item['nome'],
-                        'images': [image_url],
-                     },
-                 },
-                    'quantity': item['quantidade'],
-    })
-
+            image_url = request.build_absolute_uri(item_data['imagem']) if item_data['imagem'] else ''
+            line_items.append({
+                'price_data': {
+                    'currency': 'brl',
+                    'unit_amount': int(item_data['preco_unitario'] * 100),
+                    'product_data': {
+                        'name': item_data['nome'],
+                        'images': [image_url] if image_url else [],
+                    },
+                },
+                'quantity': item_data['quantidade'],
+            })
             total_pedido_calculado += item_data['subtotal']
 
         except Exception as e:
-    
             messages.error(request, f"Ocorreu um erro ao processar um item do carrinho: {e}")
             return redirect('produtos:ver_carrinho')
 
+    # ✅ Adiciona frete, se houver
+    valor_frete = request.session.get('valor_frete')
+    if valor_frete:
+        try:
+            line_items.append({
+                'price_data': {
+                    'currency': 'brl',
+                    'unit_amount': int(float(valor_frete) * 100),
+                    'product_data': {
+                        'name': 'Frete',
+                    },
+                },
+                'quantity': 1,
+            })
+            total_pedido_calculado += float(valor_frete)
+        except Exception as e:
+            messages.warning(request, f"Erro ao adicionar o frete ao Stripe: {e}")
+
     if not line_items:
-       
-        messages.error(request, "Seu carrinho não contém produtos válidos para finalizar a compra.")
+        messages.error(request, "Seu carrinho não contém produtos válidos.")
         return redirect('produtos:ver_carrinho')
 
-    customer_stripe_id = None
     try:
         clientes = stripe.Customer.list(email=customer_email, limit=1)
         if clientes.data:
-            customer = clientes.data[0]
-            customer_stripe_id = customer.id
-            
+            customer_stripe_id = clientes.data[0].id
         else:
             customer = stripe.Customer.create(email=customer_email, name=customer_name)
             customer_stripe_id = customer.id
-
-    except stripe.error.StripeError as e:
-    
-        messages.error(request, f"Erro ao gerenciar cliente Stripe: {e.user_message}")
-        return redirect('produtos:ver_carrinho')
-
     except Exception as e:
-        messages.error(request, f"Ocorreu um erro ao gerenciar cliente Stripe: {e}")
+        messages.error(request, f"Erro ao criar/recuperar cliente Stripe: {e}")
         return redirect('produtos:ver_carrinho')
 
- 
-    checkout_session = None 
     try:
-
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=line_items,
             mode='payment',
             customer=customer_stripe_id,
-            success_url = request.build_absolute_uri(reverse('pagamento:compra_sucesso')) + '?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url = request.build_absolute_uri(reverse('pagamento:pagamento_cancelado'))
-
+            success_url=request.build_absolute_uri(reverse('pagamento:compra_sucesso')) + '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=request.build_absolute_uri(reverse('pagamento:pagamento_cancelado')),
         )
-
-    except stripe.error.StripeError as e:
-       
-        messages.error(request, f"Erro ao criar sessão de checkout: {e.user_message}")
-        return redirect('produtos:ver_carrinho')
     except Exception as e:
-    
-        messages.error(request, f"Ocorreu um erro inesperado ao criar a sessão de checkout: {e}")
+        messages.error(request, f"Erro ao criar sessão de checkout: {e}")
         return redirect('produtos:ver_carrinho')
 
     try:
-        if not checkout_session:
-            messages.error(request, "Erro interno: A sessão de checkout não foi criada. Tente novamente.")
-           
-            return redirect('produtos:ver_carrinho')
-
         pedido = Pedido.objects.create(
             stripe_id=checkout_session.id,
             usuario=request.user if request.user.is_authenticated else None,
-            email_cliente=customer_email, # Garanta que customer_email está definido
+            email_cliente=customer_email,
             total=total_pedido_calculado,
             status='pendente'
         )
-        for item_key, item_data in carrinho.items():
-            # AQUI: O produto_id_original deve existir em item_data
+        for item_data in carrinho.values():
             Item.objects.create(
                 pedido=pedido,
-                produto_id_original=item_data['produto_id'], # Assegure-se que 'produto_id' está no item_data
+                produto_id_original=item_data['produto_id'],
                 nome=item_data['nome'],
                 preco_unitario=item_data['preco_unitario'],
                 quantidade=item_data['quantidade'],
                 subtotal=item_data['subtotal']
             )
-        request.session['pedido_em_criacao_id'] = pedido.id 
-        
-    except Exception as e:        
-        messages.error(request, f"Erro ao salvar o pedido no banco de dados: {e}")
-
+        request.session['pedido_em_criacao_id'] = pedido.id
+    except Exception as e:
+        messages.error(request, f"Erro ao salvar o pedido: {e}")
         return redirect('produtos:ver_carrinho')
 
     return redirect(checkout_session.url, code=303)
-
 
 @csrf_exempt
 @require_POST # Webhooks sempre são POST

@@ -1,6 +1,6 @@
 # produtos/admin.py
 from django.contrib import admin
-from .models import Produto, CarouselImage, Pedido, Item, ProdutoImage
+from .models import Produto, CarouselImage, Pedido, Item, ProdutoImage, RegiaoFrete
 
 
 # Novo: Inline para ProdutoImage
@@ -49,3 +49,8 @@ class ItemAdmin(admin.ModelAdmin):
     list_display = ('nome', 'pedido', 'quantidade', 'preco_unitario', 'subtotal')
     list_filter = ('pedido__status',) # Filtra por status do pedido pai
     search_fields = ('nome', 'pedido__id')
+
+@admin.register(RegiaoFrete)
+class RegiaoFreteAdmin(admin.ModelAdmin):
+    list_display = ('prefixo_cep', 'cidade', 'valor_frete', 'prazo_entrega')
+    search_fields = ('prefixo_cep', 'cidade')
