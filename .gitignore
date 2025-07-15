@@ -37,8 +37,10 @@ Thumbs.db  # Windows specific files
 *.pid
 *.sock
 
+
 # Outros
 *.example # Se você tiver arquivos de exemplo de configurações (ex: .env.example)
 
 # Ignorar o diretório raiz do projeto (se ele for o mesmo nome do seu repositório)
 # crmsolar/
+Docker Desktop Installer.exe
