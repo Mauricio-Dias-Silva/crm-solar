@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse # Importe HttpResponse
 from django.views.decorators.http import require_POST # Importe require_POST para as views POST
 from .models import CarouselImage, Pedido, Item, Produto, ProdutoImage, RegiaoFrete
-from .forms import CustomUserCreationForm 
+from .forms import CustomUserCreationForm, ProdutoForm, ProdutoImageForm
 from decimal import Decimal  # coloque no topo do arquivo
 import stripe
 
@@ -58,10 +58,6 @@ def home(request):
     }
     return render(request, 'produtos/home.html', context)
 
-# produtos/views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .models import Produto # Você não precisa de Categoria aqui se não a usa como model
 
 def produtos_por_categoria(request, categoria_slug):
     categorias_validas = [
@@ -358,3 +354,202 @@ def calcular_frete_carrinho(request):
         messages.error(request, f"Não encontramos uma região com base no CEP informado ({cep}).")
 
     return redirect('produtos:ver_carrinho')
+
+
+# seu_app/views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.forms import inlineformset_factory
+from django.contrib.auth.decorators import user_passes_test # Para proteger a view
+
+from .models import Produto, ProdutoImage
+from .forms import ProdutoForm, ProdutoImageForm
+
+# Função auxiliar para verificar permissões (ex: staff ou superuser)
+def is_manager_or_admin(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+    # Alternativamente, use user.has_perm('produtos.add_produto') para permissão específica
+
+@user_passes_test(is_manager_or_admin, login_url='login')
+def adicionar_produto(request):
+    ProdutoImageFormSet = inlineformset_factory(
+        Produto, ProdutoImage, form=ProdutoImageForm, extra=1, can_delete=True, max_num=5
+    )
+
+    if request.method == 'POST':
+        form = ProdutoForm(request.POST)
+        formset = ProdutoImageFormSet(request.POST, request.FILES)
+
+        if form.is_valid() and formset.is_valid():
+            produto = form.save() # Salva o produto para obter um ID
+            formset.instance = produto # Associa as imagens ao produto salvo
+            formset.save()
+            return redirect('produtos:home') # Redirecionar após o sucesso
+        else:
+            # Se houver erros, os formulários serão renderizados novamente com feedback
+            pass
+    else:
+        form = ProdutoForm()
+        formset = ProdutoImageFormSet()
+
+    context = {
+        'form': form,
+        'formset': formset,
+        'is_adding': True, # Flag para personalizar o template se for "Adicionar"
+        'produto': None # Nenhum produto existente ao adicionar
+    }
+    return render(request, 'produtos/modificar_produto.html', context) # Reutiliza o template
+
+
+# crmsolar/produtos/views.py
+
+# ... (all your existing imports, e.g., render, get_object_or_404, redirect,
+#      inlineformset_factory, user_passes_test, Produto, ProdutoImage,
+#      ProdutoForm, ProdutoImageForm) ...
+
+# Your permission function (assuming it's defined correctly above)
+def is_manager_or_admin(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
+
+@user_passes_test(is_manager_or_admin, login_url='account_login')
+def modificar_produto(request, produto_id):
+    # 1. Get the existing product object
+    produto = get_object_or_404(Produto, pk=produto_id)
+
+    # 2. Define the FormSet for images (this is outside the if/else as it's always needed)
+    ProdutoImageFormSet = inlineformset_factory(
+        Produto, ProdutoImage, form=ProdutoImageForm, extra=1, can_delete=True, max_num=5
+    )
+
+    # 3. Handle POST vs GET requests
+    if request.method == 'POST':
+        # If the form was submitted (POST request)
+        form = ProdutoForm(request.POST, instance=produto)
+        formset = ProdutoImageFormSet(request.POST, request.FILES, instance=produto)
+
+        if form.is_valid() and formset.is_valid():
+            # If both forms are valid, save the data
+            form.save()
+            formset.save()
+            # Redirect to the product list after successful modification
+            return redirect('produtos:lista_produtos')
+        # ELSE (if validation fails for POST):
+        # The 'form' and 'formset' variables are already defined above (with errors attached).
+        # The code will simply proceed to render the template with these forms.
+
+    else: # This block handles GET requests (when the page is first loaded)
+        # For GET requests, initialize the forms with the existing product's data
+        form = ProdutoForm(instance=produto)
+        formset = ProdutoImageFormSet(instance=produto)
+
+    # 4. Prepare the context dictionary (THIS IS LINE 497 IN YOUR TRACEBACK)
+    #    'form' and 'formset' are GUARANTEED to be defined here because:
+    #    - If it was a POST request, they were defined in the 'if request.method == "POST":' block.
+    #    - If it was a GET request, they were defined in the 'else:' block.
+    context = {
+        'form': form,
+        'formset': formset,
+        'produto': produto,
+        'is_adding': False # Indicate this is a modification page
+    }
+
+    # 5. Render the template
+    return render(request, 'produtos/modificar_produto.html', context)
+
+# ... (rest of your views and other code) ...
+
+
+def is_manager_or_admin(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
+# View para listar produtos (sua nova "central de gerenciamento")
+def lista_produtos(request):
+    produtos = Produto.objects.all().order_by('name') # Ordena por nome
+    context = {
+        'produtos': produtos
+    }
+    return render(request, 'produtos/lista_produtos.html', context)
+
+
+
+# crmsolar/produtos/views.py
+
+# (Certifique-se de que todas as suas importações estão no topo do arquivo)
+from django.shortcuts import render, get_object_or_404, redirect
+from django.forms import inlineformset_factory
+from django.contrib.auth.decorators import user_passes_test
+
+from .models import Produto, ProdutoImage
+from .forms import ProdutoForm, ProdutoImageForm
+
+# Sua função de verificação de permissão (assumindo que está correta e definida acima)
+def is_manager_or_admin(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
+
+@user_passes_test(is_manager_or_admin, login_url='account_login')
+def modificar_produto(request, produto_id):
+    # 1. Obtenha o objeto Produto existente
+    # Se o produto não for encontrado, get_object_or_404 levanta um 404
+    produto = get_object_or_404(Produto, pk=produto_id)
+
+    # 2. Defina o FormSet para as imagens (isso fica fora do if/else, pois sempre será necessário)
+    ProdutoImageFormSet = inlineformset_factory(
+        Produto, ProdutoImage, form=ProdutoImageForm, extra=1, can_delete=True, max_num=5
+    )
+
+    # 3. Lógica para requisições POST vs GET
+    if request.method == 'POST':
+        # Se a requisição é POST (o formulário foi enviado)
+        # Instancia os formulários com os dados enviados (request.POST, request.FILES)
+        # e associa à instância existente do produto (instance=produto)
+        form = ProdutoForm(request.POST, instance=produto)
+        formset = ProdutoImageFormSet(request.POST, request.FILES, instance=produto)
+
+        # Verifica se ambos os formulários são válidos
+        if form.is_valid() and formset.is_valid():
+            form.save()      # Salva as alterações no produto
+            formset.save()   # Salva as alterações nas imagens (incluindo novas, atualizações e exclusões)
+            
+            # Redireciona para a lista de produtos após a modificação bem-sucedida
+            # Você pode mudar para 'produtos:produto_detalhe' produto_id=produto.pk se preferir ir para a página de detalhes
+            return redirect('produtos:lista_produtos')
+        
+        # Se a validação falhar (o if acima for False), o código continua aqui.
+        # As variáveis 'form' e 'formset' já estão definidas acima (com os dados e erros).
+        # Elas serão passadas para o contexto e o template as exibirá com as mensagens de erro.
+
+    else: # Este bloco é executado para requisições GET (quando a página é carregada pela primeira vez)
+        # Para requisições GET, inicializa os formulários com os dados do produto existente
+        form = ProdutoForm(instance=produto) # <-- 'form' é definido aqui
+        formset = ProdutoImageFormSet(instance=produto) # <-- 'formset' é definido aqui
+
+    # 4. Prepare o dicionário de contexto
+    # As variáveis 'form' e 'formset' SEMPRE estarão definidas neste ponto do código,
+    # seja porque foram definidas no bloco 'if POST' ou no bloco 'else GET'.
+    context = {
+        'form': form,
+        'formset': formset,
+        'produto': produto,         # Passa o objeto produto para o template
+        'is_adding': False          # Indica que esta é a página de modificação (não de adição)
+    }
+
+    # 5. Renderiza o template 'modificar_produto.html' com o contexto
+    return render(request, 'produtos/modificar_produto.html', context)
+
+# (Não se esqueça de manter o restante do seu arquivo views.py abaixo desta função)
+
+# View para excluir produto
+@user_passes_test(is_manager_or_admin, login_url='account_login')
+def excluir_produto(request, produto_id):
+    produto = get_object_or_404(Produto, pk=produto_id)
+    if request.method == 'POST':
+        produto.delete()
+        # Opcional: Adicionar mensagem de sucesso aqui com django.contrib.messages
+        # messages.success(request, f'Produto "{produto.name}" excluído com sucesso!')
+        return redirect('produtos:lista_produtos')
+    
+    # Se for GET, você pode renderizar uma página de confirmação de exclusão
+    return render(request, 'produtos/confirmar_exclusao_produto.html', {'produto': produto})
+
+# ... outras views ...

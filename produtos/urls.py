@@ -16,7 +16,7 @@ urlpatterns = [
     path('produto/<int:produto_id>/', views.produto_detalhe, name='produto_detalhe'), # Usa int:produto_id e nome 'produto_detalhe'
     path('categoria/<slug:categoria_slug>/', views.produtos_por_categoria, name='produtos_por_categoria'),
     path('produto/<int:produto_id>/frete/', views.calcular_frete, name='calcular_frete'),
-
+    path('lista/', views.lista_produtos, name='lista_produtos'),
     # URLs de Autenticação (Django Auth Views)
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='produtos:home'), name='logout'), # next_page com namespace
@@ -38,8 +38,14 @@ urlpatterns = [
     path('adicionar_ao_carrinho/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
     path('remover_do_carrinho/<int:produto_id>/', views.remover_do_carrinho, name='remover_do_carrinho'),
     path('calcular_frete_carrinho/', views.calcular_frete_carrinho, name='calcular_frete_carrinho'),
+    path('adicionar/', views.adicionar_produto, name='adicionar_produto'), # <-- This line is crucial!
 
-    
+
+    path('adicionar/', views.adicionar_produto, name='adicionar_produto'),
+    path('<int:produto_id>/modificar/', views.modificar_produto, name='modificar_produto'),
+    path('<int:produto_id>/excluir/', views.excluir_produto, name='excluir_produto'), # <--- Adicione esta URL (se ainda não tiver)
+
+
     # OLD/REMOVIDAS (COMENTADAS, CASO PRECISE LEMBRAR)
     # path('finalizar_compra/', views.finalizar_compra, name='finalizar_compra'), # Esta view foi incorporada em criar_checkout_session
     # path('compra_sucesso/', views.success, name='compra_sucesso'), # Movido para app pagamento

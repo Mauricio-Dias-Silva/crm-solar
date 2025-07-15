@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
-
+from .models import Produto, ProdutoImage 
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -72,3 +72,38 @@ class CustomUserCreationForm(UserCreationForm):
                 print(f"[ERRO AO CRIAR CLIENTE NO SOLAR] {e}")
 
         return user
+
+
+
+
+class ProdutoForm(forms.ModelForm):
+    class Meta:
+        model = Produto
+        # Inclua todos os campos que você deseja permitir que o usuário edite.
+        # Excluímos 'created_at' e 'updated_at' porque são gerados automaticamente.
+        fields = [
+            'name', 'description', 'preco', 'categoria_id',
+            'slug', 'is_active', 'stock', 'sku'
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}), # Ajusta o tamanho da área de texto
+            # Você pode adicionar mais widgets personalizados aqui
+        }
+
+    # Você pode adicionar validações customizadas ou lógica aqui, se necessário.
+    def clean_preco(self):
+        preco = self.cleaned_data.get('preco')
+        if preco is not None and preco < 0:
+            raise forms.ValidationError("O preço não pode ser negativo.")
+        return preco
+
+class ProdutoImageForm(forms.ModelForm):
+    
+    class Meta:
+        model = ProdutoImage
+        # fields = '__all__' # ou selecione os campos que você quer permitir edição
+        fields = ['image', 'alt_text', 'is_main']
+        widgets = {
+            # Se você não quiser que o usuário edite o produto associado diretamente aqui
+            'produto': forms.HiddenInput(),
+        }

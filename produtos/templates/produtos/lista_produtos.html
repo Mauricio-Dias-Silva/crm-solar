@@ -1,0 +1,65 @@
+{% extends 'produtos/base.html' %}
+{% load static %}
+
+{% block title %}Gerenciar Produtos{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Meus Produtos</h1>
+        {# CORREÇÃO AQUI: ANINHAMENTO DOS IFS para o botão "Adicionar Novo Produto" #}
+        {% if user.is_authenticated %} {# Verifica se o usuário está logado #}
+            {% if user.is_staff or user.is_superuser %} {# Depois, verifica a permissão de staff/superuser #}
+                <a href="{% url 'produtos:adicionar_produto' %}" class="btn btn-success">Adicionar Novo Produto</a>
+            {% endif %} {# Fim do if user.is_staff or user.is_superuser #}
+        {% endif %} {# Fim do if user.is_authenticated #}
+    </div>
+
+    {# Opcional: Mensagens do Django (se você usar django.contrib.messages) #}
+    {% if messages %}
+        <ul class="messages list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Nome do Produto</th>
+                    <th>Preço</th>
+                    <th>Estoque</th>
+                    <th class="text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                <tr>
+                    <td>{{ produto.name }}</td>
+                    <td>R$ {{ produto.preco|floatformat:2 }}</td>
+                    <td>{{ produto.stock }}</td>
+                    <td class="text-center">
+                        {# CORREÇÃO AQUI: ANINHAMENTO DOS IFS para os botões "Editar" e "Excluir" #}
+                        {% if user.is_authenticated %} {# Verifica se o usuário está logado #}
+                            {% if user.is_staff or user.is_superuser %} {# Depois, verifica a permissão de staff/superuser #}
+                                <a href="{% url 'produtos:modificar_produto' produto_id=produto.pk %}" class="btn btn-sm btn-primary me-2">Editar</a>
+                                <form action="{% url 'produtos:excluir_produto' produto_id=produto.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir o produto {{ produto.name }}?');">Excluir</button>
+                                </form>
+                            {% endif %} {# Fim do if user.is_staff or user.is_superuser #}
+                        {% endif %} {# Fim do if user.is_authenticated #}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">Nenhum produto cadastrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

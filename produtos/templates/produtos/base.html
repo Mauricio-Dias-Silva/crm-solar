@@ -23,7 +23,6 @@
 <body class="bg-light">
     <header>              
 
-     <!-- Barra de Navegação -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="{% url 'produtos:home' %}">Solar Shop</a>
@@ -33,36 +32,52 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-{% if user.is_authenticated %}
-    <li class="nav-item">
-        <form id="logout-form" action="{% url 'produtos:logout' %}" method="post" style="display: none;">
-            {% csrf_token %}
-        </form>
-        <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-            Logout
-        </a>
-    </li>
-{% else %}
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'produtos:login' %}">Login</a>
-    </li>
-{% endif %}
-
+        {# LINKS DE NAVEGAÇÃO COMUNS #}
         <li class="nav-item"><a class="nav-link" href="{% url 'produtos:home' %}">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'produtos:contact' %}">Contato</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'produtos:about' %}">Sobre</a></li>
+
+        {# LINK PARA GERENCIAR PRODUTOS (APENAS PARA ADMINS) #}
+        {# CORREÇÃO AQUI: ANINHAMENTO DOS IFS #}
+        {% if user.is_authenticated %} {# Verifica se o usuário está logado (primeiro) #}
+          {% if user.is_staff or user.is_superuser %} {# Depois, verifica a permissão de staff/superuser #}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'produtos:lista_produtos' %}">Gerenciar Produtos</a>
+            </li>
+          {% endif %} {# Fim do if user.is_staff or user.is_superuser #}
+        {% endif %} {# Fim do if user.is_authenticated #}
+
+        {# LINK PARA ACOMPANHAR OBRA #}
         <li class="nav-item"><a class="nav-link" href="/crm/progresso/">Acompanhar Minha Obra</a></li>
 
+        {# LINK PARA CARRINHO (APENAS SE ESTIVER LOGADO) #}
         {% if user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'produtos:ver_carrinho' %}"><i class="bi bi-cart"></i> Carrinho</a>
           </li>
         {% endif %}
+
+        {# LINKS DE AUTENTICAÇÃO (LOGIN/LOGOUT) #}
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            {# Form oculto para logout seguro via POST #}
+            <form id="logout-form" action="{% url 'produtos:logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+            </form>
+            <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Logout
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'produtos:login' %}">Login</a>
+          </li>
+        {% endif %}
       </ul>
 
+      {# FORMULÁRIO DE PESQUISA #}
       <form action="{% url 'produtos:search' %}" method="get" class="d-flex ms-auto" style="max-width:350px; width:100%;">
         <input type="text" name="q" placeholder="Pesquisar produtos..." class="form-control me-2" aria-label="Pesquisar produtos">
         <button type="submit" class="btn btn-outline-success">Buscar</button>
@@ -196,6 +211,8 @@
         })
     })()
     </script>
+    
+    <script src="//code.jivosite.com/widget/lJltfRwXXH" async></script>
 
     {% comment %} <script src="{% static 'js/carousel.js' %}"></script> {% endcomment %}
 </body>

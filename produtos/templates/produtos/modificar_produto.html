@@ -1,0 +1,106 @@
+{% extends 'produtos/base.html' %} {# <--- Herda seu layout base com Bootstrap #}
+{% load static %}
+{% load widget_tweaks %} {# <--- ESSENCIAL para os filtros como 'add_class' #}
+
+{% block title %}
+    {% if is_adding %}Adicionar Novo Produto{% else %}Modificar Produto: {{ produto.name }}{% endif %}
+{% endblock %}
+
+{% block content %} {# <--- Tudo o que estava dentro do <body> no seu original #}
+
+<div class="container my-4">
+    <h1 class="mb-4">{% if is_adding %}Adicionar Novo Produto{% else %}Modificar Produto{% endif %}</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {# Exibição de erros globais do formulário principal #}
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <h2 class="mb-3">Detalhes do Produto</h2>
+        {% for field in form %}
+            <div class="mb-3"> {# Bootstrap margin-bottom #}
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}:</label>
+                {{ field|add_class:"form-control" }} {# Aplica a classe Bootstrap #}
+                {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+                {% if field.errors %}<div class="text-danger small">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</div>{% endif %}
+            </div>
+        {% endfor %}
+
+        <hr class="my-4">
+
+        <h2 class="mb-3">Imagens do Produto</h2>
+        <div class="border p-3 mb-4 rounded bg-light"> {# Estilo para a seção de imagens #}
+            {{ formset.management_form }} {# ESSENCIAL! Gerencia o estado do formset #}
+            
+            {% if formset.non_form_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in formset.non_form_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for image_form in formset %}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body d-flex align-items-center">
+                        {% if image_form.instance.pk %}{{ image_form.id }}{% endif %}
+
+                        <div class="me-3">
+                            {% if image_form.instance.image %}
+                                <img src="{{ image_form.instance.image.url }}" alt="{{ image_form.instance.alt_text|default:'Imagem do Produto' }}" class="img-thumbnail" style="max-width: 80px; max-height: 80px;">
+                            {% else %}
+                                <div class="bg-secondary-subtle text-muted d-flex align-items-center justify-content-center rounded" style="width: 80px; height: 80px;">
+                                    <small>Sem Imagem</small>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex-grow-1">
+                            <div class="mb-2">
+                                <label for="{{ image_form.image.id_for_label }}" class="form-label">Arquivo da Imagem:</label>
+                                {{ image_form.image|add_class:"form-control" }} {# Aplica a classe Bootstrap #}
+                                {% if image_form.image.help_text %}<small class="form-text text-muted">{{ image_form.image.help_text }}</small>{% endif %}
+                                {% if image_form.image.errors %}<div class="text-danger small">{% for error in image_form.image.errors %}<li>{{ error }}</li>{% endfor %}</div>{% endif %}
+                            </div>
+                            <div class="mb-2">
+                                <label for="{{ image_form.alt_text.id_for_label }}" class="form-label">Texto Alternativo:</label>
+                                {{ image_form.alt_text|add_class:"form-control" }} {# Aplica a classe Bootstrap #}
+                                {% if image_form.alt_text.help_text %}<small class="form-text text-muted">{{ image_form.alt_text.help_text }}</small>{% endif %}
+                                {% if image_form.alt_text.errors %}<div class="text-danger small">{% for error in image_form.alt_text.errors %}<li>{{ error }}</li>{% endfor %}</div>{% endif %}
+                            </div>
+                            <div class="form-check mb-2">
+                                {{ image_form.is_main|add_class:"form-check-input" }}
+                                <label class="form-check-label" for="{{ image_form.is_main.id_for_label }}">{{ image_form.is_main.label }}</label>
+                                {% if image_form.is_main.help_text %}<small class="form-text text-muted">{{ image_form.is_main.help_text }}</small>{% endif %}
+                                {% if image_form.is_main.errors %}<div class="text-danger small">{% for error in image_form.is_main.errors %}<li>{{ error }}</li>{% endfor %}</div>{% endif %}
+                            </div>
+
+                            {% if image_form.instance.pk %} {# Apenas mostra a opção de remover para imagens existentes #}
+                                <div class="form-check">
+                                    {{ image_form.DELETE|add_class:"form-check-input" }}
+                                    <label class="form-check-label" for="{{ image_form.DELETE.id_for_label }}">Remover esta Imagem</label>
+                                    {% if image_form.DELETE.errors %}<div class="text-danger small">{% for error in image_form.DELETE.errors %}<li>{{ error }}</li>{% endfor %}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <p class="text-center text-muted small mt-3">* Você pode adicionar até {{ formset.max_num }} imagens por produto.</p>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <a href="{% if produto %}{% url 'produtos:produto_detalhe' produto_id=produto.pk %}{% else %}{% url 'produtos:home' %}{% endif %}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar {% if is_adding %}Produto{% else %}Alterações{% endif %}</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
