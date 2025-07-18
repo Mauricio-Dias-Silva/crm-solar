@@ -1,0 +1,487 @@
+{% extends 'core/base.html' %}
+{% load core_filters %} 
+
+{% block title %}Editar Site: {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-3 text-center">Editar Seu Site: <span class="text-primary">{{ project.name }}</span></h1>
+    <p class="lead text-center mb-4">Preencha os campos abaixo para personalizar o conteúdo do seu site. Clique em "Pré-visualizar Site" para ver suas mudanças antes de salvar.</p>
+
+    {# Mensagens de feedback (sucesso/erro) - Usando o sistema de mensagens do Django #}
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" id="edit-form" action="{% url 'edit_site' project.id %}" enctype="multipart/form-data"> {# IMPORTANTE: Adicionado enctype para uploads de arquivo #}
+        {% csrf_token %}
+
+        {# Seção Principal (Hero) #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-dark text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-star-fill me-2"></i>Seção Principal (Hero)</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_hero_titulo" class="form-label fw-bold">Título Principal:</label>
+                        <input type="text" class="form-control" id="id_hero_titulo" name="LP_HERO_TITULO" value="{{ project.content_data.LP_HERO_TITULO|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_hero_subtitulo" class="form-label fw-bold">Subtítulo:</label>
+                        <textarea class="form-control" id="id_hero_subtitulo" name="LP_HERO_SUBTITULO" rows="2">{{ project.content_data.LP_HERO_SUBTITULO|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_hero_cta_texto" class="form-label fw-bold">Texto do Botão de Chamada para Ação (CTA):</label>
+                        <input type="text" class="form-control" id="id_hero_cta_texto" name="LP_HERO_CTA_TEXTO" value="{{ project.content_data.LP_HERO_CTA_TEXTO|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_hero_cta_link" class="form-label fw-bold">Link do Botão de Chamada para Ação (CTA):</label>
+                        <input type="url" class="form-control" id="id_hero_cta_link" name="LP_HERO_CTA_LINK" value="{{ project.content_data.LP_HERO_CTA_LINK|default:'' }}">
+                    </div>
+                    <div class="col-12">
+                        <label for="id_hero_bg_imagem" class="form-label fw-bold">Imagem de Fundo da Seção Hero:</label>
+                        <input type="file" class="form-control" id="id_hero_bg_imagem" name="LP_HERO_BG_IMAGEM_URL_FILE" accept="image/*"> {# type="file" e accept="image/*" #}
+                        {% if project.content_data.LP_HERO_BG_IMAGEM_URL %}
+                            <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_HERO_BG_IMAGEM_URL }}" target="_blank">{{ project.content_data.LP_HERO_BG_IMAGEM_URL }}</a></small>
+                            <img src="{{ project.content_data.LP_HERO_BG_IMAGEM_URL }}" alt="Pré-visualização da Imagem Hero" class="img-thumbnail mt-2" style="max-height: 150px;">
+                        {% endif %}
+                        {# Se a IA não gerou ALT para a imagem de fundo, adicione um campo oculto ou um input de texto aqui se precisar #}
+                        <input type="hidden" name="LP_HERO_BG_IMAGEM_ALT" value="{{ project.content_data.LP_HERO_BG_IMAGEM_ALT|default:'Imagem de fundo da seção principal' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Seção Benefícios #}
+        {# Copie e cole este bloco para Benefício 2 e Benefício 3, ajustando IDs e Nomes #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-info text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-lightbulb-fill me-2"></i>Benefício 1</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_beneficio1_titulo" class="form-label fw-bold">Título do Benefício:</label>
+                        <input type="text" class="form-control" id="id_beneficio1_titulo" name="LP_BENEFICIO_1_TITULO" value="{{ project.content_data.LP_BENEFICIO_1_TITULO|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio1_descricao" class="form-label fw-bold">Descrição do Benefício:</label>
+                        <textarea class="form-control" id="id_beneficio1_descricao" name="LP_BENEFICIO_1_DESCRICAO" rows="3">{{ project.content_data.LP_BENEFICIO_1_DESCRICAO|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio1_imagem" class="form-label fw-bold">Imagem do Benefício:</label>
+                        <input type="file" class="form-control" id="id_beneficio1_imagem" name="LP_IMAGEM_BENEFIT_1_URL_FILE" accept="image/*">
+                        {% if project.content_data.LP_IMAGEM_BENEFIT_1_URL %}
+                            <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_BENEFIT_1_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_BENEFIT_1_URL }}</a></small>
+                            <img src="{{ project.content_data.LP_IMAGEM_BENEFIT_1_URL }}" alt="Pré-visualização da Imagem Benefício 1" class="img-thumbnail mt-2" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio1_alt" class="form-label fw-bold">Texto Alternativo da Imagem:</label>
+                        <input type="text" class="form-control" id="id_beneficio1_alt" name="LP_IMAGEM_BENEFIT_1_ALT" value="{{ project.content_data.LP_IMAGEM_BENEFIT_1_ALT|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {# CÓPIA PARA BENEFÍCIO 2 #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-info text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-lightbulb-fill me-2"></i>Benefício 2</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_beneficio2_titulo" class="form-label fw-bold">Título do Benefício:</label>
+                        <input type="text" class="form-control" id="id_beneficio2_titulo" name="LP_BENEFICIO_2_TITULO" value="{{ project.content_data.LP_BENEFICIO_2_TITULO|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio2_descricao" class="form-label fw-bold">Descrição do Benefício:</label>
+                        <textarea class="form-control" id="id_beneficio2_descricao" name="LP_BENEFICIO_2_DESCRICAO" rows="3">{{ project.content_data.LP_BENEFICIO_2_DESCRICAO|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio2_imagem" class="form-label fw-bold">Imagem do Benefício:</label>
+                        <input type="file" class="form-control" id="id_beneficio2_imagem" name="LP_IMAGEM_BENEFIT_2_URL_FILE" accept="image/*">
+                        {% if project.content_data.LP_IMAGEM_BENEFIT_2_URL %}
+                            <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_BENEFIT_2_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_BENEFIT_2_URL }}</a></small>
+                            <img src="{{ project.content_data.LP_IMAGEM_BENEFIT_2_URL }}" alt="Pré-visualização da Imagem Benefício 2" class="img-thumbnail mt-2" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio2_alt" class="form-label fw-bold">Texto Alternativo da Imagem:</label>
+                        <input type="text" class="form-control" id="id_beneficio2_alt" name="LP_IMAGEM_BENEFIT_2_ALT" value="{{ project.content_data.LP_IMAGEM_BENEFIT_2_ALT|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# CÓPIA PARA BENEFÍCIO 3 #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-info text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-lightbulb-fill me-2"></i>Benefício 3</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_beneficio3_titulo" class="form-label fw-bold">Título do Benefício:</label>
+                        <input type="text" class="form-control" id="id_beneficio3_titulo" name="LP_BENEFICIO_3_TITULO" value="{{ project.content_data.LP_BENEFICIO_3_TITULO|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio3_descricao" class="form-label fw-bold">Descrição do Benefício:</label>
+                        <textarea class="form-control" id="id_beneficio3_descricao" name="LP_BENEFICIO_3_DESCRICAO" rows="3">{{ project.content_data.LP_BENEFICIO_3_DESCRICAO|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio3_imagem" class="form-label fw-bold">Imagem do Benefício:</label>
+                        <input type="file" class="form-control" id="id_beneficio3_imagem" name="LP_IMAGEM_BENEFIT_3_URL_FILE" accept="image/*">
+                        {% if project.content_data.LP_IMAGEM_BENEFIT_3_URL %}
+                            <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_BENEFIT_3_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_BENEFIT_3_URL }}</a></small>
+                            <img src="{{ project.content_data.LP_IMAGEM_BENEFIT_3_URL }}" alt="Pré-visualização da Imagem Benefício 3" class="img-thumbnail mt-2" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_beneficio3_alt" class="form-label fw-bold">Texto Alternativo da Imagem:</label>
+                        <input type="text" class="form-control" id="id_beneficio3_alt" name="LP_IMAGEM_BENEFIT_3_ALT" value="{{ project.content_data.LP_IMAGEM_BENEFIT_3_ALT|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Seção Depoimentos #}
+        {# Copie e cole este bloco para Depoimento 2 e Depoimento 3, ajustando IDs e Nomes #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-success text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-chat-quote-fill me-2"></i>Depoimento 1</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_dep1_texto" class="form-label fw-bold">Texto do Depoimento:</label>
+                        {# O 'name' deve ser DEP_1_TEXTO #}
+                        <textarea class="form-control" id="id_dep1_texto" name="DEP_1_TEXTO" rows="3">{{ project.content_data.DEP_1_TEXTO|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep1_nome" class="form-label fw-bold">Nome do Cliente:</label>
+                        {# O 'name' deve ser DEP_1_NOME #}
+                        <input type="text" class="form-control" id="id_dep1_nome" name="DEP_1_NOME" value="{{ project.content_data.DEP_1_NOME|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep1_foto" class="form-label fw-bold">Foto do Cliente:</label>
+                        {# O 'name' para o UPLOAD deve ser LP_IMAGEM_DEP_1_PHOTO_URL_FILE #}
+                        <input type="file" class="form-control" id="id_dep1_foto" name="LP_IMAGEM_DEP_1_PHOTO_URL_FILE" accept="image/*">
+                        {% if project.content_data.LP_IMAGEM_DEP_1_PHOTO_URL %}
+                            <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_DEP_1_PHOTO_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_DEP_1_PHOTO_URL }}</a></small>
+                            <img src="{{ project.content_data.LP_IMAGEM_DEP_1_PHOTO_URL }}" alt="Pré-visualização da Foto do Depoimento 1" class="img-thumbnail mt-2" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep1_alt" class="form-label fw-bold">Texto Alternativo da Foto:</label>
+                        {# O 'name' deve ser LP_IMAGEM_DEP_1_PHOTO_ALT #}
+                        <input type="text" class="form-control" id="id_dep1_alt" name="LP_IMAGEM_DEP_1_PHOTO_ALT" value="{{ project.content_data.LP_IMAGEM_DEP_1_PHOTO_ALT|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# CÓPIA PARA DEPOIMENTO 2 #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-success text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-chat-quote-fill me-2"></i>Depoimento 2</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_dep2_texto" class="form-label fw-bold">Texto do Depoimento:</label>
+                        {# O 'name' deve ser DEP_2_TEXTO #}
+                        <textarea class="form-control" id="id_dep2_texto" name="DEP_2_TEXTO" rows="3">{{ project.content_data.DEP_2_TEXTO|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep2_nome" class="form-label fw-bold">Nome do Cliente:</label>
+                        {# O 'name' deve ser DEP_2_NOME #}
+                        <input type="text" class="form-control" id="id_dep2_nome" name="DEP_2_NOME" value="{{ project.content_data.DEP_2_NOME|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep2_foto" class="form-label fw-bold">Foto do Cliente:</label>
+                        {# O 'name' para o UPLOAD deve ser LP_IMAGEM_DEP_2_PHOTO_URL_FILE #}
+                        <input type="file" class="form-control" id="id_dep2_foto" name="LP_IMAGEM_DEP_2_PHOTO_URL_FILE" accept="image/*">
+                        {% if project.content_data.LP_IMAGEM_DEP_2_PHOTO_URL %}
+                            <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_DEP_2_PHOTO_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_DEP_2_PHOTO_URL }}</a></small>
+                            <img src="{{ project.content_data.LP_IMAGEM_DEP_2_PHOTO_URL }}" alt="Pré-visualização da Foto do Depoimento 2" class="img-thumbnail mt-2" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep2_alt" class="form-label fw-bold">Texto Alternativo da Foto:</label>
+                        {# O 'name' deve ser LP_IMAGEM_DEP_2_PHOTO_ALT #}
+                        <input type="text" class="form-control" id="id_dep2_alt" name="LP_IMAGEM_DEP_2_PHOTO_ALT" value="{{ project.content_data.LP_IMAGEM_DEP_2_PHOTO_ALT|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# CÓPIA PARA DEPOIMENTO 3 #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-success text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-chat-quote-fill me-2"></i>Depoimento 3</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_dep3_texto" class="form-label fw-bold">Texto do Depoimento:</label>
+                        {# O 'name' deve ser DEP_3_TEXTO #}
+                        <textarea class="form-control" id="id_dep3_texto" name="DEP_3_TEXTO" rows="3">{{ project.content_data.DEP_3_TEXTO|default:'' }}</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep3_nome" class="form-label fw-bold">Nome do Cliente:</label>
+                        {# O 'name' deve ser DEP_3_NOME #}
+                        <input type="text" class="form-control" id="id_dep3_nome" name="DEP_3_NOME" value="{{ project.content_data.DEP_3_NOME|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep3_foto" class="form-label fw-bold">Foto do Cliente:</label>
+                        {# O 'name' para o UPLOAD deve ser LP_IMAGEM_DEP_3_PHOTO_URL_FILE #}
+                        <input type="file" class="form-control" id="id_dep3_foto" name="LP_IMAGEM_DEP_3_PHOTO_URL_FILE" accept="image/*">
+                        {% if project.content_data.LP_IMAGEM_DEP_3_PHOTO_URL %}
+                            <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_DEP_3_PHOTO_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_DEP_3_PHOTO_URL }}</a></small>
+                            <img src="{{ project.content_data.LP_IMAGEM_DEP_3_PHOTO_URL }}" alt="Pré-visualização da Foto do Depoimento 3" class="img-thumbnail mt-2" style="max-height: 100px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_dep3_alt" class="form-label fw-bold">Texto Alternativo da Foto:</label>
+                        {# O 'name' deve ser LP_IMAGEM_DEP_3_PHOTO_ALT #}
+                        <input type="text" class="form-control" id="id_dep3_alt" name="LP_IMAGEM_DEP_3_PHOTO_ALT" value="{{ project.content_data.LP_IMAGEM_DEP_3_PHOTO_ALT|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Seção Formulário de Contato #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-danger text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-envelope-fill me-2"></i>Formulário de Contato</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_form_titulo" class="form-label fw-bold">Título do Formulário:</label>
+                        {# O 'name' deve ser FORM_TITULO #}
+                        <input type="text" class="form-control" id="id_form_titulo" name="FORM_TITULO" value="{{ project.content_data.FORM_TITULO|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_form_submit_texto" class="form-label fw-bold">Texto do Botão Enviar:</label>
+                        {# O 'name' deve ser FORM_SUBMIT_TEXTO #}
+                        <input type="text" class="form-control" id="id_form_submit_texto" name="FORM_SUBMIT_TEXTO" value="{{ project.content_data.FORM_SUBMIT_TEXTO|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ... restante do formulário e botões de ação ... #}
+        {# Seção Rodapé #}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-secondary text-white p-3">
+                <h3 class="mb-0 fs-5"><i class="bi bi-c-circle-fill me-2"></i>Rodapé</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_rodape_copyright" class="form-label fw-bold">Texto de Copyright:</label>
+                        <input type="text" class="form-control" id="id_rodape_copyright" name="LP_RODAPE_COPYRIGHT" value="{{ project.content_data.LP_RODAPE_COPYRIGHT|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_link_instagram" class="form-label fw-bold">Link do Instagram:</label>
+                        <input type="url" class="form-control" id="id_link_instagram" name="LP_LINK_INSTAGRAM" value="{{ project.content_data.LP_LINK_INSTAGRAM|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_link_facebook" class="form-label fw-bold">Link do Facebook:</label>
+                        <input type="url" class="form-control" id="id_link_facebook" name="LP_LINK_FACEBOOK" value="{{ project.content_data.LP_LINK_FACEBOOK|default:'' }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Botões de Ação Fixos #}
+        <div class="d-flex justify-content-center gap-3 my-5 p-3 bg-light rounded-3 shadow-sm flex-wrap"> {# flex-wrap para responsividade #}
+            <button type="submit" class="btn btn-success btn-lg px-5"><i class="bi bi-save me-2"></i>Salvar Alterações</button>
+            <button type="button" class="btn btn-primary btn-lg px-5" id="preview-button"><i class="bi bi-eye-fill me-2"></i>Pré-visualizar Site</button>
+            <a href="{% url 'my_sites' %}" class="btn btn-outline-secondary btn-lg px-5"><i class="bi bi-arrow-left me-2"></i>Voltar para Meus Sites</a>
+            <button id="publish-btn" class="btn btn-warning btn-lg px-5" {% if project.published_url %}disabled{% endif %}>
+                {% if project.published_url %}<i class="bi bi-check-circle-fill me-2"></i>Publicado!{% else %}<i class="bi bi-cloud-arrow-up-fill me-2"></i>Publicar Site{% endif %}
+            </button>
+        </div>
+        {% if project.published_url %}
+            <p class="text-center mt-2 fs-5">
+                Seu site está online em: <a href="{{ project.published_url }}" target="_blank" class="fw-bold">{{ project.published_url }}</a>
+            </p>
+        {% endif %}
+    </form>
+</div>
+
+{# Modal para Pré-visualização - Fora do bloco content para ser global #}
+{# Certifique-se de que este modal esteja no final do seu 'base.html' ou 'edit_site.html' para que o JavaScript o encontre #}
+{# É melhor que esteja no base.html para ser reusável, mas se não for, mantenha aqui #}
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-fullscreen"> {# Modal grande para melhor visualização #}
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="previewModalLabel">Pré-visualização do Site</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <iframe id="preview-iframe-modal" src="about:blank" style="width: 100%; height: 100%; border: none;"></iframe> {# ID diferente para evitar conflito #}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar Pré-visualização</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const editForm = document.getElementById('edit-form');
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const previewButton = document.getElementById('preview-button');
+    const previewIframeModal = document.getElementById('preview-iframe-modal'); // O iframe DENTRO do modal
+    const publishBtn = document.getElementById('publish-btn');
+
+    // URLs dinâmicas com o ID do projeto
+    const previewUrl = "{% url 'preview_site_ajax' project.id %}";
+    const publishUrl = "{% url 'publish_site' project.id %}";
+
+    // Função para atualizar a pré-visualização no modal
+    function updatePreviewModal() {
+        const formData = new FormData(editForm);
+        
+        const previewData = new URLSearchParams();
+        for (const [key, value] of formData.entries()) {
+            if (!(value instanceof File)) {
+                previewData.append(key, value);
+            }
+        }
+
+        // Usando previewUrl que agora é dinâmica
+        fetch(previewUrl, { 
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: previewData.toString()
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.html) {
+                previewIframeModal.srcdoc = data.html;
+                const previewModalElement = new bootstrap.Modal(document.getElementById('previewModal'));
+                previewModalElement.show();
+            } else if (data.error) {
+                console.error("Erro na pré-visualização:", data.error);
+                alert("Erro ao carregar pré-visualização: " + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição AJAX de pré-visualização:', error);
+            alert('Erro de rede ou servidor ao tentar pré-visualizar.');
+        });
+    }
+
+    // Event listener para o botão de pré-visualização
+    if (previewButton) {
+        previewButton.addEventListener('click', function() {
+            updatePreviewModal();
+        });
+    }
+
+    // Lógica para feedback visual no upload de arquivos (mostra nome do arquivo e miniatura)
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : '';
+            let smallTag = this.closest('.mb-3').querySelector('small.form-text');
+            if (!smallTag) {
+                smallTag = document.createElement('small');
+                smallTag.className = 'form-text text-muted d-block mt-1';
+                this.parentNode.insertBefore(smallTag, this.nextSibling);
+            }
+            smallTag.textContent = fileName ? `Arquivo selecionado: ${fileName}` : 'Nenhum arquivo selecionado.';
+
+            // Opcional: Pré-visualização imediata da imagem selecionada
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    let imgPreview = this.closest('.mb-3').querySelector('img.img-thumbnail');
+                    if (!imgPreview) {
+                        imgPreview = document.createElement('img');
+                        imgPreview.className = 'img-thumbnail mt-2';
+                        imgPreview.style.maxHeight = '150px';
+                        this.closest('.mb-3').appendChild(imgPreview);
+                    }
+                    imgPreview.src = e.target.result;
+                    imgPreview.alt = 'Pré-visualização da imagem selecionada';
+                };
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                let imgPreview = this.closest('.mb-3').querySelector('img.img-thumbnail');
+                if (imgPreview) {
+                    imgPreview.remove();
+                }
+            }
+        });
+    });
+
+    // Lógica do botão Publicar
+    if (publishBtn) {
+        publishBtn.addEventListener('click', function() {
+            publishBtn.disabled = true;
+            publishBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicando...';
+
+            // Usando publishUrl que agora é dinâmica
+            fetch(publishUrl, { 
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => { throw new Error(errorData.error || 'Erro desconhecido'); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('Site publicado com sucesso! URL: ' + data.published_url);
+                    publishBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Publicado!';
+                    let publishedUrlParagraph = document.querySelector('.d-flex + p.text-center');
+                    if (!publishedUrlParagraph) {
+                        publishedUrlParagraph = document.createElement('p');
+                        publishedUrlParagraph.className = 'text-center mt-2 fs-5';
+                        publishBtn.closest('.d-flex').parentNode.appendChild(publishedUrlParagraph);
+                    }
+                    // Certifique-se de que o link esteja formatado corretamente com <a href="..."></a>
+                    publishedUrlParagraph.innerHTML = `Seu site está online em: <a href="${data.published_url}" target="_blank" class="fw-bold">${data.published_url}</a>`; 
+                } else {
+                    alert('Erro ao publicar site: ' + data.error);
+                    publishBtn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i>Publicar Site';
+                    publishBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Erro na requisição AJAX de publicação:', error);
+                alert('Erro na requisição de publicação: ' + error.message);
+                publishBtn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i>Publicar Site';
+                publishBtn.disabled = false;
+            });
+        });
+    }
+
+</script>
+{% endblock %}

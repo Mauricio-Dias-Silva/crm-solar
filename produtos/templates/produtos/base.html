@@ -8,137 +8,171 @@
     <title>{% block title %}Meu Site{% endblock %}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
-          rel="stylesheet" 
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
-          crossorigin="anonymous">
+              rel="stylesheet" 
+              integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+              crossorigin="anonymous">
     
-    {# Bootstrap Icons para os ícones que estamos usando #}
+    {# Bootstrap Icons para os ícones que estamos usando (ex: carrinho) #}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    {# Font Awesome para os ícones sociais (se você os estiver usando) #}
+    {# Font Awesome para os ícones sociais (ex: solar-panel, tools) #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    {# Seu CSS personalizado, se houver #}
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    
+    {% block extra_head %}{% endblock %} {# Para CSS/JS adicionais específicos de alguma página #}
+
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f6f8;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Removendo estilos de sidebar e content que podem ter sobrado de outro base.html */
+        .sidebar, .content {
+            position: relative;
+            width: auto;
+            margin-left: 0;
+            height: auto;
+            display: block;
+            z-index: auto;
+        }
+
+        footer {
+            background-color: #1b263b;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: auto;
+        }
+        .footer-text {
+            font-size: 14px;
+        }
+
+        footer img {
+            height: 40px;
+        }
+
+        .messages-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1050;
+            padding: 1rem;
+        }
+        .messages-container .alert {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Ajustes no navbar para os botões ficarem à direita sem quebrar a navegação principal */
+        @media (min-width: 992px) { /* A partir de 'lg' */
+            .navbar-nav-right-buttons {
+                margin-left: auto; /* Empurra para a direita no desktop */
+            }
+        }
+        @media (max-width: 991px) { /* Em telas menores, garante que os botões fiquem empilhados */
+            .navbar-nav-right-buttons .nav-item {
+                margin-top: 10px; /* Espaçamento entre os botões quando empilhados */
+            }
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
 
 </head>
-<body class="bg-light">
-    <header>              
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="{% url 'produtos:home' %}">Solar Shop</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-        {# LINKS DE NAVEGAÇÃO COMUNS #}
-        <li class="nav-item"><a class="nav-link" href="{% url 'produtos:home' %}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'produtos:contact' %}">Contato</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'produtos:about' %}">Sobre</a></li>
-
-        {# LINK PARA GERENCIAR PRODUTOS (APENAS PARA ADMINS) #}
-        {# CORREÇÃO AQUI: ANINHAMENTO DOS IFS #}
-        {% if user.is_authenticated %} {# Verifica se o usuário está logado (primeiro) #}
-          {% if user.is_staff or user.is_superuser %} {# Depois, verifica a permissão de staff/superuser #}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'produtos:lista_produtos' %}">Gerenciar Produtos</a>
-            </li>
-          {% endif %} {# Fim do if user.is_staff or user.is_superuser #}
-        {% endif %} {# Fim do if user.is_authenticated #}
-
-        {# LINK PARA ACOMPANHAR OBRA #}
-        <li class="nav-item"><a class="nav-link" href="/crm/progresso/">Acompanhar Minha Obra</a></li>
-
-        {# LINK PARA CARRINHO (APENAS SE ESTIVER LOGADO) #}
-        {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'produtos:ver_carrinho' %}"><i class="bi bi-cart"></i> Carrinho</a>
-          </li>
-        {% endif %}
-
-        {# LINKS DE AUTENTICAÇÃO (LOGIN/LOGOUT) #}
-        {% if user.is_authenticated %}
-          <li class="nav-item">
-            {# Form oculto para logout seguro via POST #}
-            <form id="logout-form" action="{% url 'produtos:logout' %}" method="post" style="display: none;">
-                {% csrf_token %}
-            </form>
-            <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                Logout
-            </a>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'produtos:login' %}">Login</a>
-          </li>
-        {% endif %}
-      </ul>
-
-      {# FORMULÁRIO DE PESQUISA #}
-      <form action="{% url 'produtos:search' %}" method="get" class="d-flex ms-auto" style="max-width:350px; width:100%;">
-        <input type="text" name="q" placeholder="Pesquisar produtos..." class="form-control me-2" aria-label="Pesquisar produtos">
-        <button type="submit" class="btn btn-outline-success">Buscar</button>
-      </form>
-    </div>
-  </div>
-</nav>
-
-
-        {# --- SEGUNDO NAVBAR DE CATEGORIAS (HORIZONTAL) --- #}
-        {# Reintroduzindo o navbar horizontal de categorias #}
-        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom border-top py-0"> {# Adicionei border-bottom border-top e py-0 para um visual mais compacto #}
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div class="container-fluid">
-                {# Use um botão para colapsar em telas menores, se quiser que ele seja responsivo #}
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavCategories" aria-controls="navbarNavCategories" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-bold" href="{% url 'produtos:home' %}">Solar Shop</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse justify-content-center" id="navbarNavCategories"> {# justify-content-center para centralizar os links #}
-                    <ul class="navbar-nav">
-                        {% for categoria in categorias_ativas %}
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    {# LINKS DE NAVEGAÇÃO COMUNS - Mantenha este ul como estava #}
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'produtos:home' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'produtos:contact' %}">Contato</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'produtos:about' %}">Sobre</a></li>
+
+                        {# LINK PARA GERENCIAR PRODUTOS (APENAS PARA ADMINS/STAFF) #}
+                        {% if user.is_authenticated and user.is_staff or user.is_superuser %}
                             <li class="nav-item">
-                                <a class="nav-link text-dark fw-bold px-3 py-2" href="{% url 'produtos:produtos_por_categoria' categoria.nome_url %}">{{ categoria.nome_exibicao }}</a> {# Ajustei o padding e a cor do texto #}
+                                <a class="nav-link" href="{% url 'produtos:lista_produtos' %}">Gerenciar Produtos</a>
                             </li>
-                        {% endfor %}
+                        {% endif %}
+
+                        {# LINK PARA ACOMPANHAR OBRA #}
+                        <li class="nav-item"><a class="nav-link" href="/crm/progresso/">Acompanhar Minha Obra</a></li>
+
+                        {# LINK PARA CARRINHO (APENAS SE ESTIVER LOGADO) #}
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'produtos:ver_carrinho' %}"><i class="bi bi-cart"></i> Carrinho</a>
+                            </li>
+                        {% endif %}
                     </ul>
+
+                    {# NOVO BLOCO PARA BOTÕES DE LANDING PAGES E AUTENTICAÇÃO - Este UL ficará à direita #}
+                    <ul class="navbar-nav navbar-nav-right-buttons mb-2 mb-lg-0">
+                        {% if request.user.is_authenticated %}
+                            {# Lógica para CLIENTES com LP Personalizada #}
+                            {% with user_client=request.user.cliente_set.first %}
+                                {% if user_client and user_client.site_projects.first %}
+                                    <li class="nav-item"> 
+                                        <a class="nav-link btn btn-warning btn-sm text-dark fw-bold" href="{% url 'core:view_site' user_client.site_projects.first.id %}">
+                                           <i class="fas fa-solar-panel me-1"></i> Minha Oferta Solar
+                                        </a>
+                                    </li>
+                                {% elif request.user.is_staff or user.is_superuser %}
+                                    {# Link para a interface de criação de LPs para administradores/vendedores no CRM #}
+                                    <li class="nav-item">
+                                        <a class="nav-link btn btn-primary btn-sm text-white" href="{% url 'core:my_sites' %}">
+                                            <i class="fas fa-tools me-1"></i> Gerenciar LPs (CRM)
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endwith %}
+
+                            {# LINK DE LOGOUT #}
+                            <li class="nav-item">
+                                <form id="logout-form" action="{% url 'produtos:logout' %}" method="post" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                                <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+                            </li>
+                        {% else %}
+                            {# LINK DE LOGIN #}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'produtos:login' %}">Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+
+                    {# FORMULÁRIO DE PESQUISA - Movido para fora dos ULs, mas ainda dentro do collapse #}
+                    {# Para ficar à direita de TUDO no desktop, use ms-auto no formulário também #}
+                    <form action="{% url 'produtos:search' %}" method="get" class="d-flex ms-auto my-2 my-lg-0" style="max-width:350px;">
+                        <input type="text" name="q" placeholder="Pesquisar produtos..." class="form-control me-2" aria-label="Pesquisar produtos">
+                        <button type="submit" class="btn btn-outline-success">Buscar</button>
+                    </form>
                 </div>
             </div>
         </nav>
-        {# --- FIM DO SEGUNDO NAVBAR --- #}
 
-        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                {% for image in carousel_images %}
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{ forloop.counter }}"></button>
-                {% endfor %}
-            </div>
-            <div class="carousel-inner">
-                {% for image in carousel_images %}
-                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ image.title }}">
-                    {% if image.title or image.description %}
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5>{{ image.title }}</h5>
-                        <p>{{ image.description }}</p>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
+        {# ... (restante do template, incluindo o segundo navbar de categorias e o carrossel) ... #}
+
     </header>
 
-    <main class="container my-4">
+    <main class="container my-4 flex-grow-1">
         {% if messages %}
             <div class="messages-container my-3">
                 {% for message in messages %}
@@ -215,5 +249,6 @@
     <script src="//code.jivosite.com/widget/lJltfRwXXH" async></script>
 
     {% comment %} <script src="{% static 'js/carousel.js' %}"></script> {% endcomment %}
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

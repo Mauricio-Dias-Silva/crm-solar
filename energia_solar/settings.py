@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import dj_database_url
 
+
 # --- INÍCIO DA CONFIGURAÇÃO COM DJANGO-ENVIRON ---
 import environ # <--- Importe environ
 # Initialise environment variables
@@ -20,6 +21,11 @@ STRIPE_SECRET_KEY = env('SECRET_KEY_STRIPE')
 
 SECRET_KEY = env('SECRET_KEY', default='sua-chave-secreta-padrao-para-desenvolvimento-aqui') # <--- Use env()
 
+DEFAULT_AI_PROVIDER = os.environ.get('DEFAULT_AI_PROVIDER', 'gemini') # Ou 'openai'
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY') # Certifique-se de definir no ambiente
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY') # Certifique-se de definir no ambiente
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
 DEBUG='True'
@@ -35,9 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'solar',
+    'crispy_forms',
+    'crispy_bootstrap5',
     'widget_tweaks',
+    'solar',
     'produtos',
+    'core',
     'pagamento',
     'django_admin_logs',
     'django.contrib.sites',
@@ -48,6 +57,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
 ]
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -132,26 +143,26 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 #     server.quit() if server else None
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',
-        'USER': 'user',
-        'PASSWORD': 'password',
-        'HOST': 'db',  # mesmo nome do serviço no docker-compose
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         'ENGINE': 'django.db.backends.mysql',pip list
+#         'NAME': 'mydb',
+#         'USER': 'user',
+#         'PASSWORD': 'password',
+#         'HOST': 'db',  # mesmo nome do serviço no docker-compose
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'), # Usando os.path.join
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -192,9 +203,16 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://solarhub.com.br',
+#     'https://www.solarhub.com.br',
+#     'https://loja.solarhub.com.br',
+# ]
+
 CSRF_TRUSTED_ORIGINS = [
     'https://solarhub.com.br',
     'https://www.solarhub.com.br',
     'https://loja.solarhub.com.br',
+    'http://127.0.0.1:8000',  # Para desenvolvimento local
+    'http://localhost:8000',  # Outra opção comum para desenvolvimento
 ]
-

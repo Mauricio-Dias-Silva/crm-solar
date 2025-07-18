@@ -10,6 +10,7 @@ urlpatterns = [
     path('crm/', include('solar.urls', namespace='solar')),
     path('pagamento/', include('pagamento.urls', namespace='pagamento')),
     path('accounts/', include('allauth.urls')),
+    path('landing-pages/', include('core.urls')),
 ]
 
 # 👇 ESTE BLOCO DEVE ESTAR AQUI NO SEU urls.py PRINCIPAL

@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Meus Sites{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Seus Projetos de Sites</h1>
+<p class="lead text-center">Aqui você verá todos os sites que você criou e publicou com a GayaSites.</p>
+
+{% if user_projects %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for project in user_projects %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ project.name }}</h5>
+                    <p class="card-text text-muted">Criado em: {{ project.created_at|date:"d/m/Y H:i" }}</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'edit_site' project.id %}" class="btn btn-primary btn-sm">Editar Conteúdo</a>
+                        <a href="{% url 'download_site' project.id %}" class="btn btn-secondary btn-sm mt-1">Baixar HTML</a>
+                        {% if project.published_url %}
+                            <a href="{{ project.published_url }}" target="_blank" class="btn btn-success btn-sm mt-1">Ver Publicado</a>
+                        {% else %}
+                            <button class="btn btn-warning btn-sm mt-1" disabled>Não Publicado</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info text-center" role="alert">
+        Nenhum site criado ainda. <a href="{% url 'core:create_site' %}" class="alert-link">Comece a criar seu primeiro site agora!</a>
+    </div>
+{% endif %}
+{% endblock %}

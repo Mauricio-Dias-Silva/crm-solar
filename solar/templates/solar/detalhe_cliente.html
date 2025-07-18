@@ -1,4 +1,8 @@
+{# solar/templates/solar/detalhe_cliente.html #}
+
 {% extends 'solar/base.html' %}
+{% load static %}
+{% load i18n %}
 
 {% block title %}Detalhes do Cliente{% endblock %}
 
@@ -6,7 +10,7 @@
 <div class="container mt-5">
     <h2>Detalhes do Cliente</h2>
 
-    <div class="card p-4">
+    <div class="card p-4 mb-4">
         <p><strong>Nome:</strong> {{ cliente.nome }}</p>
         <p><strong>E-mail:</strong> {{ cliente.email }}</p>
 
@@ -19,9 +23,9 @@
         <p><strong>Telefone:</strong> {{ cliente.telefone }}</p>
 
         <p><strong>Endereço:</strong> 
-            {{ cliente.rua }}, nº {{ cliente.numero }} — 
-            CEP {{ cliente.cep }} — 
-            {{ cliente.cidade }}/{{ cliente.estado }}
+            {{ cliente.rua|default:'' }}, nº {{ cliente.numero|default:'' }} — 
+            CEP {{ cliente.cep|default:'' }} — 
+            {{ cliente.cidade|default:'' }}/{{ cliente.estado|default:'' }}
         </p>
 
         <p><strong>Possui WhatsApp:</strong> 
@@ -35,12 +39,50 @@
         <p><strong>ID de Acesso:</strong> {{ cliente.id_acesso }}</p>
     </div>
 
+    {# --- NOVO BLOCO: Ações e Landing Pages Personalizadas --- #}
+    <div class="card p-4 mb-4">
+        <h3 class="mb-3">Ações e Páginas Personalizadas</h3>
+
+        {# Botão para Gerar Nova Landing Page #}
+        {# Agora o namespace é 'core' #}
+        <a href="{% url 'core:create_site' %}?cliente_id={{ cliente.id }}&cliente_nome={{ cliente.nome|urlencode }}&prompt_inicial=Crie uma landing page moderna e clean para o cliente {{ cliente.nome }} ({{ cliente.empresa|default:'não informada' }}), focado em soluções de energia solar. Destaque os benefícios de economia de energia e sustentabilidade. Inclua um formulário de contato para orçamento e alguns depoimentos de clientes."
+           class="btn btn-info btn-lg w-100 mb-3">
+            <i class="fas fa-globe me-2"></i> Gerar Nova Landing Page Personalizada
+        </a>
+
+        {# Listagem de Landing Pages Existentes para este Cliente #}
+        {% if cliente.site_projects.all %}
+            <h4 class="mt-4 mb-3 text-center">Landing Pages Existentes:</h4>
+            <ul class="list-group">
+                {% for lp in cliente.site_projects.all %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            {# Agora o namespace é 'core' #}
+                            <a href="{% url 'core:edit_site' lp.id %}">{{ lp.name|default:"Página Sem Nome" }}</a>
+                            <small class="text-muted d-block">Criada em: {{ lp.created_at|date:"d/m/Y" }}</small>
+                        </div>
+                        <div>
+                            {% if lp.published_url %}
+                                <a href="{{ lp.published_url }}" target="_blank" class="badge bg-primary ms-2">Ver Online</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted text-center mt-3">Nenhuma landing page gerada para este cliente ainda.</p>
+        {% endif %}
+
+    </div>
+    {# --- FIM DO NOVO BLOCO --- #}
+
+    {# Botões de Ação Originais (manter) #}
     <div class="mt-4 d-flex gap-2">
         <a href="{% url 'crm:lista_clientes' %}" class="btn btn-secondary">Voltar</a>
         <a href="{% url 'crm:editar_cliente' cliente.id %}" class="btn btn-warning">Editar</a>
-        <form method="POST" action="{% url 'crm:excluir_cliente' cliente.id %}" style="display:inline;">
+        <form method="POST" action="{% url 'crm:excluir_cliente' cliente.id %}" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este cliente?');">
+            <button type="submit" class="btn btn-danger">
                 Excluir
             </button>
         </form>

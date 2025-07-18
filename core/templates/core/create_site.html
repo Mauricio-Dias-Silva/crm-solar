@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Criar Novo Site{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Descreva seu Novo Site</h1>
+<p class="lead text-center">Use a caixa abaixo para descrever a landing page que você deseja criar. Seja o mais específico possível!</p>
+
+<form method="post" action="{% url 'core:create_site' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="id_prompt" class="form-label">Minha descrição para a Gaya:</label>
+        <textarea class="form-control" id="id_prompt" name="prompt" rows="5" placeholder="Ex: Uma landing page moderna para minha consultoria de marketing digital, com seção hero, 3 benefícios, depoimentos e formulário de contato. Cores azuis e brancas.">{{ user_prompt|default_if_none:"" }}</textarea>
+    </div>
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary btn-lg">Gerar Código com Gaya</button>
+    </div>
+</form>
+
+{% if generated_code %}
+    <h2 class="mt-5 text-center">Código Gerado pela Gaya:</h2>
+    <div class="bg-light p-3 rounded mb-3">
+        <pre><code class="language-html">{{ generated_code|escape }}</code></pre>
+    </div>
+    <div class="d-grid gap-2">
+        <button class="btn btn-success btn-lg" disabled>Continuar para Edição (Em breve!)</button>
+    </div>
+{% else %}
+    <div class="mt-5 text-center">
+        <p class="text-muted">A Gaya usará sua descrição para gerar um HTML/CSS/JS base que você poderá editar facilmente.</p>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+{% endblock %}

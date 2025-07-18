@@ -1,9 +1,10 @@
 {% extends "produtos/base.html" %}
 {% load static %}
-{% load widget_tweaks %}
-{% load socialaccount %} {# Para login social se necessário no futuro #}
+{% load socialaccount %} {# Mantenha isso se for usar login social no futuro #}
+{% load widget_tweaks %} {# <--- ADICIONE ESTA LINHA AQUI! #}
+{% load i18n %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login{% endblock %} {# Título da página #}
 
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
@@ -13,12 +14,11 @@
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm animate__animated animate__fadeIn">
                 <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-3 fw-bold text-dark">Bem-vindo de volta!</h2>
-                    <p class="text-center text-muted mb-4">
-                        Acesse sua conta para continuar suas compras com a <strong>Solar Shop</strong>.
-                    </p>
+                    <h2 class="card-title text-center mb-4 display-6 fw-bold text-dark">Login</h2>
+                    <p class="text-center text-muted mb-4">Acesse sua conta para continuar suas compras.</p>
 
-                    <form method="post" novalidate>
+                    {# Formulário de Login #}
+                    <form method="post">
                         {% csrf_token %}
 
                         {# Exibir erros gerais do formulário (ex: senha incorreta) #}
@@ -40,11 +40,11 @@
                                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                     {% endif %}
 
-                                    {% if field.errors %}
+                                   {% if field.errors %}
                                         {{ field|add_class:"form-control is-invalid" }}
                                     {% else %}
                                         {{ field|add_class:"form-control" }}
-                                    {% endif %}
+                                    {% endif %} {# Don't forget to close the 'if' statement #}
                                 </div>
 
                                 {% if field.help_text %}
@@ -56,22 +56,45 @@
                                 {% endfor %}
                             </div>
                         {% endfor %}
-
+                        
                         <div class="d-grid gap-2 mb-3">
-                            <button type="submit" class="btn btn-success btn-lg w-100">
-                                <i class="fas fa-sign-in-alt me-2"></i> Entrar
-                            </button>
+                            <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
                         </div>
                     </form>
 
                     <hr class="my-4">
 
+                    {# Seção de Login Social #}
+                    {% get_providers as socialaccount_providers %} {# Esta tag garante que socialaccount_providers está disponível #}
+                    {% if socialaccount_providers %}
+                        <h3 class="text-center mb-3">{% trans "Ou faça login com:" %}</h3>
+                        <div class="d-grid gap-2"> {# Container para os botões de login social #}
+                            {% for provider in socialaccount_providers %}
+                                {# Você pode customizar o botão para cada provedor se quiser cores específicas #}
+                                <a href="{% provider_login_url provider.id process="login" %}" class="btn btn-outline-secondary btn-lg d-flex align-items-center justify-content-center">
+                                    {# Exemplo de ícone, se você tiver Font Awesome ou SVGs #}
+                                    {% if provider.id == 'google' %}
+                                        <img src="{% static 'img/google_icon.png' %}" alt="Google" style="width: 20px; height: 20px; margin-right: 10px;"> {# Adicione um ícone do Google na sua pasta static/img #}
+                                    {% elif provider.id == 'facebook' %}
+                                        <img src="{% static 'img/facebook_icon.png' %}" alt="Facebook" style="width: 20px; height: 20px; margin-right: 10px;"> {# Exemplo para Facebook #}
+                                    {% elif provider.id == 'github' %}
+                                        <i class="fab fa-github me-2"></i> {# Exige Font Awesome #}
+                                    {% endif %}
+                                    Login com {{ provider.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                        <hr class="my-4"> {# Outra linha divisória depois dos botões sociais #}
+                    {% endif %}
+
                     <p class="text-center mb-2">
-                        <a href="{% url 'produtos:password_reset' %}" class="text-decoration-none">Esqueceu sua senha?</a>
+                        <a href="{% url 'account_reset_password' %}" class="text-decoration-none">{% trans "Esqueceu sua senha?" %}</a>
                     </p>
+                    {% if ACCOUNT_ALLOW_REGISTRATION %} {# Verifica se o cadastro está permitido #}
                     <p class="text-center">
-                        Não tem uma conta? <a href="{% url 'produtos:register' %}" class="fw-bold text-decoration-none">Cadastre-se aqui</a>.
+                        Não tem uma conta? <a href="{% url 'produtos:register' %}" class="text-decoration-none fw-bold">Cadastre-se aqui</a>.
                     </p>
+                    {% endif %}
                 </div>
             </div>
 
@@ -83,4 +106,27 @@
         </div>
     </div>
 </div>
+
+{% comment %}
+    Removendo temporariamente a seção de login social para simplificar o CSS agora.
+    Se precisar, você pode reintroduzi-la e estilizá-la.
+<h3>Ou faça login com</h3>
+<ul>
+    {% if socialaccount_providers %}
+        {% for provider in socialaccount_providers %}
+            <li>
+                <a href="{% provider_login_url provider.id %}">Login com {{ provider.name }}</a>
+            </li>
+        {% endfor %}
+    {% endif %}
+</ul>
+{% endcomment %}
+
+{# Dashboard Stripe link (se for o caso, pode ser movido para o admin ou dashboard do superusuário) #}
+{% if user.is_superuser %}
+    <div class="container text-center mt-3">
+        <a href="https://dashboard.stripe.com" target="_blank" class="btn btn-outline-dark">Acessar Dashboard Stripe</a>
+    </div>
+{% endif %}
+
 {% endblock %}
