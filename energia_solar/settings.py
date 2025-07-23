@@ -21,7 +21,7 @@ STRIPE_SECRET_KEY = env('SECRET_KEY_STRIPE')
 
 SECRET_KEY = env('SECRET_KEY', default='sua-chave-secreta-padrao-para-desenvolvimento-aqui') # <--- Use env()
 
-DEFAULT_AI_PROVIDER = os.environ.get('DEFAULT_AI_PROVIDER', 'gemini') # Ou 'openai'
+DEFAULT_AI_PROVIDER="gemini"
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY') # Certifique-se de definir no ambiente
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY') # Certifique-se de definir no ambiente
 

@@ -7,7 +7,8 @@
     <div class="container-fluid py-5 text-center">
         <h1 class="display-5 fw-bold">Crie seu Site em Minutos com IA!</h1>
         <p class="col-md-8 fs-4 mx-auto">GayaSites utiliza inteligência artificial para gerar landing pages e sites estáticos incríveis para você, sem precisar de código.</p>
-        <a href="{% url 'create_site' %}" class="btn btn-primary btn-lg">Começar Agora!</a>
+        {# Link para a página de criação de site #}
+        <a href="{% url 'core:create_site' %}" class="btn btn-primary btn-lg">Começar Agora!</a>
     </div>
 </div>
 
@@ -21,7 +22,7 @@
     <div class="col-md-6">
         <div class="h-100 p-5 bg-light border rounded-3">
             <h2>Fácil de Usar</h2>
-            <p>Descreva seu site, edite o conteúdo em um formulário simples e publique com um clique. Sem complicações!</p>
+            <p>Descreva seu site, veja o código gerado e copie-o para seu projeto. Simples assim!</p>
         </div>
     </div>
 </div>

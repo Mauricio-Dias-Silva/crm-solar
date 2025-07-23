@@ -1,17 +1,15 @@
-from django.urls import path
-from django.contrib.auth import views as auth_views
+# solar/urls.py
+from django.urls import path, include 
 from . import views
-from django.shortcuts import redirect
+from django.shortcuts import redirect 
 
-app_name = 'crm'
+app_name = 'crm' 
 
 urlpatterns = [
-    # Login
-    path('login/', views.login_view, name='login'),
-
-    # Página inicial
+    # Página inicial do CRM
     path('', views.home, name='home'),
 
+    path('login_cliente/', views.login_cliente, name='login_cliente'),
     # Clientes
     path('clientes/', views.lista_clientes, name='lista_clientes'),
     path('clientes/cadastrar/', views.cadastrar_cliente, name='cadastrar_cliente'),
@@ -19,11 +17,11 @@ urlpatterns = [
     path('clientes/<int:pk>/editar/', views.editar_cliente, name='editar_cliente'),
     path('clientes/<int:pk>/excluir/', views.excluir_cliente, name='excluir_cliente'),
 
-    # Usuários (adicionar ao urlpatterns do branch mauricio)
+    # Usuários (Gestão de usuários por administradores, NÃO autenticação de login/registro)
     path('usuarios/', views.lista_usuarios, name='lista_usuarios'),
     path('usuarios/novo/', views.cadastrar_usuario, name='cadastrar_usuario'),
     path('usuarios/<int:usuario_id>/editar/', views.editar_usuario, name='editar_usuario'),
-    path('usuarios/<int:usuario_id>/resetar_senha/', views.resetar_senha_usuario, name='resetar_senha_usuario'),
+    path('usuarios/<int:usuario_id>/resetar_senha/', views.resetar_senha_usuario, name='resetar_senha_usuario'), # Esta view precisa ser cuidadosamente implementada para não conflitar
     path('usuarios/<int:usuario_id>/excluir/', views.excluir_usuario, name='excluir_usuario'),
 
     # Projetos
@@ -50,16 +48,11 @@ urlpatterns = [
     # Financeiro
     path('financeiro/', views.lista_financeiro, name='lista_financeiro'),
     path('financeiro/cadastrar/', views.cadastrar_lancamento, name='cadastrar_lancamento'),
-
-    #Dashboard Financeiro
     path('financeiro/dashboard/', views.dashboard_financeiro, name='dashboard_financeiro'),
 
-    # Área do Cliente
-    path('progresso/', lambda request: redirect('/crm/progresso/login/')),  # redireciona se acessar apenas /crm/progresso/
-    path('progresso/login/', views.login_cliente, name='login_cliente'),
-    path('progresso/logout/', views.logout_cliente, name='logout_cliente'),
-    path('progresso/painel/', views.painel_cliente, name='painel_cliente'),
-
-    # Logout (opcional, usando view padrão do Django)
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-]
+    # Área do Cliente (Sem login/logout próprios, usa allauth)
+    path('progresso/', lambda request: redirect('crm:painel_cliente')), 
+    path('progresso/', lambda request: redirect('crm:painel_cliente'), name='progresso'),
+    path('cliente/painel/', views.painel_cliente, name='painel_cliente'),
+   
+] 

@@ -7,10 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Meu Site{% endblock %}</title>
 
+    {# Bootstrap CSS via CDN #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
-              rel="stylesheet" 
-              integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
-              crossorigin="anonymous">
+                rel="stylesheet" 
+                integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+                crossorigin="anonymous">
     
     {# Bootstrap Icons para os ícones que estamos usando (ex: carrinho) #}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -81,7 +82,7 @@
             }
         }
 
-        {% block extra_css %}{% endblock %}
+        {% block extra_css %} {% endblock %}
     </style>
 
 </head>
@@ -96,7 +97,7 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    {# LINKS DE NAVEGAÇÃO COMUNS - Mantenha este ul como estava #}
+                    {# LINKS DE NAVEGAÇÃO COMUNS #}
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link" href="{% url 'produtos:home' %}">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'produtos:contact' %}">Contato</a></li>
@@ -109,8 +110,8 @@
                             </li>
                         {% endif %}
 
-                        {# LINK PARA ACOMPANHAR OBRA #}
-                        <li class="nav-item"><a class="nav-link" href="/crm/progresso/">Acompanhar Minha Obra</a></li>
+                        {# LINK PARA ACOMPANHAR OBRA (app solar/crm) #}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'crm:progresso' %}">Acompanhar Minha Obra</a></li>
 
                         {# LINK PARA CARRINHO (APENAS SE ESTIVER LOGADO) #}
                         {% if user.is_authenticated %}
@@ -123,12 +124,13 @@
                     {# NOVO BLOCO PARA BOTÕES DE LANDING PAGES E AUTENTICAÇÃO - Este UL ficará à direita #}
                     <ul class="navbar-nav navbar-nav-right-buttons mb-2 mb-lg-0">
                         {% if request.user.is_authenticated %}
-                            {# Lógica para CLIENTES com LP Personalizada #}
-                            {% with user_client=request.user.cliente_set.first %}
+                            {# Lógica para CLIENTES com LP Personalizada (app core) #}
+                            {# Assumindo que o Cliente do solar.models tem um related_name='cliente_set' para o User #}
+                            {% with user_client=request.user.cliente_set.first %} 
                                 {% if user_client and user_client.site_projects.first %}
                                     <li class="nav-item"> 
-                                        <a class="nav-link btn btn-warning btn-sm text-dark fw-bold" href="{% url 'core:view_site' user_client.site_projects.first.id %}">
-                                           <i class="fas fa-solar-panel me-1"></i> Minha Oferta Solar
+                                        <a class="nav-link btn btn-warning btn-sm text-dark fw-bold" href="{% url 'core:view_published_site' user_client.site_projects.first.id %}">
+                                            <i class="fas fa-solar-panel me-1"></i> Minha Oferta Solar
                                         </a>
                                     </li>
                                 {% elif request.user.is_staff or user.is_superuser %}
@@ -138,28 +140,31 @@
                                             <i class="fas fa-tools me-1"></i> Gerenciar LPs (CRM)
                                         </a>
                                     </li>
-                                {% endif %}
-                            {% endwith %}
-
-                            {# LINK DE LOGOUT #}
+                                {% endif %} {# <-- ESTE 'endif' FECHA O 'if user_client ...' #}
+                            {% endwith %} {# <-- ESTE 'endwith' FECHA O 'with' #}
+                                                 
+                            {# LINK DE LOGOUT (USANDO ALLAUTH) #}
                             <li class="nav-item">
-                                <form id="logout-form" action="{% url 'produtos:logout' %}" method="post" style="display: none;">
+                                <form id="logout-form-products" action="{% url 'account_logout' %}" method="post" style="display: none;">
                                     {% csrf_token %}
                                 </form>
-                                <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form-products').submit();">
                                     Logout
                                 </a>
                             </li>
                         {% else %}
-                            {# LINK DE LOGIN #}
+                            {# LINK DE LOGIN (USANDO ALLAUTH) #}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'produtos:login' %}">Login</a>
+                                <a class="nav-link" href="{% url 'account_login' %}">Login</a>
                             </li>
-                        {% endif %}
+                            {# LINK DE REGISTRO (OPCIONAL, SE SEU ECOMMERCE PERMITIR REGISTRO VIA ALLAUTH) #}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'account_signup' %}">Registrar</a>
+                            </li>
+                        {% endif %} {# <-- ESTE 'endif' FECHA O 'if request.user.is_authenticated' PRINCIPAL #}
                     </ul>
 
-                    {# FORMULÁRIO DE PESQUISA - Movido para fora dos ULs, mas ainda dentro do collapse #}
-                    {# Para ficar à direita de TUDO no desktop, use ms-auto no formulário também #}
+                    {# FORMULÁRIO DE PESQUISA #}
                     <form action="{% url 'produtos:search' %}" method="get" class="d-flex ms-auto my-2 my-lg-0" style="max-width:350px;">
                         <input type="text" name="q" placeholder="Pesquisar produtos..." class="form-control me-2" aria-label="Pesquisar produtos">
                         <button type="submit" class="btn btn-outline-success">Buscar</button>
@@ -168,11 +173,16 @@
             </div>
         </nav>
 
-        {# ... (restante do template, incluindo o segundo navbar de categorias e o carrossel) ... #}
+        {# SEGUNDO NAVBAR (se você tiver uma barra de categorias, etc.) #}
+        {# Exemplo: <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mt-0 mb-3"> ... </nav> #}
+        {# CARROSSEL (se estiver aqui) #}
+        {# Exemplo: <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel"> ... </div> #}
 
     </header>
 
+    {# CONTEÚDO PRINCIPAL DA PÁGINA #}
     <main class="container my-4 flex-grow-1">
+        {# Mensagens do Django (do sistema de mensagens, ex: "Site salvo com sucesso!") #}
         {% if messages %}
             <div class="messages-container my-3">
                 {% for message in messages %}
@@ -188,6 +198,7 @@
         {% endblock %}
     </main>
 
+    {# RODAPÉ #}
     <footer class="bg-dark text-white py-4 mt-5">
         <div class="container">
             <div class="row">
@@ -225,27 +236,12 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+    {# Bootstrap JS Bundle #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/  bootstrap.bundle.min.js" 
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
             crossorigin="anonymous"></script>
     
-    <script>
-    (function () {
-      'use strict'
-      var forms = document.querySelectorAll('.needs-validation')
-      Array.prototype.slice.call(forms)
-        .forEach(function (form) {
-          form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-              event.preventDefault()
-              event.stopPropagation()
-            }
-            form.classList.add('was-validated')
-          }, false)
-        })
-    })()
-    </script>
-    
+    {# Script Jivosite (se estiver usando) #}
     <script src="//code.jivosite.com/widget/lJltfRwXXH" async></script>
 
     {% comment %} <script src="{% static 'js/carousel.js' %}"></script> {% endcomment %}

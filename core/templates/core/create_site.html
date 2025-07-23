@@ -1,43 +1,87 @@
 {% extends 'core/base.html' %}
+{% load static %} {# Para carregar arquivos estáticos como CSS ou JS no futuro #}
 
-{% block title %}Criar Novo Site{% endblock %}
+{% block title %}Criar Novo Site com Gaya{% endblock %}
 
 {% block content %}
-<h1 class="mb-4 text-center">Descreva seu Novo Site</h1>
-<p class="lead text-center">Use a caixa abaixo para descrever a landing page que você deseja criar. Seja o mais específico possível!</p>
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Descreva seu Novo Site com IA</h1>
+    <p class="lead text-center mb-4">A Gaya vai gerar o código HTML para sua landing page.</p>
 
-<form method="post" action="{% url 'core:create_site' %}">
-    {% csrf_token %}
-    <div class="mb-3">
-        <label for="id_prompt" class="form-label">Minha descrição para a Gaya:</label>
-        <textarea class="form-control" id="id_prompt" name="prompt" rows="5" placeholder="Ex: Uma landing page moderna para minha consultoria de marketing digital, com seção hero, 3 benefícios, depoimentos e formulário de contato. Cores azuis e brancas.">{{ user_prompt|default_if_none:"" }}</textarea>
-    </div>
-    <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-primary btn-lg">Gerar Código com Gaya</button>
-    </div>
-</form>
+    {# Mensagens de feedback (sucesso/erro) #}
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-{% if generated_code %}
-    <h2 class="mt-5 text-center">Código Gerado pela Gaya:</h2>
-    <div class="bg-light p-3 rounded mb-3">
-        <pre><code class="language-html">{{ generated_code|escape }}</code></pre>
-    </div>
-    <div class="d-grid gap-2">
-        <button class="btn btn-success btn-lg" disabled>Continuar para Edição (Em breve!)</button>
-    </div>
-{% else %}
-    <div class="mt-5 text-center">
-        <p class="text-muted">A Gaya usará sua descrição para gerar um HTML/CSS/JS base que você poderá editar facilmente.</p>
-    </div>
-{% endif %}
+    <form method="post" action="{% url 'core:create_site' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_prompt" class="form-label fw-bold">Descreva a landing page que você quer:</label>
+            <textarea class="form-control" id="id_prompt" name="prompt" rows="5" placeholder="Ex: Uma landing page moderna para minha cafeteria, com seção hero, 3 produtos e formulário de contato.">{{ user_prompt|default_if_none:"" }}</textarea>
+        </div>
+        {# Campos ocultos para passar os dados do cliente (se vierem da URL) #}
+        {% if cliente_id %}
+        <input type="hidden" name="cliente_id" value="{{ cliente_id }}">
+        {% endif %}
+        {% if cliente_nome %}
+        <input type="hidden" name="cliente_nome" value="{{ cliente_nome }}">
+        {% endif %}
+        {% if prompt_inicial %}
+        <input type="hidden" name="prompt_inicial" value="{{ prompt_inicial }}">
+        {% endif %}
 
-{% endblock %}
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-magic me-2"></i> Gerar Código com Gaya</button>
+        </div>
+    </form>
 
-{% block extra_head %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    {# Área para exibir o código gerado #}
+    {% if generated_code %}
+        <h2 class="mt-5 mb-3 text-center">Código HTML Gerado:</h2>
+        <div class="bg-light p-3 rounded-3 shadow-sm" style="overflow-x: auto; max-height: 500px;">
+            <pre><code class="language-html">{{ generated_code|escape }}</code></pre>
+        </div>
+        <p class="text-center mt-3 text-muted">Este é o código HTML completo. Você pode copiá-lo e usá-lo onde precisar!</p>
+        <div class="d-grid gap-2 mt-3">
+             {# Botão para copiar o código gerado #}
+            <button class="btn btn-outline-primary btn-lg" id="copy-code-btn"><i class="bi bi-clipboard me-2"></i>Copiar Código</button>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
 
 {% block extra_js %}
+{# Script para destaque de código (Highlight.js) #}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <script>hljs.highlightAll();</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyCodeBtn = document.getElementById('copy-code-btn');
+        if (copyCodeBtn) {
+            copyCodeBtn.addEventListener('click', function() {
+                const codeElement = document.querySelector('pre code');
+                if (codeElement) {
+                    const codeToCopy = codeElement.textContent;
+                    navigator.clipboard.writeText(codeToCopy)
+                        .then(() => {
+                            alert('Código copiado para a área de transferência!');
+                        })
+                        .catch(err => {
+                            console.error('Erro ao copiar o código: ', err);
+                            alert('Erro ao copiar o código. Tente copiar manualmente.');
+                        });
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

@@ -12,6 +12,7 @@ from django.utils.dateparse import parse_date
 from django.contrib.auth.hashers import check_password
 import json
 
+
 # Tela inicial de login
 def login_view(request):
     if request.method == "POST":
@@ -380,7 +381,12 @@ def logout_cliente(request):
     request.session.flush()
     return redirect('crm:login_cliente')
 
-# Painel do cliente
+
+def is_crm_cliente(user):
+    return user.groups.filter(name='crm_cliente').exists()
+
+@login_required
+@user_passes_test(is_crm_cliente)
 def painel_cliente(request):
     cliente_id = request.session.get('cliente_id')
     if not cliente_id:
@@ -485,3 +491,22 @@ def excluir_usuario(request, usuario_id):
         messages.success(request, 'Usuário excluído com sucesso!')
         return redirect('crm:lista_usuarios')
     return render(request, "solar/confirmar_excluir_usuario.html", {"usuario": usuario})
+
+
+def politica_privacidade(request):
+    return render(request, 'solar/politica_privacidade.html') 
+
+
+def termos_de_servico(request):
+    return render(request, 'solar/termos_de_servico.html')
+
+
+@login_required
+def redirecionamento_pos_login(request):
+    user = request.user
+    if user.groups.filter(name='crm_cliente').exists():
+        return redirect('crm:painel_cliente')
+    elif user.groups.filter(name='ecommerce_cliente').exists():
+        return redirect('produtos:home')  # ou carrinho, ou loja
+    else:
+        return redirect('pagina_padrao')  # fallback para segurança

@@ -1,14 +1,17 @@
-{% extends 'core/base.html' %}
+<!-- {% extends 'core/base.html' %}
 {% load core_filters %} 
 
 {% block title %}Editar Site: {{ project.name }}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-3 text-center">Editar Seu Site: <span class="text-primary">{{ project.name }}</span></h1>
     <p class="lead text-center mb-4">Preencha os campos abaixo para personalizar o conteúdo do seu site. Clique em "Pré-visualizar Site" para ver suas mudanças antes de salvar.</p>
 
-    {# Mensagens de feedback (sucesso/erro) - Usando o sistema de mensagens do Django #}
     {% if messages %}
         <div class="mb-4">
             {% for message in messages %}
@@ -20,7 +23,7 @@
         </div>
     {% endif %}
 
-    <form method="post" id="edit-form" action="{% url 'edit_site' project.id %}" enctype="multipart/form-data"> {# IMPORTANTE: Adicionado enctype para uploads de arquivo #}
+    <form method="post" id="edit-form" action="{% url 'core:edit_site' project.id %}" enctype="multipart/form-data">
         {% csrf_token %}
 
         {# Seção Principal (Hero) #}
@@ -48,20 +51,18 @@
                     </div>
                     <div class="col-12">
                         <label for="id_hero_bg_imagem" class="form-label fw-bold">Imagem de Fundo da Seção Hero:</label>
-                        <input type="file" class="form-control" id="id_hero_bg_imagem" name="LP_HERO_BG_IMAGEM_URL_FILE" accept="image/*"> {# type="file" e accept="image/*" #}
+                        <input type="file" class="form-control" id="id_hero_bg_imagem" name="LP_HERO_BG_IMAGEM_URL_FILE" accept="image/*">
                         {% if project.content_data.LP_HERO_BG_IMAGEM_URL %}
                             <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_HERO_BG_IMAGEM_URL }}" target="_blank">{{ project.content_data.LP_HERO_BG_IMAGEM_URL }}</a></small>
                             <img src="{{ project.content_data.LP_HERO_BG_IMAGEM_URL }}" alt="Pré-visualização da Imagem Hero" class="img-thumbnail mt-2" style="max-height: 150px;">
                         {% endif %}
-                        {# Se a IA não gerou ALT para a imagem de fundo, adicione um campo oculto ou um input de texto aqui se precisar #}
                         <input type="hidden" name="LP_HERO_BG_IMAGEM_ALT" value="{{ project.content_data.LP_HERO_BG_IMAGEM_ALT|default:'Imagem de fundo da seção principal' }}">
                     </div>
                 </div>
             </div>
         </div>
 
-        {# Seção Benefícios #}
-        {# Copie e cole este bloco para Benefício 2 e Benefício 3, ajustando IDs e Nomes #}
+        {# Seção Benefício 1 #}
         <div class="card mb-4 shadow-sm border-0">
             <div class="card-header bg-info text-white p-3">
                 <h3 class="mb-0 fs-5"><i class="bi bi-lightbulb-fill me-2"></i>Benefício 1</h3>
@@ -92,7 +93,7 @@
             </div>
         </div>
         
-        {# CÓPIA PARA BENEFÍCIO 2 #}
+        {# Seção Benefício 2 #}
         <div class="card mb-4 shadow-sm border-0">
             <div class="card-header bg-info text-white p-3">
                 <h3 class="mb-0 fs-5"><i class="bi bi-lightbulb-fill me-2"></i>Benefício 2</h3>
@@ -123,7 +124,7 @@
             </div>
         </div>
 
-        {# CÓPIA PARA BENEFÍCIO 3 #}
+        {# Seção Benefício 3 #}
         <div class="card mb-4 shadow-sm border-0">
             <div class="card-header bg-info text-white p-3">
                 <h3 class="mb-0 fs-5"><i class="bi bi-lightbulb-fill me-2"></i>Benefício 3</h3>
@@ -155,7 +156,6 @@
         </div>
 
         {# Seção Depoimentos #}
-        {# Copie e cole este bloco para Depoimento 2 e Depoimento 3, ajustando IDs e Nomes #}
         <div class="card mb-4 shadow-sm border-0">
             <div class="card-header bg-success text-white p-3">
                 <h3 class="mb-0 fs-5"><i class="bi bi-chat-quote-fill me-2"></i>Depoimento 1</h3>
@@ -164,17 +164,14 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="id_dep1_texto" class="form-label fw-bold">Texto do Depoimento:</label>
-                        {# O 'name' deve ser DEP_1_TEXTO #}
                         <textarea class="form-control" id="id_dep1_texto" name="DEP_1_TEXTO" rows="3">{{ project.content_data.DEP_1_TEXTO|default:'' }}</textarea>
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep1_nome" class="form-label fw-bold">Nome do Cliente:</label>
-                        {# O 'name' deve ser DEP_1_NOME #}
                         <input type="text" class="form-control" id="id_dep1_nome" name="DEP_1_NOME" value="{{ project.content_data.DEP_1_NOME|default:'' }}">
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep1_foto" class="form-label fw-bold">Foto do Cliente:</label>
-                        {# O 'name' para o UPLOAD deve ser LP_IMAGEM_DEP_1_PHOTO_URL_FILE #}
                         <input type="file" class="form-control" id="id_dep1_foto" name="LP_IMAGEM_DEP_1_PHOTO_URL_FILE" accept="image/*">
                         {% if project.content_data.LP_IMAGEM_DEP_1_PHOTO_URL %}
                             <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_DEP_1_PHOTO_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_DEP_1_PHOTO_URL }}</a></small>
@@ -183,7 +180,6 @@
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep1_alt" class="form-label fw-bold">Texto Alternativo da Foto:</label>
-                        {# O 'name' deve ser LP_IMAGEM_DEP_1_PHOTO_ALT #}
                         <input type="text" class="form-control" id="id_dep1_alt" name="LP_IMAGEM_DEP_1_PHOTO_ALT" value="{{ project.content_data.LP_IMAGEM_DEP_1_PHOTO_ALT|default:'' }}">
                     </div>
                 </div>
@@ -199,17 +195,14 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="id_dep2_texto" class="form-label fw-bold">Texto do Depoimento:</label>
-                        {# O 'name' deve ser DEP_2_TEXTO #}
                         <textarea class="form-control" id="id_dep2_texto" name="DEP_2_TEXTO" rows="3">{{ project.content_data.DEP_2_TEXTO|default:'' }}</textarea>
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep2_nome" class="form-label fw-bold">Nome do Cliente:</label>
-                        {# O 'name' deve ser DEP_2_NOME #}
                         <input type="text" class="form-control" id="id_dep2_nome" name="DEP_2_NOME" value="{{ project.content_data.DEP_2_NOME|default:'' }}">
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep2_foto" class="form-label fw-bold">Foto do Cliente:</label>
-                        {# O 'name' para o UPLOAD deve ser LP_IMAGEM_DEP_2_PHOTO_URL_FILE #}
                         <input type="file" class="form-control" id="id_dep2_foto" name="LP_IMAGEM_DEP_2_PHOTO_URL_FILE" accept="image/*">
                         {% if project.content_data.LP_IMAGEM_DEP_2_PHOTO_URL %}
                             <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_DEP_2_PHOTO_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_DEP_2_PHOTO_URL }}</a></small>
@@ -218,7 +211,6 @@
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep2_alt" class="form-label fw-bold">Texto Alternativo da Foto:</label>
-                        {# O 'name' deve ser LP_IMAGEM_DEP_2_PHOTO_ALT #}
                         <input type="text" class="form-control" id="id_dep2_alt" name="LP_IMAGEM_DEP_2_PHOTO_ALT" value="{{ project.content_data.LP_IMAGEM_DEP_2_PHOTO_ALT|default:'' }}">
                     </div>
                 </div>
@@ -234,17 +226,14 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="id_dep3_texto" class="form-label fw-bold">Texto do Depoimento:</label>
-                        {# O 'name' deve ser DEP_3_TEXTO #}
                         <textarea class="form-control" id="id_dep3_texto" name="DEP_3_TEXTO" rows="3">{{ project.content_data.DEP_3_TEXTO|default:'' }}</textarea>
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep3_nome" class="form-label fw-bold">Nome do Cliente:</label>
-                        {# O 'name' deve ser DEP_3_NOME #}
                         <input type="text" class="form-control" id="id_dep3_nome" name="DEP_3_NOME" value="{{ project.content_data.DEP_3_NOME|default:'' }}">
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep3_foto" class="form-label fw-bold">Foto do Cliente:</label>
-                        {# O 'name' para o UPLOAD deve ser LP_IMAGEM_DEP_3_PHOTO_URL_FILE #}
                         <input type="file" class="form-control" id="id_dep3_foto" name="LP_IMAGEM_DEP_3_PHOTO_URL_FILE" accept="image/*">
                         {% if project.content_data.LP_IMAGEM_DEP_3_PHOTO_URL %}
                             <small class="form-text text-muted d-block mt-1">Imagem atual: <a href="{{ project.content_data.LP_IMAGEM_DEP_3_PHOTO_URL }}" target="_blank">{{ project.content_data.LP_IMAGEM_DEP_3_PHOTO_URL }}</a></small>
@@ -253,7 +242,6 @@
                     </div>
                     <div class="col-md-6">
                         <label for="id_dep3_alt" class="form-label fw-bold">Texto Alternativo da Foto:</label>
-                        {# O 'name' deve ser LP_IMAGEM_DEP_3_PHOTO_ALT #}
                         <input type="text" class="form-control" id="id_dep3_alt" name="LP_IMAGEM_DEP_3_PHOTO_ALT" value="{{ project.content_data.LP_IMAGEM_DEP_3_PHOTO_ALT|default:'' }}">
                     </div>
                 </div>
@@ -269,19 +257,16 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="id_form_titulo" class="form-label fw-bold">Título do Formulário:</label>
-                        {# O 'name' deve ser FORM_TITULO #}
                         <input type="text" class="form-control" id="id_form_titulo" name="FORM_TITULO" value="{{ project.content_data.FORM_TITULO|default:'' }}">
                     </div>
                     <div class="col-md-6">
                         <label for="id_form_submit_texto" class="form-label fw-bold">Texto do Botão Enviar:</label>
-                        {# O 'name' deve ser FORM_SUBMIT_TEXTO #}
                         <input type="text" class="form-control" id="id_form_submit_texto" name="FORM_SUBMIT_TEXTO" value="{{ project.content_data.FORM_SUBMIT_TEXTO|default:'' }}">
                     </div>
                 </div>
             </div>
         </div>
 
-        {# ... restante do formulário e botões de ação ... #}
         {# Seção Rodapé #}
         <div class="card mb-4 shadow-sm border-0">
             <div class="card-header bg-secondary text-white p-3">
@@ -301,15 +286,21 @@
                         <label for="id_link_facebook" class="form-label fw-bold">Link do Facebook:</label>
                         <input type="url" class="form-control" id="id_link_facebook" name="LP_LINK_FACEBOOK" value="{{ project.content_data.LP_LINK_FACEBOOK|default:'' }}">
                     </div>
+                    {# NOVO: Placeholder para Link do Pinterest #}
+                    <div class="col-md-6">
+                        <label for="id_link_pinterest" class="form-label fw-bold">Link do Pinterest:</label>
+                        <input type="url" class="form-control" id="id_link_pinterest" name="LP_LINK_PINTEREST" value="{{ project.content_data.LP_LINK_PINTEREST|default:'' }}">
+                    </div>
                 </div>
             </div>
         </div>
 
         {# Botões de Ação Fixos #}
-        <div class="d-flex justify-content-center gap-3 my-5 p-3 bg-light rounded-3 shadow-sm flex-wrap"> {# flex-wrap para responsividade #}
+        <div class="d-flex justify-content-center gap-3 my-5 p-3 bg-light rounded-3 shadow-sm flex-wrap">
             <button type="submit" class="btn btn-success btn-lg px-5"><i class="bi bi-save me-2"></i>Salvar Alterações</button>
             <button type="button" class="btn btn-primary btn-lg px-5" id="preview-button"><i class="bi bi-eye-fill me-2"></i>Pré-visualizar Site</button>
-            <a href="{% url 'my_sites' %}" class="btn btn-outline-secondary btn-lg px-5"><i class="bi bi-arrow-left me-2"></i>Voltar para Meus Sites</a>
+            <a href="{% url 'core:my_sites' %}" class="btn btn-outline-secondary btn-lg px-5"><i class="bi bi-arrow-left me-2"></i>Voltar para Meus Sites</a>
+            <a href="{% url 'core:download_site' project.id %}" class="btn btn-info btn-lg px-5"><i class="bi bi-download me-2"></i>Baixar HTML</a>
             <button id="publish-btn" class="btn btn-warning btn-lg px-5" {% if project.published_url %}disabled{% endif %}>
                 {% if project.published_url %}<i class="bi bi-check-circle-fill me-2"></i>Publicado!{% else %}<i class="bi bi-cloud-arrow-up-fill me-2"></i>Publicar Site{% endif %}
             </button>
@@ -322,18 +313,16 @@
     </form>
 </div>
 
-{# Modal para Pré-visualização - Fora do bloco content para ser global #}
-{# Certifique-se de que este modal esteja no final do seu 'base.html' ou 'edit_site.html' para que o JavaScript o encontre #}
-{# É melhor que esteja no base.html para ser reusável, mas se não for, mantenha aqui #}
+{# Modal para Pré-visualização #}
 <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-fullscreen"> {# Modal grande para melhor visualização #}
+  <div class="modal-dialog modal-xl modal-fullscreen">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="previewModalLabel">Pré-visualização do Site</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-0">
-        <iframe id="preview-iframe-modal" src="about:blank" style="width: 100%; height: 100%; border: none;"></iframe> {# ID diferente para evitar conflito #}
+        <iframe id="preview-iframe-modal" src="about:blank" style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar Pré-visualização</button>
@@ -348,26 +337,72 @@
     const editForm = document.getElementById('edit-form');
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const previewButton = document.getElementById('preview-button');
-    const previewIframeModal = document.getElementById('preview-iframe-modal'); // O iframe DENTRO do modal
+    const previewIframeModal = document.getElementById('preview-iframe-modal');
     const publishBtn = document.getElementById('publish-btn');
+    const previewModalBootstrap = new bootstrap.Modal(document.getElementById('previewModal')); // Instância do modal Bootstrap
 
-    // URLs dinâmicas com o ID do projeto
-    const previewUrl = "{% url 'preview_site_ajax' project.id %}";
-    const publishUrl = "{% url 'publish_site' project.id %}";
+    // Função que será injetada no iframe para tornar elementos editáveis
+    const editableScript = `
+        document.body.addEventListener('click', function(event) {
+            let target = event.target;
+            while (target && !target.hasAttribute('data-gaya-editable')) {
+                target = target.parentElement;
+            }
+
+            if (target && target.hasAttribute('data-gaya-editable')) {
+                event.preventDefault();
+                const placeholderKey = target.getAttribute('data-gaya-placeholder');
+                
+                let originalContent = '';
+                let isImage = false;
+                let isLink = false;
+
+                if (target.tagName === 'IMG') {
+                    originalContent = target.getAttribute('src');
+                    isImage = true;
+                } else if (target.tagName === 'A') {
+                    originalContent = target.getAttribute('href');
+                    isLink = true;
+                } else {
+                    originalContent = target.textContent.trim();
+                }
+
+                let newValue = prompt('Editar ' + placeholderKey + ':', originalContent);
+                
+                if (newValue !== null) { // Se o usuário não cancelou
+                    if (isImage) {
+                        target.setAttribute('src', newValue);
+                    } else if (isLink) {
+                        target.setAttribute('href', newValue);
+                    } else {
+                        target.textContent = newValue;
+                    }
+                    
+                    window.parent.postMessage({
+                        type: 'gaya-content-updated',
+                        placeholder: placeholderKey,
+                        value: newValue
+                    }, window.location.origin);
+                }
+            }
+        });
+        document.querySelectorAll('[data-gaya-editable="true"]').forEach(el => {
+            el.style.outline = '1px dashed #007bff'; 
+            el.style.cursor = 'pointer';
+        });
+    `;
 
     // Função para atualizar a pré-visualização no modal
-    function updatePreviewModal() {
+    function updatePreviewModalContent() {
         const formData = new FormData(editForm);
-        
         const previewData = new URLSearchParams();
         for (const [key, value] of formData.entries()) {
-            if (!(value instanceof File)) {
+            if (!(value instanceof File)) { // Exclui arquivos binários
                 previewData.append(key, value);
             }
         }
 
-        // Usando previewUrl que agora é dinâmica
-        fetch(previewUrl, { 
+        fetch("{% url 'core:preview_site_ajax' project.id %}", { 
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrftoken,
@@ -378,9 +413,19 @@
         .then(response => response.json())
         .then(data => {
             if (data.html) {
-                previewIframeModal.srcdoc = data.html;
-                const previewModalElement = new bootstrap.Modal(document.getElementById('previewModal'));
-                previewModalElement.show();
+                previewIframeModal.srcdoc = data.html; 
+                
+                previewIframeModal.onload = function() {
+                    try {
+                        const iframeDoc = previewIframeModal.contentWindow.document;
+                        const scriptElement = iframeDoc.createElement('script');
+                        scriptElement.textContent = editableScript;
+                        iframeDoc.body.appendChild(scriptElement);
+                    } catch (e) {
+                        console.error("Erro ao injetar script no iframe:", e);
+                    }
+                    previewIframeModal.onload = null;
+                };
             } else if (data.error) {
                 console.error("Erro na pré-visualização:", data.error);
                 alert("Erro ao carregar pré-visualização: " + data.error);
@@ -395,10 +440,11 @@
     // Event listener para o botão de pré-visualização
     if (previewButton) {
         previewButton.addEventListener('click', function() {
-            updatePreviewModal();
+            updatePreviewModalContent();
+            previewModalBootstrap.show();
         });
     }
-
+    
     // Lógica para feedback visual no upload de arquivos (mostra nome do arquivo e miniatura)
     document.querySelectorAll('input[type="file"]').forEach(input => {
         input.addEventListener('change', function() {
@@ -411,7 +457,6 @@
             }
             smallTag.textContent = fileName ? `Arquivo selecionado: ${fileName}` : 'Nenhum arquivo selecionado.';
 
-            // Opcional: Pré-visualização imediata da imagem selecionada
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -435,14 +480,40 @@
         });
     });
 
+    // Lógica para receber mensagens do iframe e atualizar o formulário
+    window.addEventListener('message', function(event) {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+        if (event.data && event.data.type === 'gaya-content-updated') {
+            const { placeholder, value } = event.data;
+            const formField = editForm.querySelector(`[name="${placeholder}"]`);
+            if (formField) {
+                formField.value = value;
+                // Dispara o evento 'input' para que updatePreview seja chamado
+                // e o iframe seja atualizado com o conteúdo editado,
+                // que agora vem do formulário (garantindo consistência).
+                // updatePreviewModalContent(); // Chama a pré-visualização novamente após atualização do campo
+            }
+        }
+    });
+
+    // Lógica do botão Salvar Alterações
+    editForm.addEventListener('submit', function(event) {
+        // Nada de event.preventDefault() aqui, queremos que o formulário submeta normalmente
+        // O botão tem type="submit", então ele já faz isso.
+        // O `editForm.submit()` manual que tínhamos era para lidar com bugs anteriores,
+        // mas agora o form deve submeter normalmente.
+        // Já que ele submete, o `messages` do Django no backend será exibido.
+    });
+
     // Lógica do botão Publicar
     if (publishBtn) {
         publishBtn.addEventListener('click', function() {
             publishBtn.disabled = true;
             publishBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicando...';
 
-            // Usando publishUrl que agora é dinâmica
-            fetch(publishUrl, { 
+            fetch("{% url 'core:publish_site' project.id %}", { 
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': csrftoken,
@@ -466,8 +537,8 @@
                         publishedUrlParagraph.className = 'text-center mt-2 fs-5';
                         publishBtn.closest('.d-flex').parentNode.appendChild(publishedUrlParagraph);
                     }
-                    // Certifique-se de que o link esteja formatado corretamente com <a href="..."></a>
                     publishedUrlParagraph.innerHTML = `Seu site está online em: <a href="${data.published_url}" target="_blank" class="fw-bold">${data.published_url}</a>`; 
+                    window.location.reload(); 
                 } else {
                     alert('Erro ao publicar site: ' + data.error);
                     publishBtn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i>Publicar Site';
@@ -483,5 +554,22 @@
         });
     }
 
+    editForm.addEventListener('input', updatePreviewModalContent);
+    editForm.addEventListener('change', updatePreviewModalContent); 
+    document.addEventListener('DOMContentLoaded', updatePreviewModalContent);
 </script>
+{% endblock %} -->
+
+{% extends 'core/base.html' %}
+
+{% block title %}Edição de Site (Temporariamente Desativada){% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Edição de Site Temporariamente Desativada</h1>
+    <p class="lead text-center">Nesta versão simplificada, a edição direta de sites foi desativada para focar na geração de código HTML. Por favor, utilize a página de criação.</p>
+    <div class="text-center mt-4">
+        <a href="{% url 'core:create_site' %}" class="btn btn-primary btn-lg">Voltar para a Criação de Sites</a>
+    </div>
+</div>
 {% endblock %}
