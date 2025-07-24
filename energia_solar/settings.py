@@ -3,23 +3,18 @@
 import os
 from pathlib import Path
 import dj_database_url
+import environ 
 
-
-# --- INÍCIO DA CONFIGURAÇÃO COM DJANGO-ENVIRON ---
-import environ # <--- Importe environ
-# Initialise environment variables
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-env = environ.Env() # <--- Crie uma instância de Env
-# Read .env file from the project root (where manage.py is)
+env = environ.Env(DEBUG=(bool, False))
 
 env.read_env(os.path.join(BASE_DIR, '.env')) # <--- Lê o arquivo .env
 # --- FIM DA CONFIGURAÇÃO COM DJANGO-ENVIRON --
-
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 STRIPE_SECRET_KEY = env('SECRET_KEY_STRIPE')
-
-SECRET_KEY = env('SECRET_KEY', default='sua-chave-secreta-padrao-para-desenvolvimento-aqui') # <--- Use env()
+SECRET_KEY=env('SECRET_KEY')
 
 DEFAULT_AI_PROVIDER="gemini"
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY') # Certifique-se de definir no ambiente
@@ -27,11 +22,11 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY') # Certifique-se de definir no 
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
+# DEBUG = env('DEBUG', default=False, cast=bool) # <--- Use env()
 DEBUG='True'
 
 #ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[]) # <--- Exemplo para ALLOWED_HOSTS
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 INSTALLED_APPS = [
@@ -78,8 +73,10 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+SITE_ID = 1
 LOGIN_URL = 'account_login'
-LOGIN_REDIRECT_URL = 'produtos:home' 
+# settings.py
+LOGIN_REDIRECT_URL = '/redirecionamento-login/' 
 LOGOUT_REDIRECT_URL = 'account_login'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
 
@@ -90,8 +87,6 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_USERNAME_REQUIRED = True
 
-
-SITE_ID = 1
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_SECURE = False  

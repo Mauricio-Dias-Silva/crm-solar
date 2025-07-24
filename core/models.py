@@ -11,7 +11,7 @@ except ImportError:
     # Isso é apenas para evitar erros durante o makemigrations em um projeto simples.
     class Cliente(models.Model):
         nome = models.CharField(max_length=255)
-        # Adicione outros campos necessários aqui se precisar para evitar erros
+        email = models.EmailField(blank=True, null=True)
         def __str__(self):
             return self.nome
 

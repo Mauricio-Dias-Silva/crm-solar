@@ -501,12 +501,46 @@ def termos_de_servico(request):
     return render(request, 'solar/termos_de_servico.html')
 
 
+# solar/views.py
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import redirect
+from django.contrib.auth.models import Group # Importar Group se for usar diretamente
+from django.contrib import messages # Para mensagens úteis
+from django.contrib.auth import logout # Para o caso de perfil inconsistente
+
+def is_crm_cliente(user):
+    # Verifique se o grupo 'crm_cliente' existe e o usuário pertence a ele
+    try:
+        crm_group = Group.objects.get(name='crm_cliente')
+        return user.groups.filter(name=crm_group.name).exists()
+    except Group.DoesNotExist:
+        # O grupo não existe, então nenhum usuário pode ser 'crm_cliente'
+        return False
+
+def is_ecommerce_cliente(user):
+    try:
+        ecommerce_group = Group.objects.get(name='ecommerce_cliente')
+        return user.groups.filter(name=ecommerce_group.name).exists()
+    except Group.DoesNotExist:
+        return False
+
+
 @login_required
 def redirecionamento_pos_login(request):
     user = request.user
-    if user.groups.filter(name='crm_cliente').exists():
+    print(f"DEBUG: redirecionamento_pos_login - Usuário: {user.username}, Autenticado: {user.is_authenticated}")
+    print(f"DEBUG: Grupos do usuário: {[g.name for g in user.groups.all()]}")
+
+    if user.is_superuser:
+        print("DEBUG: Superuser detectado, redirecionando para crm:home")
+        return redirect('crm:home')
+    elif is_crm_cliente(user): # Use a função auxiliar
+        print("DEBUG: crm_cliente detectado, redirecionando para crm:painel_cliente")
         return redirect('crm:painel_cliente')
-    elif user.groups.filter(name='ecommerce_cliente').exists():
-        return redirect('produtos:home')  # ou carrinho, ou loja
+    elif is_ecommerce_cliente(user): # Use a função auxiliar
+        print("DEBUG: ecommerce_cliente detectado, redirecionando para produtos:home")
+        return redirect('produtos:home')
     else:
-        return redirect('pagina_padrao')  # fallback para segurança
+        # Fallback para usuários logados que não se encaixam nas categorias acima (e.g., equipe do CRM não superusuária)
+        print("DEBUG: Usuário logado sem grupo específico, redirecionando para crm:home")
+        return redirect('crm:home')

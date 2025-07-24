@@ -22,6 +22,7 @@ def validar_cpf(cpf):
     return cpf
 
 class Cliente(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True, blank=True, related_name='cliente_profile')
     nome = models.CharField(max_length=200)
     email = models.EmailField()
     telefone = models.CharField(max_length=20, validators=[validar_telefone])
